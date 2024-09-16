@@ -1,0 +1,37 @@
+\section{Requirements}
+
+\subsection{Functional requirements}
+\begin{table}[h!]
+    \begin{ReqTable}
+    \ReqHeader
+    \ReqItem{R:Battery}{The source is internally powered. }
+    \ReqItem{R:Charger}{The device includes a charger. }
+    \ReqItem{R:Bat_Status}{An indicator provides information about the state of charge. }
+    \ReqItem{R:Bat_Change}{The internal energy source can be easily replaced using simple tools. }
+    \ReqItemMM{R:Chargingtime}{Charging time: }{N/A}{$\qty{10}{\hour}$}
+    \ReqItemMM{R:Endurance}{Runtime at maximum power output: }{$\qty{30}{\min}$}{N/A}
+    \ReqItem{R:60V}{Output mode to provide 60V}
+    \ReqItemMM{R:60V_Tolerance}{Allowed deviation from target voltage in voltage mode: }{N/A}{$\qty{1}{\percent}$}
+    \ReqItemMM{R:60V_Current}{Output current in voltage mode: }{$\qty{1}{\ampere}$}{N/A}
+    \ReqItem{R:BSPD}{Output mode to provide an adjustable current}
+    \ReqItemMM{R:BSPD_Current}{Maximum output current in current mode}{$\qty{10}{\ampere}$}{N/A}
+    \ReqItemMM{R:BSPD_Tolerance}{Allowed deviation from target output current in current mode: }{N/A}{$\qty{1}{\percent}$}
+    \ReqItemMM{R:BSPD_Voltage}{Maximum output voltage in current mode}{$\qty{5}{\volt}$}{N/A}
+    \end{ReqTable}
+\end{table}
+
+%\clearpage
+
+\subsection{Safety requirements}
+\begin{table}[h!]
+    \begin{ReqTable}
+    \ReqHeader
+    \ReqItem{R:Iso}{Galvanic isolation between charging port and output}
+    \ReqItem{R:Overvolt}{The device must not be permanently damaged when connected to \qty{600}{\volt}. }
+    \ReqItem{R:Short}{A short circuit of the battery or the charging port must be prevented. }
+    \ReqItem{R:Overcurrent}{An overcurrent protection for the battery must be included. }
+    \ReqItem{R:BMS}{The battery must be protected against deep-discharge, over-charge and over-temperature. }
+    \ReqItem{R:Rain}{The device must be able to operate in rain. The enclosure fulfills an ingress protection of at least IP54. }
+    \end{ReqTable}
+\end{table}
+

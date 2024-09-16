@@ -1,0 +1,619 @@
+% Layouteinstellungen für alle Dokumente
+
+% Encoding
+    \usepackage[utf8]{inputenc} % für input utf8
+    \usepackage[T1]{fontenc}    % Schriftcodierung mit UTF-8
+    \usepackage{textcomp}       % Erweiterung von fontenc
+    \usepackage{lmodern}        % Erweiterung des Zeichensatzes
+
+% Font
+    %\usepackage{helvet}
+    %\renewcommand{\familydefault}{\sfdefault}
+
+% Anpassungen für die Deutsche Sprache
+    %\usepackage[ngerman]{babel} % Neue deutsche Rechtschreibung
+
+% Dummy text
+    \usepackage{lipsum}
+
+% Seiteneinstellungen
+    \usepackage{lscape}         % Einzelne Seiten im Querformat
+    \usepackage{pdflscape}      % Einzelne Seiten im Querformat (bessere Lesbarkeit)
+
+% Farben
+    \usepackage{color}          % Farben
+    \usepackage{colortbl}       % Tabellen einfärben
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{beamer}{
+        % Do not load package xcolor in beamer class as beamer class loads xcolor
+    }{
+        \usepackage[table]{xcolor}  % 
+    }
+    \makeatother        % @ wieder anderes Zeichen
+
+% Eigene definierte Farben
+    \definecolor{gray}      {gray}  {0.749}
+    \definecolor{lgray}     {gray}  {0.85}
+    \definecolor{red}       {rgb}   {1  ,  0  , 0}
+    \definecolor{green}     {rgb}   {0  ,  1  , 0}
+    \definecolor{blue}      {rgb}   {0  ,  0  , 1}
+    \definecolor{darkgreen} {rgb}   {0  , 0.6 , 0}
+    \definecolor{deepblue}  {rgb}   {0  , 0   , 0.5}
+    \definecolor{deepred}   {rgb}   {0.6, 0   , 0}
+    \definecolor{orange}    {rgb}   {1  , 0.5 , 0}
+
+% Tabellen
+    \usepackage{longtable}      % Seitenübergreifende Tabellen
+    \usepackage{multirow}       % Zeilen zusammenfassen
+    \usepackage{tabularx}
+
+% Eigene Tabellen
+    % Hellgrau und weiss abwechselnd
+    \newenvironment{zebratabular}{\rowcolors{2}{lgray}{white}\tabular}{\endtabular}
+    \newenvironment{zebratabularx}{\rowcolors{2}{lgray}{white}\tabularx}{\endtabularx}
+    \newenvironment{zebralongtable}{\rowcolors{2}{lgray}{white}\longtable}{\endlongtable}
+
+% Requirement tables
+\newcommand{\ReqWidthOne}{2.0cm}
+\newcommand{\ReqWidthTwo}{11.0cm}
+\newcommand{\ReqWidthThree}{1.5cm}
+\newcommand{\ReqWidthFour}{1.5cm}
+\newcommand{\ReqWidthFive}{8cm}
+\newcommand{\ReqWidthOneThree}{\ReqWidthOne+\ReqWidthTwo+\ReqWidthThree}
+
+\newcounter{ReqCounter}
+\newcommand{\ReqHeader}{\rowcolor{gray} \textbf{No} & \textbf{Requirement} & \textbf{Min} & \textbf{Max} \\}
+\newcommand{\ReqItem}[2]{\ReqLabel{#1} & #2 & & \\}
+\newcommand{\ReqItemMM}[4]{\ReqLabel{#1} & #2 & #3 & #4 \\}
+
+\newcommand{\ReqPrefix}{REQ-}
+\newcommand{\ReqRef}[1]{\textbf{\ReqPrefix\ref{#1}}}
+\newcommand{\ReqLabel}[1]{\textbf{\ReqPrefix\refstepcounter{ReqCounter}\arabic{ReqCounter}\label{#1}}}
+
+\newenvironment{ReqTable}{\begin{zebralongtable}{ p{\ReqWidthOne}p{\ReqWidthTwo}p{\ReqWidthThree}p{\ReqWidthFour}p{\ReqWidthFive} }}{\end{zebralongtable}}
+
+% Standards table
+\newcommand{\StdNameWidth}{3.0cm}
+\newcommand{\StdDescWidth}{11.0cm}
+\newcommand{\StdApplWidth}{2.0cm}
+\newenvironment{standards}{\begin{zebralongtable}{p{\StdNameWidth}p{\StdDescWidth}p{\StdApplWidth}}\standardsheader}{\end{zebralongtable}}
+\newcommand{\standardsheader}{\rowcolor{gray} Standard & Description & Applicable \\}
+\newcommand{\standard}[3]{#1 & #2 & #3 \\}
+
+% Patents table
+\newcommand{\PatentNameWidth}{2.0cm}
+\newcommand{\PatentDescWidth}{11.0cm}
+\newcommand{\PatentIssuedWidth}{1.0cm}
+\newcommand{\PatentApplWidth}{2.0cm}
+\newenvironment{patents}{\begin{zebralongtable}{p{\PatentNameWidth}p{\PatentDescWidth}p{\PatentIssuedWidth}p{\PatentApplWidth}}\patentsheader}{\end{zebralongtable}}
+\newcommand{\patentsheader}{\rowcolor{gray} Patent & Description & Date & Applicable \\}
+\newcommand{\patent}[4]{#1 & #2 & #3 & #4 \\}
+
+% Meeting minutes elements
+\newcommand{\ConvHeader}{}
+\newcommand{\ConvByWidth}{1.5cm}
+\newcommand{\ConvStatementWidth}{12.0cm}
+\newcommand{\ConvActionWidth}{2.5cm}
+\newcommand{\colorahorat}{blue!20}
+\newcommand{\colordaniw}{green!20}
+\newenvironment{conversation}[1]{
+    \section{#1}
+    \begin{zebralongtable}{p{\ConvByWidth}p{\ConvStatementWidth}p{\ConvActionWidth}}
+    \convhead
+}{
+    \end{zebralongtable}
+}
+%\newenvironment{conversation}[1]{\section{#1} \begin{zebralongtable}{|p{\ConvByWidth}|p{\ConvStatementWidth}|p{\ConvActionWidth}}| \convhead}{\end{zebralongtable}}
+%\newenvironment{conversation}[1]{\section{#1} \begin{zebralongtable}{|l|l|l|} \convhead}{\end{zebralongtable}}
+\newcommand{\convhead}{\rowcolor{gray} By & Statement & Actions \\}
+%\newcommand{\convstate}[3][N/A]{\begin{minipage}{\ConvByWidth} \vskip 4pt #2 \vskip 4pt \end{minipage} & \begin{minipage}{\ConvStatementWidth} \vskip 4pt #3 \vskip 4pt \end{minipage} & \begin{minipage}{\ConvActionWidth} \vskip 4pt #1 \vskip 4pt \end{minipage} \\}
+\newcommand{\convstate}[3][-]{%
+% Todo: Check parameter 2 and set row color accordingly
+%\begin{minipage}{\ConvStatementWidth}
+%    \vskip 4pt
+#2
+%    \vskip 4pt
+%\end{minipage}
+&
+\begin{minipage}{\ConvStatementWidth}
+    \vskip 4pt
+    #3
+    \vskip 4pt
+\end{minipage}
+&
+\begin{minipage}{\ConvActionWidth}
+    \vskip 4pt
+    #1
+    \vskip 4pt
+\end{minipage}
+\\
+}
+
+% Grafiken
+    \usepackage{graphicx}       % Grafiken einbinden
+    \usepackage{pdfpages}       % PDF Seiten einbinden
+    \usepackage{caption}        % Bildunterschrift
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{beamer}{
+        % Do not load package subcaption in beamer class
+    }{ 
+        \usepackage{subcaption}     % Bildunterschrift unter zusammen dargestellten Bildern
+    }
+    \makeatother        % @ wieder anderes Zeichen
+    \usepackage{tikz}           % TikZ - "TikZ ist kein Zeichenprogramm"
+        \usetikzlibrary{tikzmark}   % References for hooking tikz graphics to
+        \usetikzlibrary{arrows}
+        \usetikzlibrary{automata}
+        \usetikzlibrary{shapes.geometric}
+        \usetikzlibrary{positioning}
+    \tikzset{elliptic state/.style={draw, ellipse, minimum height=1.2cm}}
+    \usepackage{tikz-timing}    % For drawing timing diagrams with tikz
+        \usetikztiminglibrary[new={char=Q,reset char=R, increment=-1}]{counters}
+        \usetikztiminglibrary{either}
+        %\usetikztiminglibrary{advnodes}
+    \usepackage{placeins}       % For \FloatBarrier
+    \newcommand{\schscale}{0.8}   % Scale for Schematics
+    \newcommand{\schfile}{appendix/PS1-1AA_Schematic_2024-09-16.PDF}    % Schematics file
+    % Dotted box
+    \usepackage{dashbox}
+    \newcommand\dashedph[1][H]{\setlength{\fboxsep}{0pt}\setlength{\dashlength}{2.2pt}\setlength{\dashdash}{1.1pt} \dbox{\phantom{#1}}}
+
+% Circuits
+    \usepackage{circuitikz}     % Schaltpläne
+    \pgfdeclareshape{inverter}{
+        \anchor{center}{\pgfpointorigin} % within the node, (0,0) is the center
+        \anchor{text} % this is used to center the text in the node
+        {\pgfpoint{-.5\wd\pgfnodeparttextbox}{-.5\ht\pgfnodeparttextbox}}
+        \savedanchor\icpinp{\pgfpoint{-30}{20}} % pin 1
+        \anchor{in+}{\icpinp}
+        \savedanchor\icpinm{\pgfpoint{-30}{-20}} % pin 2
+        \anchor{in-}{\icpinm}
+        \savedanchor\icpina{\pgfpoint{30}{25}} % pin 3
+        \anchor{a}{\icpina}
+        \savedanchor\icpinb{\pgfpoint{30}{0}} % pin 4
+        \anchor{b}{\icpinb}
+        \savedanchor\icpinc{\pgfpoint{30}{-25}} % pin 4
+        \anchor{c}{\icpinc}
+        \foregroundpath{ % border and pin numbers are drawn here
+            \pgfsetlinewidth{0.05cm}
+            \pgfpathrectanglecorners{\pgfpoint{30}{30}}{\pgfpoint{-30}{-30}}
+            \pgfusepath{draw} %draw rectangle
+            \pgfpathmoveto{\pgfpoint{-30}{-30}}
+            \pgfpathlineto{\pgfpoint{30}{30}}
+            \pgfusepath{draw} %draw diagonal line
+            \pgftext[center,at={\pgfpoint{-15}{15}}]{DC}
+            \pgftext[center,at={\pgfpoint{15}{-15}}]{AC}
+        }
+    }
+    \pgfdeclareshape{dcdc}{
+        \anchor{center}{\pgfpointorigin} % within the node, (0,0) is the center
+        \anchor{text} % this is used to center the text in the node
+        {\pgfpoint{-.5\wd\pgfnodeparttextbox}{-.5\ht\pgfnodeparttextbox}}
+        \savedanchor\icpina{\pgfpoint{-30}{20}} % pin 1
+        \anchor{in+}{\icpina}
+        \savedanchor\icpinb{\pgfpoint{-30}{-20}} % pin 2
+        \anchor{in-}{\icpinb}
+        \savedanchor\icpinc{\pgfpoint{30}{20}} % pin 3
+        \anchor{out+}{\icpinc}
+        \savedanchor\icpind{\pgfpoint{30}{-20}} % pin 4
+        \anchor{out-}{\icpind}
+        \foregroundpath{ % border and pin numbers are drawn here
+            \pgfsetlinewidth{0.05cm}
+            \pgfpathrectanglecorners{\pgfpoint{30}{30}}{\pgfpoint{-30}{-30}}
+            \pgfusepath{draw} %draw rectangle
+            \pgfpathmoveto{\pgfpoint{-30}{-30}}
+            \pgfpathlineto{\pgfpoint{30}{30}}
+            \pgfusepath{draw} %draw diagonal line
+            \pgftext[center,at={\pgfpoint{-15}{15}}]{DC}
+            \pgftext[center,at={\pgfpoint{15}{-15}}]{DC}
+        }
+    }
+
+% Trees
+    \usepackage{dirtree}        % Directory trees
+
+% Todo
+    \usepackage{todonotes}
+
+% Video
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{beamer}{
+        \usepackage{multimedia}
+    }{
+    }
+    \makeatother        % @ wieder anderes Zeichen
+
+% Mathematik
+    \usepackage{amsmath}        % Strukturierung von Formeln
+    \usepackage{bm}             % Bold math
+    \usepackage{amssymb}        % Sonderzeichen für Formeln
+    \usepackage{etoolbox}
+    \makeatletter
+        \preto\env@matrix{\renewcommand{\arraystretch}{2.2}} % Zeilenabstand in Matrizen
+    \makeatother
+    \newcommand{\blindunderbrace}[2]{\smash{\underbrace{#1}_{#2}} \vphantom{#1}} % Underbrace in Klammern ohne Beinflussung der Klammern
+
+% SI Einheiten
+    \usepackage[binary-units=true]{siunitx}        % SI Einheiten
+    \sisetup{exponent-product = \cdot} % \cdot for exponents
+    \sisetup{per-mode = fraction}      % Fraction for Per units
+	\sisetup{separate-uncertainty=true} % Enable the display of uncertainties
+    \sisetup{separate-uncertainty-units=single} % Set uncertainty format to not use brackets  and only append the unit at the end eg. 123 +-2 mm
+    %\sisetup{per = frac}        % Fraction for Per units (legacy)
+    \DeclareSIUnit{\wdg}{Wdg}   % Number of windings
+    \DeclareSIUnit{\sample}{S}  % Samples
+    \DeclareSIUnit{\rpm}{RPM}	% Revolutions per minute
+    \DeclareSIUnit{\LSB}{LSB}   % Least significant bits
+    \DeclareSIUnit{\ppm}{ppm}   % parts per million
+    \DeclareSIUnit{\ppb}{ppb}   % parts per billion
+    \DeclareSIUnit{\ppt}{ppt}   % parts per trillion
+
+% Verweise
+    \usepackage{makeidx}        % Index
+    \usepackage{hyperref}       % Verlinkte interne und externe Verweise
+    \newcommand{\secref}[1]{\ref{#1} \nameref{#1}} 
+    \usepackage{cite}           % Zitieren
+    \bibliographystyle{ieeetr}  % IEEE Zitier Stil
+
+% Abkürzungen
+    \usepackage[printonlyused]{acronym}
+    \renewcommand*{\acsfont}[1]{\textnormal{#1}}
+
+% Source-Code Paket
+    \usepackage{listings}
+    \lstset{language=[LaTeX]TeX}
+    \lstloadlanguages{TeX}
+    \lstset{basicstyle=\ttfamily,
+        numbers=left,
+        numberstyle=\tiny, 
+        numbersep=5pt,
+        breaklines=true,
+        texcsstyle=\color{black},
+        backgroundcolor=\color{gray!10},
+        commentstyle=\color{darkgreen},
+        %keywordstyle=\color{red}\bfseries,
+        %stringstyle=\color{blue}\bfseries,
+        frame=single,
+        tabsize=4,
+        rulecolor=\color{black!30},
+        title=\lstname,
+        escapeinside={\%*}{*)},
+        breaklines=true,
+        breakatwhitespace=true,
+        framextopmargin=2pt,
+        framexbottommargin=2pt,
+        inputencoding=utf8,
+        extendedchars=true,
+        literate={Ö}{{\"O}}1
+                 {Ä}{{\"A}}1
+                 {Ü}{{\"U}}1
+                 {ü}{{\"u}}1
+                 {ä}{{\"a}}1
+                 {ö}{{\"o}}1 }
+
+% Darstellung von verschiedenen Sprachen
+
+    % LaTeX
+    \newcommand\lstsettinglatex{
+        \lstset{language=[LaTeX]TeX}
+        \lstloadlanguages{TeX}
+        \lstset{basicstyle=\ttfamily,
+            numbers=left,
+            numberstyle=\tiny, 
+            numbersep=5pt,
+            breaklines=true,
+            texcsstyle=\color{blue},
+            backgroundcolor=\color{gray!10},
+            commentstyle=\color{darkgreen},
+            keywordstyle=\color{red}\bfseries,
+            stringstyle=\color{blue}\bfseries,
+            frame=single,
+            tabsize=4,
+            rulecolor=\color{black!30},
+            title=\lstname,
+            escapeinside={\%*}{*)},
+            breaklines=true,
+            breakatwhitespace=true,
+            framextopmargin=2pt,
+            framexbottommargin=2pt,
+            inputencoding=utf8,
+            extendedchars=true,
+            literate={Ö}{{\"O}}1
+                     {Ä}{{\"A}}1
+                     {Ü}{{\"U}}1
+                     {ü}{{\"u}}1
+                     {ä}{{\"a}}1
+                     {ö}{{\"o}}1 }
+    }
+
+    % C
+    \newcommand\lstsettingc{
+        \lstset{language=C}
+        \lstloadlanguages{C}
+        \lstset{basicstyle=\ttfamily,
+            numbers=left,
+            numberstyle=\tiny, 
+            numbersep=5pt,
+            breaklines=true,
+            texcsstyle=\color{black},
+            backgroundcolor=\color{gray!10},
+            commentstyle=\color{darkgreen},
+            keywordstyle=\color{red}\bfseries,
+            stringstyle=\color{blue}\bfseries,
+            frame=single,
+            tabsize=4,
+            rulecolor=\color{black!30},
+            title=\lstname,
+            escapeinside={\%*}{*)},
+            breaklines=true,
+            breakatwhitespace=true,
+            framextopmargin=2pt,
+            framexbottommargin=2pt,
+            inputencoding=utf8,
+            extendedchars=true,
+            literate={Ö}{{\"O}}1
+                     {Ä}{{\"A}}1
+                     {Ü}{{\"U}}1
+                     {ü}{{\"u}}1
+                     {ä}{{\"a}}1
+                     {ö}{{\"o}}1 }
+    }
+
+    % Matlab
+    \newcommand\lstsettingmatlab{
+        \lstset{language=Matlab}
+        \lstloadlanguages{Matlab}
+        \lstset{basicstyle=\ttfamily,
+            numbers=left,
+            numberstyle=\tiny, 
+            numbersep=5pt,
+            breaklines=true,
+            texcsstyle=\color{black},
+            backgroundcolor=\color{gray!10},
+            commentstyle=\color{darkgreen},
+            keywordstyle=\color{red}\bfseries,
+            stringstyle=\color{blue}\bfseries,
+            frame=single,
+            tabsize=4,
+            rulecolor=\color{black!30},
+            title=\lstname,
+            escapeinside={\%*}{*)},
+            breaklines=true,
+            breakatwhitespace=true,
+            framextopmargin=2pt,
+            framexbottommargin=2pt,
+            inputencoding=utf8,
+            extendedchars=true,
+            literate={Ö}{{\"O}}1
+                     {Ä}{{\"A}}1
+                     {Ü}{{\"U}}1
+                     {ü}{{\"u}}1
+                     {ä}{{\"a}}1
+                     {ö}{{\"o}}1 }
+    }
+    
+    %Python 
+    \newcommand\lstsettingpython{\lstset{
+    		language=Python,
+    		basicstyle=\ttfamily,
+    		morekeywords={self},              % Add keywords here
+    		keywordstyle=\ttb\color{deepblue},
+    		emph={MyClass,__init__},          % Custom highlighting
+    		emphstyle=\ttb\color{deepred},    % Custom highlighting style
+    		stringstyle=\color{orange},
+    		frame=tb,                         % Any extra options here
+    		showstringspaces=false
+    }}
+
+	\newcommand\pythoninline[1]{{\lstsettingpython\lstinline!#1!}}
+	
+	\lstnewenvironment{python}[1][]
+	{
+		\lstsettingpython
+		\lstset{#1}
+	}
+	{}
+	
+
+% Bedingungen
+    \usepackage{ifthen}     % Verzweigungen
+
+% Benutzerdefinierte Kopf- und Fusszeile
+    \usepackage{fancyhdr}   % http://en.wikibooks.org/wiki/LaTeX/Page_Layout#Customising_with_fancyhdr
+% Noindent
+    \setlength\parindent{0pt}
+
+% Ränder
+    % Ränder für Artikel
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{article}{
+        % TODO: Define all dimensions below!!!
+        % \addtolength{\textheight}{3.5cm}
+        \addtolength{\voffset}{-2.5cm}
+        \addtolength{\textwidth}{5cm}
+        \addtolength{\textheight}{1cm}
+        \addtolength{\evensidemargin}{-25mm}
+        \addtolength{\oddsidemargin}{-25mm}
+        % \addtolength{\headwidth}{5cm}
+        \addtolength{\headheight}{2.5cm}
+
+        % \addtolength{\textheight}{\topmargin-\evensidemargin-\hoffset+\voffset}
+        % \setlength{\topmargin}{\evensidemargin+\hoffset-\voffset}
+
+        % \addtolength{\headwidth}{1cm}
+    }{}
+    \makeatother        % @ wieder anderes Zeichen
+
+    % Ränder für Letter
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{letter}{
+        % TODO: Define all dimensions below!!!
+        \addtolength{\textheight}{4.0cm}
+        \addtolength{\voffset}{-4.5cm}
+        \addtolength{\textwidth}{12cm}
+        \addtolength{\evensidemargin}{-60mm}
+        \addtolength{\oddsidemargin}{-60mm}
+        \addtolength{\headwidth}{0.0cm}
+        \addtolength{\headheight}{2.5cm}
+        \addtolength{\headsep}{-1cm}
+
+        % \addtolength{\textheight}{\topmargin-\evensidemargin-\hoffset+\voffset}
+        % \setlength{\topmargin}{\evensidemargin+\hoffset-\voffset}
+
+        % \addtolength{\headwidth}{1cm}
+    }{}
+    \makeatother        % @ wieder anderes Zeichen
+
+    % Ränder für Bücher
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{book}{
+        % TODO: Define all dimensions below!!!
+        % \addtolength{\textheight}{3.5cm}
+        % \addtolength{\voffset}{-1.5cm}
+        % \addtolength{\textwidth}{1cm}
+        % \addtolength{\evensidemargin}{-15mm}
+        % \addtolength{\oddsidemargin}{5mm}
+
+        % \addtolength{\textheight}{\topmargin-\evensidemargin-\hoffset+\voffset}
+        % \setlength{\topmargin}{\evensidemargin+\hoffset-\voffset}
+
+        % \addtolength{\headwidth}{1cm}
+    }{}
+    \makeatother        % @ wieder anderes Zeichen
+
+%  Inhalt Kopf- und Fusszeile
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{beamer}{
+        % Do not change pagestyle, if using beamer class
+    }{
+        \pagestyle{fancy}                           % eigener Seitenstil
+        \fancyhf{}                                  % alle Kopf- und Fusszeilenfelder bereinigen
+    }
+    \makeatother        % @ wieder anderes Zeichen
+
+    % Kopf- und Fusszeile für Artikel
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{minutes}{
+        \usepackage{lastpage}
+        \fancyhead[L]{Bat Source}               % Kopfeile links
+        \fancyhead[C]{Meeting minutes \\ \@date}  % zentrierte Kopfzeile
+        \fancyhead[R]{\@author}                          % Kopfzeile rechts
+        \fancyfoot[L]{}                       % Fusszeile links
+        \fancyfoot[C]{}                             % Fusszeile zentriert
+        \fancyfoot[R]{\thepage / \pageref{LastPage}}                     % Fusszeile rechts
+        \renewcommand{\headrulewidth}{0.4pt}        % obere Trennlinie
+        \renewcommand{\footrulewidth}{0.4pt}        % untere Trennlinie
+    }{
+        \@ifclassloaded{article}{
+            \fancyhead[LO]{Bat Source}              % Kopfeile links
+            \fancyhead[CO]{Technical Documentation}  % zentrierte Kopfzeile
+            \fancyhead[RO]{}                          % Kopfzeile rechts
+            \fancyhead[LE]{}               % Kopfeile links
+            \fancyhead[CE]{\leftmark}  % zentrierte Kopfzeile
+            \fancyhead[RE]{}                             % Kopfzeile rechts
+            %
+            %\fancyfoot[L]{\today}                       % Fusszeile links
+            %\fancyfoot[C]{}                             % Fusszeile zentriert
+            %\fancyfoot[R]{\thepage}                     % Fusszeile rechts
+            \fancyfoot[LO]{\today}                             % Fusszeile links
+            \fancyfoot[CO]{Andreas Horat \\ Daniel Winz}                       % Fusszeile zentriert
+            \fancyfoot[RO]{\thepage}                     % Fusszeile rechts
+            \fancyfoot[LE]{}                     % Fusszeile links
+            \fancyfoot[CE]{} % Fusszeile zentriert
+            \fancyfoot[RE]{}                             % Fusszeile rechts
+            %
+            \renewcommand{\headrulewidth}{0.4pt}        % obere Trennlinie
+            \renewcommand{\footrulewidth}{0.4pt}        % untere Trennlinie
+        }{}
+    }
+    \makeatother        % @ wieder anderes Zeichen
+
+    % Kopf- und Fusszeile für Letter
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{letter}{
+        \fancyhead[LO]{Bat Source}              % Kopfeile links
+        \fancyhead[CO]{Commissioning protocol}  % zentrierte Kopfzeile
+        \fancyhead[RO]{\includegraphics[width=1.5cm]{../img/LogoFSCH-Color.pdf}} % Kopfzeile rechts
+        \fancyhead[LE]{}               % Kopfeile links
+        \fancyhead[CE]{\leftmark}  % zentrierte Kopfzeile
+        \fancyhead[RE]{}                             % Kopfzeile rechts
+        %
+        %\fancyfoot[L]{\today}                       % Fusszeile links
+        %\fancyfoot[C]{}                             % Fusszeile zentriert
+        %\fancyfoot[R]{\thepage}                     % Fusszeile rechts
+        \fancyfoot[LO]{\today}                             % Fusszeile links
+        \fancyfoot[CO]{Andreas Horat \\ Daniel Winz}                       % Fusszeile zentriert
+        \fancyfoot[RO]{\thepage}                     % Fusszeile rechts
+        \fancyfoot[LE]{}                     % Fusszeile links
+        \fancyfoot[CE]{} % Fusszeile zentriert
+        \fancyfoot[RE]{}                             % Fusszeile rechts
+        %
+        \renewcommand{\headrulewidth}{0.4pt}        % obere Trennlinie
+        \renewcommand{\footrulewidth}{0.4pt}        % untere Trennlinie
+        }{}
+    \makeatother        % @ wieder anderes Zeichen
+
+    % Kopf- und Fusszeile für Bücher
+    \makeatletter       % @ Teil des Befehls
+    \@ifclassloaded{book}{
+        \fancyhead[LO]{}                            % Kopfzeile links auf ungeraden Seiten
+        \fancyhead[CO]{}                            % Kopfzeile zentriert auf ungeraden Seiten
+        \fancyhead[RO]{\rightmark}                  % Kopfzeile rechts auf ungeraden Seiten
+        \fancyhead[LE]{\leftmark}                   % Kopfzeile links auf geraden Seiten
+        \fancyhead[CE]{}                            % Kopfzeile zentriert auf geraden Seiten
+        \fancyhead[RE]{}                            % Kopfzeile rechts auf geraden Seiten
+        %
+        \fancyfoot[LO]{\today}                      % Fusszeile links auf ungeraden Seiten
+        \fancyfoot[CO]{}                            % Fusszeile zentriert auf ungeraden Seiten
+        \fancyfoot[RO]{\thepage}                    % Fusszeile rechts auf ungeraden Seiten
+        \fancyfoot[LE]{\thepage}                    % Fusszeile links auf geraden Seiten
+        \fancyfoot[CE]{}                            % Fusszeile zentriert auf geraden Seiten
+        \fancyfoot[RE]{\today}                      % Fusszeile rechts auf geraden Seiten
+        %
+        \renewcommand{\headrulewidth}{0.4pt}        % obere Trennlinie
+        \renewcommand{\footrulewidth}{0.4pt}        % untere Trennlinie
+    }{}
+    \makeatother        % @ wieder anderes Zeichen
+
+    %\fancyhead[R]{\includegraphics[scale=0.25]{../fig/hslu_logo2.PNG}}
+
+% Partstyle
+\usepackage{titlesec}
+
+\titleclass{\part}{top} % make part like a chapter
+\titleformat{\part}[display]
+{\normalfont\Huge\bfseries}
+{\vspace{3pt}\titlerule[2pt]\vspace{3pt}\MakeUppercase{\partname} \thepart}
+{0pt}
+{\titlerule[2pt]\vspace{1pc}\huge}
+[\thispagestyle{fancy}]
+%
+\titlespacing*{\part}{0pt}{0pt}{20pt}
+
+% Table for test report
+
+\newcounter{formcount}
+\newcommand{\formfieldMW}{\stepcounter{formcount}\TextField[name=\arabic{formcount}, bordercolor = black, borderstyle = U, height = 0.45cm,width=3cm]{}}
+\newcommand{\formfieldCO}{\stepcounter{formcount}\TextField[name=\arabic{formcount}, bordercolor = black, borderstyle = U, height = 0.45cm,width=8cm]{}}
+\newcommand{\formCB}[1]{\stepcounter{formcount}\CheckBox[name=\arabic{formcount}, bordercolor = #1]{}}
+
+\newcommand{\formTitle}[1]{\hline \multicolumn{5}{|c|}{\textbf{#1}} \\ \hline \hline}
+\newcommand{\formHeader}{Description & Expected Value & Measured Value & Passed & Comments \endfirsthead \hline Description & Expected Value & Measured Value & Passed & Comments \endhead \hline}
+\newcommand{\formMeasure}[2]{#1 & #2 & \formfieldMW & \formCB{black} & \formfieldCO \\ \hline}
+\newcommand{\formWork}[1]{\multicolumn{3}{|l|}{\textbf{\textcolor{darkgreen}{#1}}} &\formCB{darkgreen} &\formfieldCO \\ \hline \hline}
+\newcommand{\formCheck}[1]{\multicolumn{3}{|l|}{\textbf{#1}} &\formCB{black} &\formfieldCO \\ \hline}
+\newcommand{\formNote}[2]{\multicolumn{5}{|l|}{#1} \\* \multicolumn{5}{|l|}{#2} \\ \hline}
+\newcommand{\formNoteR}[1]{\multicolumn{5}{|l|}{#1} \\* \multicolumn{5}{|l|}{\textcolor{yellow}{\textcircled{$i$} Measure resistances expected to be OL at the highest range on the multimeter}} \\ \hline}
+\newcommand{\formNoteV}[2]{\multicolumn{5}{|l|}{#1} \\* \multicolumn{5}{|l|}{\textcolor{yellow}{\textcircled{$i$} Measure voltages with reference to #2. }} \\ \hline}
+\newcommand{\formNoteHV}[1]{\multicolumn{5}{|l|}{#1} \\ \multicolumn{5}{|l|}{\textbf{\textcolor{red}{\warning Test under high voltage}}} \\ \hline}
+
+\newenvironment{formtable}{\begin{longtable}{ |p{\ColumnWidthOne}||p{\ColumnWidthTwo}|p{\ColumnWidthThree}|p{\ColumnWidthFour}|p{\ColumnWidthFive}| }}{\end{longtable}}
+
+% Table dimensions
+\newcommand{\ColumnWidthOne}{8.4cm}
+\newcommand{\ColumnWidthTwo}{3cm}
+\newcommand{\ColumnWidthThree}{3cm}
+\newcommand{\ColumnWidthFour}{1.2cm}
+\newcommand{\ColumnWidthFive}{8cm}
+\newcommand{\ColumnWidthOneThree}{\ColumnWidthOne+\ColumnWidthTwo+\ColumnWidthThree}
+
