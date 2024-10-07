@@ -8,7 +8,7 @@
     \ReqItem{R:Charger}{The device includes a charger. }
     \ReqItem{R:Charger_enclosure}{The device can be charged inside the storage enclosure. }
     \ReqItem{R:Bat_Status}{An indicator provides information about the state of charge. }
-    \ReqItem{R:Bat_Change}{The internal energy source can be easily replaced using simple tools. }
+    \ReqItem{R:Bat_Change}{The internal energy source can be easily replaced using basic tools. Screwdrivers and pliers are considered basic tools. A soldering iron is considered a special tool, therefore no soldering must be required to replace the energy source. }
     \ReqItemMM{R:Chargingtime}{Charging time: }{}{$\qty{4}{\hour}$}
     \ReqItemMM{R:Endurance}{Runtime at maximum power output: }{$\qty{30}{\min}$}{}
     \ReqItem{R:60V}{Output mode to provide 60V}
@@ -18,6 +18,8 @@
     \ReqItemMM{R:BSPD_Current}{Maximum output current in current mode}{$\qty{10}{\ampere}$}{}
     \ReqItemMM{R:BSPD_Tolerance}{Allowed deviation from target output current in current mode: }{}{$\qty{1}{\percent}$}
     \ReqItemMM{R:BSPD_Voltage}{Maximum output voltage in current mode}{$\qty{5}{\volt}$}{}
+    \ReqItem{R:Output}{The output terminals must be shrouded \qty{4}{\milli\meter} jacks. }
+    \ReqItem{R:Calibration}{A means to calibrate the output values is provided. }
     \end{ReqTable}
 \end{table}
 
@@ -27,7 +29,7 @@
 \begin{table}[h!]
     \begin{ReqTable}
     \ReqHeader
-    \ReqItem{R:Iso}{Galvanic isolation between charging port and output}
+    \ReqItem{R:Iso}{The device must provide galvanic isolation between the charging port and the output terminals. }
     \ReqItem{R:Overvolt}{The device must not be permanently damaged when connected to \qty{600}{\volt}. }
     \ReqItem{R:Short}{A short circuit of the battery or the charging port must be prevented. }
     \ReqItem{R:Overcurrent}{An overcurrent protection for the battery must be included. }
@@ -36,3 +38,14 @@
     \end{ReqTable}
 \end{table}
 
+\clearpage
+
+\subsection{Optional requirements}
+\begin{table}[h!]
+    \begin{ReqTable}
+    \ReqHeader
+    \ReqItem{R:Disp}{Output voltage and / or current are displayed}
+    \ReqItem{R:Disp_bright}{Display is readable in bright sunlight}
+    \ReqItem{R:Disp_dark}{Display is readable in low-light conditions}
+    \end{ReqTable}
+\end{table}

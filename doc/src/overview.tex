@@ -1,9 +1,9 @@
-\section{Overview}
-\label{sec:overview}
+\section{Concept}
+\label{sec:concept}
 %\lipsum
 
 \subsection{Charging}
-The user must be able to recharge the interated energy source. Multiple concepts are discussed: 
+The user must be able to recharge the internal energy source. Multiple concepts are discussed: 
 
 \begin{itemize}
     \item Integrated power supply with mains connector
@@ -17,11 +17,27 @@ The user must be able to recharge the interated energy source. Multiple concepts
         The charger is powered with an alternating magnetic field that is applied from outside the device enclosure, similar to Qi chargers for phones. This might lead to a increased heat output when charging inside the storage enclosure. 
     \item External power supply with integrated charger
         \\
-        An external power supply supplies the device with power for charging. This design might require a protective insulation on the charging input or output port, depending on the selected connector type. 
+        An external power supply provides the power for charging. Depending on the selected connector type, protective insulation on the charging input or output port might be required. 
 \end{itemize}
 
+\subsection{Energy source}
+
+\begin{itemize}
+    \item Lead
+        \\ Heavy, low power density, availability questionable due to new european battery regulation
+    \item NiMH
+        \\
+    \item LiIon
+        \\
+    \item LiFePO4
+        \\
+\end{itemize}
+
+\ReqRef{R:Bat_Change} requires the battery to be replacable without the need of special tools. For PCB-mounted batteries, a socket should be used, as soldering is considered as using special tools. 
+
 \subsection{User interface}
-The user must be able to set the operation mode and adjust the output current. The output voltage and current should be shown to the user. 
+The user must be able to set the operation mode and adjust the output current. The output voltage and current should be shown to the user. \\
+If the cover of the enclosure is transparent, the display can be placed inside the enclosure, which allows for an inherent water proof construction. 
 
 \subsubsection{User interaction}
 \begin{itemize}
@@ -30,9 +46,10 @@ The user must be able to set the operation mode and adjust the output current. T
         Multiple touch sensors can be implemented that can be actuated through the enclosure. No tactile feedback is provided unless an additional actuator is implemented. 
     \item Hall sensors with external magnet
         \\
+        Hall sensors can be integrated inside the enclosure which can be actuated by a magnet from outside the enclosure, which would inherently provide ingress protection. A magnet is needed to operate the device, which must always be kept close to the device and there is no tactile feedback as well. 
     \item Buttons / switches
         \\
-        The buttons / switches must include ingress protection
+        Depending of the type of button / switch selected, this provides feedback to the user. The buttons / switches must include ingress protection as they protrude through the enclosure. 
     \item Rotary encoder
         \\
         A rotary encoder with integrated push-button can be used. This solution will provide feedback to the user. The encoder must include ingress protection for water. 
@@ -54,15 +71,24 @@ The user must be able to set the operation mode and adjust the output current. T
 
 \subsubsection{Display technology}
 \begin{itemize}
-     \item LED
+     \item \acs{LED}
         \\
-    \item LCD
+        A \ac{LED} display is self-illuminating and therefore especially good readable in low-light conditions. For readability in sunlight, the brightness of the display must be sufficiently high. An automatic adjustment of the brighness might be beneficial. 
+    \item \acs{LCD}
         \\
-    \item OLED
+        \acp{LCD}
+    \item \acs{TFT}
         \\
-    \item E-paper
+    \item \acs{OLED}
+        \\
+    \item \acs{VFD}
+        \\
+    \item E-paper display
         \\
 \end{itemize}
+
+\subsubsection{Calibration}
+
 
 \subsection{Mechanical Design}
 
