@@ -88,7 +88,22 @@ If the cover of the enclosure is transparent, the display can be placed inside t
 \end{itemize}
 
 \subsubsection{Calibration}
+\ReqRef{R:Calibration} requires a means to calibrate the output values of the source. Therefore a communication interface must be implemented to allow sending and receiving commands and measurement values. 
 
+\begin{itemize}
+    \item Wired connection
+        \\
+        A wired conections (\ac{USB}, RS232, Ethernet) allows easy connection to the device, but might require additional galvanic isolation between the interface and the output terminals. 
+    \item Optical
+        \\
+        An optical interface (eg. IRDa) allows for wireless communication with inherent galvanic insulation. As it requires line-of-sight to the device, it can not be accessed from large distances or connected to the wrong device, when handling multiple devices. 
+    \item Radio
+        \\
+        Radio communication (Wifi, Bluetooth, \ldots) allows for wireless communication with inherent galvanic insulation. The range allows for a very flexible setup for calibration. 
+    \item Magneto-optic
+        \\
+        An assymmetric interface with a magnetic field for one direction and optical communication for the oposite direction allows for wireless communication with inherent galvanic insulation. As this would be a custom interface, the implementation will require more effort. The magnetic field might interfere with the measurements during calibration. 
+\end{itemize}
 
 \subsection{Mechanical Design}
 
