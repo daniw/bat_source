@@ -1,6 +1,5 @@
 \section{Concept}
 \label{sec:concept}
-%\lipsum
 
 \subsection{Charging}
 The user must be able to recharge the internal energy source. Multiple concepts are discussed: 
@@ -21,19 +20,58 @@ The user must be able to recharge the internal energy source. Multiple concepts 
 \end{itemize}
 
 \subsection{Energy source}
+To select an energy source, the following requirements have to be considered: 
+\begin{itemize}
+    \item \ReqRef{R:Battery} (Internally powered)
+    \item \ReqRef{R:Bat_Replace} (Battery replacable)
+    \item \ReqRef{R:Endurance} (Runtime)
+    \item \ReqRef{R:60V} (Output voltage in voltage mode)
+    \item \ReqRef{R:60V_Current} (Output current in voltage mode)
+    \item \ReqRef{R:BSPD_Current} (Output current in current mode)
+    \item \ReqRef{R:BSPD_Voltage} (Output voltage in current mode)
+\end{itemize}
+
+Based on these requirements, the power and energy requirements can be extracted. 
+\begin{align}
+    P_{volt_{max}}
+    = U_{volt_{max}} \cdot I_{volt_{max}}
+    = \qty{60}{\volt} \cdot \qty{1}{\ampere}
+    = \qty{60}{\watt}
+\end{align}
+\begin{align}
+    P_{current_{max}}
+    = U_{current{max}} \cdot I_{current{max}}
+    = \qty{5}{\volt} \cdot \qty{10}{\ampere}
+    = \qty{50}{\watt}
+\end{align}
+\begin{align}
+    P_{Bat_{max}}
+    = \dfrac{max\left(P_{volt_{max}}, P_{current_{max}}\right)}{\eta}
+    = \dfrac{\qty{60}{\watt}, \qty{50}{\watt}}{\qty{0.8}{}}
+    = \qty{75}{\watt}
+\end{align}
+\begin{align}
+    E_{Bat_{max}}
+    = P_{Bat_{max}} \cdot t_{run}
+    = \qty{75}{\watt} \cdot \qty{0.5}{\hour}
+    = \qty{37.5}{\watt\hour}
+\end{align}
 
 \begin{itemize}
     \item Lead
-        \\ Heavy, low power density, availability questionable due to new european battery regulation
+        \\
+        Heavy, low power density, availability questionable due to new european battery regulation
     \item NiMH
         \\
     \item LiIon
         \\
+        Very high power- and energy density
     \item LiFePO4
         \\
+        High power- and energy density
 \end{itemize}
 
-\ReqRef{R:Bat_Change} requires the battery to be replacable without the need of special tools. For PCB-mounted batteries, a socket should be used, as soldering is considered as using special tools. 
+\ReqRef{R:Bat_Replace} requires the battery to be replacable without the need of special tools. For PCB-mounted batteries, a socket should be used, as soldering is considered as using special tools. 
 
 \subsection{User interface}
 The user must be able to set the operation mode and adjust the output current. The output voltage and current should be shown to the user. \\
