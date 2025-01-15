@@ -37,8 +37,8 @@ N=N_prim./[N_curr, N_volt, N_iso];
 fprintf("Transformer Ratios %i:%i\t%i:%i\t%i:%i\n", N_prim, N_curr, N_prim, N_volt, N_prim, N_iso)
 
 
-R_wind_prim = 0.1;
-R_wind_sek = [0.0033,0.030,2];
+R_wind_prim = 2.6e-3;
+R_wind_sek = [962.5e-6, 33.75e-3, 1.993];
 
 
 fsw = 150e3;
@@ -79,8 +79,8 @@ Dcalc_max = N.*(Vout+Rsek*Iout)./((Vin_min-Rprim.*Ipk)+N.*(Vout+Rsek*Iout));
 Ipk = (Vin_min-sqrt(Vin_min.^2-8*(Vout+Rsek.*Iout).*Iout.* Rprim./(Dcalc_max*nuest)))/(2.*Rprim);
 %Ipkcalc = 2.*(Vout+Rsek*Iout).*Iout./(Dcalc_max.*(Vin_min-Rprim.*Ipk)*nuest)
 
-fprintf("\nStandard Operating Point:\nDuty in percent: \t\t%.1f\t%.1f\t%.1f\n" + ...
-    "Primary Current in A\t%.1f\t%.1f\t%.1f\n", Dcalc_max*100, Ipk)
+fprintf(["\nStandard Operating Point:\nDuty in percent: \t\t%.1f\t%.1f\t%.1f\n" ...
+    "Primary Current in A\t%.1f\t%.1f\t%.1f\n"], Dcalc_max*100, Ipk)
 
 if(max(Ipk > Iin_max))
   fprintf("ERROR: Input current exceeding limit of %0.2f A: %0.2f A\r\n",Iin_max,max(Ipk))
@@ -189,7 +189,7 @@ end
 %% Winding Power losses
 P_wind_prim = Ipkrms_prim.^2.*R_wind_prim;
 P_wind_sek = Ipkrms_sek.^2.*R_wind_sek;
-fprintf("Winding Losses: \nPrimary: \t%.3f W\t%.3f W\t%.3f W\nSecondary:\t%.3f W\t%.3f W\t%.3f W\n\n",P_wind_prim, P_wind_sek);
+fprintf("Winding Losses: \nPrimary: \t%.3f W\t%.3f W\t%.3f W\nSecondary: \t%.3f W\t%.3f W\t%.3f W\nTotal:    \t%.3f W\t%.3f W\t%.3f W\n\n",P_wind_prim, P_wind_sek, P_wind_prim+P_wind_sek);
 
 %% Possible: 
 % Fair-rite  9567250602 --> 2.80 per pair
