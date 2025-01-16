@@ -1,4 +1,5 @@
 clc
+%% Requirements
 Vin_min = 10;
 Vin_max = 18;
 Vin = [Vin_min,Vin_max];
@@ -25,8 +26,7 @@ fbw = 1e3;
 
 Iin_max = 10;
 
-% Parameter to influence the design
-% Mode
+%% Parameter to influence the design
 % Currently only BCM is supported
 N_prim = 2;
 N_curr = 1;
@@ -45,8 +45,12 @@ fsw = 150e3;
 Dnom = 0.7;
 nuest = 0.9;
 
+% Sensing
+Asns = 20; % Current Sense amplifier gain
 Rsns_prim = 0.010;
 Rsns_sek = 0.010;
+Vsns_max = 3.3; % Complete Voltage range of ADC (eg. -1.65..1.65V or 0..3.3V)
+ENOB_Adc = 10.4; % Effective number of bits of ADC
 
 % PXN028-100QL
 Rds_prim = 0.028;
@@ -67,6 +71,7 @@ Vf_sek = 1.35;
 Rprim = Rds_prim + Rsns_prim;
 Rsek = Rds_sek + Rsns_sek;
 
+%% Calculations
 % The design supports Boundary conduction mode, at maximum output power and nominal frequency
 
 % Peak output
@@ -79,8 +84,8 @@ Dcalc_max = N.*(Vout+Rsek*Iout)./((Vin_min-Rprim.*Ipk)+N.*(Vout+Rsek*Iout));
 Ipk = (Vin_min-sqrt(Vin_min.^2-8*(Vout+Rsek.*Iout).*Iout.* Rprim./(Dcalc_max*nuest)))/(2.*Rprim);
 %Ipkcalc = 2.*(Vout+Rsek*Iout).*Iout./(Dcalc_max.*(Vin_min-Rprim.*Ipk)*nuest)
 
-fprintf(["\nStandard Operating Point:\nDuty in percent: \t\t%.1f\t%.1f\t%.1f\n" ...
-    "Primary Current in A\t%.1f\t%.1f\t%.1f\n"], Dcalc_max*100, Ipk)
+fprintf("\nStandard Operating Point:\nDuty: \t\t%.1f %%\t%.1f %%\t%.1f %%\n", Dcalc_max*100)
+fprintf("Primary Current\t%.1f A\t%.1f A\t%.1f A\n",Ipk)
 
 if(max(Ipk > Iin_max))
   fprintf("ERROR: Input current exceeding limit of %0.2f A: %0.2f A\r\n",Iin_max,max(Ipk))
@@ -102,6 +107,19 @@ fprintf("Secondary RMS Current: %.2f A\t%.2f A\t%.2f A\n", Ipkrms_sek);
 
 %% Current Sensing
 fprintf("\n\n========= Current sensing Selection Information ========\n");
+
+% Calculation of Resistance based on range
+Rsns_prim_calc = Vsns_max/(2*max(Ipk)*Asns);
+Rsns_sek_calc =  Vsns_max/(2*max(Iout)*Asns);
+fprintf("Calculated Sense Resistors: Rsns_prim = %0.3f mOhm, Rsns_sek = %0.3f mOhm\n", Rsns_prim_calc*1e3, Rsns_sek_calc*1e3);
+
+% Check if Resistor is in range
+if(Rsns_prim_calc < 0.9*Rsns_prim ||Rsns_prim_calc > 1.1*Rsns_prim)
+    fprintf("WARNING: Selected Primary current sense resistor is outside of the range\n")
+end
+if(Rsns_sek_calc < 0.9*Rsns_sek ||Rsns_sek_calc > 1.1*Rsns_sek)
+    fprintf("WARNING: Selected Primary current sense resistor is outside of the range\n")
+end
 Vsns_prim_max = max(Rsns_prim * Ipk);
 Vsns_sek_max = max(Rsns_sek * Iout);
 fprintf("Maximum sensing voltage Primary:   %.3f V with %.3f Ohm\n", Vsns_prim_max,Rsns_prim);
@@ -111,6 +129,12 @@ Psns_prim = max(Ipkrms_prim.^2*Rsns_prim);
 Psns_sek  = max(Iout.^2*Rsns_sek);
 fprintf("Maximum losses Primary:   %.3f W\n", Psns_prim);
 fprintf("Maximum losses Secondary: %.3f W\n", Psns_sek);
+
+% Calculation of maximum Resolution
+Res_prim = Vsns_max/(Asns*Rsns_prim)/2^ENOB_Adc;
+Res_sek = Vsns_max/(Asns*Rsns_sek)/2^ENOB_Adc;
+fprintf("Resolution of Current Sense ADC: %0.3f mA \t %0.3f mA\n", Res_prim*1e3, Res_sek*1e3);
+fprintf("Resolution in percentage of output current: %.3f %%\n", Res_sek/max(Iout)*100);
 
 %% Power MOSFET Calculations
 fprintf("\n\n========= MOSFET Selection Information ========\n");
@@ -186,6 +210,8 @@ fprintf("le_min = %0.4f mm\n", le_min*1e3)
 if(le_min>le_core)
     fprintf("ERROR: Core length to low. Required %f mm, Core has: %f mm", le_min*1e3,le_core*1e3);
 end
+% ToDo Calculate Core losses based on frequency
+
 %% Winding Power losses
 P_wind_prim = Ipkrms_prim.^2.*R_wind_prim;
 P_wind_sek = Ipkrms_sek.^2.*R_wind_sek;
