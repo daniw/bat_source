@@ -30,16 +30,45 @@ Iin_max = 10;
 % Currently only BCM is supported
 N_prim = 2;
 N_curr = 1;
-N_volt = 8+N_curr; % Np/Ns
-N_iso = 24+N_volt;
-N=N_prim./[N_curr, N_volt, N_iso];
+N_volt = 8; % Np/Ns
+N_iso = 24;
+N=N_prim./[N_curr, N_volt+N_curr, N_iso+N_volt+N_curr];
 
 fprintf("Transformer Ratios %i:%i\t%i:%i\t%i:%i\n", N_prim, N_curr, N_prim, N_volt, N_prim, N_iso)
 
+% Winding length per turn
+l_wind_prim =  71.3e-3 / 2;
+l_wind_curr =  35.7e-3 / 1;
+l_wind_volt = 305.8e-3 / 8;
+l_wind_iso  = 820.6e-3 / 24;
 
-R_wind_prim = 2.6e-3;
-R_wind_sek = [962.5e-6, 33.75e-3, 1.993];
+% Winding width
+w_wind_prim = 4.5e-3;
+w_wind_curr = 4.5e-3;
+w_wind_volt = 2.2e-3;
+w_wind_iso  = 0.2e-3;
 
+% Winding thickness
+t_wind_prim = 35e-6;
+t_wind_curr = 35e-6;
+t_wind_volt = 70e-6;
+t_wind_iso  = 35e-6;
+
+% Winding thickness
+p_wind_prim = 3;
+p_wind_curr = 4;
+p_wind_volt = 1;
+p_wind_iso  = 1;
+
+% Winding resistance
+rho_wind = 1.72e-8;
+R_wind_prim = N_prim .* rho_wind .* l_wind_prim ./ (w_wind_prim .* t_wind_prim) ./ p_wind_prim;
+R_wind_curr = N_curr .* rho_wind .* l_wind_curr ./ (w_wind_curr .* t_wind_curr) ./ p_wind_curr;
+R_wind_volt = N_volt .* rho_wind .* l_wind_volt ./ (w_wind_volt .* t_wind_volt) ./ p_wind_volt;
+R_wind_iso  = N_iso  .* rho_wind .* l_wind_iso  ./ (w_wind_iso  .* t_wind_iso ) ./ p_wind_iso ;
+R_wind_sek = [R_wind_curr, R_wind_volt+R_wind_curr, R_wind_iso+R_wind_volt+R_wind_curr];
+disp(['Winding resistance: \nPrimary:   ' num2str(R_wind_prim*1e3) 'mOhm\nSecondary: ' mat2str(R_wind_sek.*1e3) 'mOhm']);
+fprintf("Winding Resistance: \nPrimary: \t%.3f mOhm\nSecondary: \t%.3f mOhm\t%.3f mOhm\t%.3f mOhm\n\n", R_wind_prim.*1e3, R_wind_sek.*1e3);
 
 fsw = 150e3;
 Dnom = 0.7;
