@@ -36,6 +36,9 @@ N=N_prim./[N_curr, N_volt+N_curr, N_iso+N_volt+N_curr];
 
 fprintf("Transformer Ratios %i:%i\t%i:%i\t%i:%i\n", N_prim, N_curr, N_prim, N_volt, N_prim, N_iso)
 
+BASE_PCB_70U = false;
+WIND_PCB_70U = false;
+
 % Winding length per turn
 l_wind_prim =  71.3e-3 / 2;
 l_wind_curr =  35.7e-3 / 1;
@@ -49,13 +52,26 @@ w_wind_volt = 2.2e-3;
 w_wind_iso  = 0.2e-3;
 
 % Winding thickness
-t_wind_prim = 35e-6;
-t_wind_curr = 35e-6;
-t_wind_volt = 70e-6;
+if BASE_PCB_70U
+    t_wind_volt = 70e-6;
+else
+    t_wind_volt = 35e-6;
+end
+if WIND_PCB_70U
+    t_wind_prim = 70e-6;
+    t_wind_curr = 70e-6;
+else
+    t_wind_prim = 35e-6;
+    t_wind_curr = 35e-6;
+end
 t_wind_iso  = 35e-6;
 
 % Winding thickness
-p_wind_prim = 3;
+if WIND_PCB_70U
+    p_wind_prim = 2;
+else
+    p_wind_prim = 3;
+end
 p_wind_curr = 4;
 p_wind_volt = 1;
 p_wind_iso  = 1;
