@@ -85,6 +85,14 @@
     \item GPIO assignment
     \item Analog reference
 \end{itemize}
+The STM32F334series is selected as microcontroller. This controller is suited for controlling a DC/DC converter due to the inclusion of the \ac{HRTIM}, which allows \ac{PWM} generation with a resolution as low as \qty{217}{\pico\second}. The QFP-48 package is selected due to the solderability and number of \ac{GPIO} pins. For the prototype the mximum of \qty{64}{\kibi\byte} is selected. This leads to the selected device: STM32F334C8T
+
+\subsubsection{Pinout and module usage}
+\paragraph{Reference voltage}
+The internal reference voltage is only directly accessible in the BGA package. To access the internal voltage reference, the output of the operational amplifier (OPAMP2\_VOUT) is used. For this the amplifiert must be configured to output the refernce voltage. (OPAMP2\_CSR: TSTREF) the referance voltage is then accessible on PA6. 
+
+\subsubsection{Memory}
+To store persistent data such as serial number or calibration data, an \ac{I2C} \ac{EEPROM} is used. 
 
 \FloatBarrier
 
