@@ -41,7 +41,7 @@ R_wind_prim = 2.6e-3;
 R_wind_sek = [962.5e-6, 33.75e-3, 1.993];
 
 
-fsw = 150e3;
+fsw = 350e3;
 Dnom = 0.7;
 nuest = 0.9;
 
@@ -52,17 +52,30 @@ Rsns_sek = 0.010;
 Vsns_max = 3.3; % Complete Voltage range of ADC (eg. -1.65..1.65V or 0..3.3V)
 ENOB_Adc = 10.4; % Effective number of bits of ADC
 
-% PXN028-100QL
+% PXN028-100QL SMD Alternative (LCSC GT095N10D5)
 Rds_prim = 0.028;
 Qdrv_prim = 3e-9; % nC
 Idrv_prim = 4;
 Qtot_prim = 7e-9;
 
-% SUM90220E-GE3 oder IRFP4127PBF (THT TO247, dafür teurer)
+% THT GT105N10F TO220
+Rds_prim = 0.0105;
+Qdrv_prim = 10e-9; % nC
+Idrv_prim = 2;
+Qtot_prim = 54e-9;
+
+% SUM90220E-GE3 SMD TO263 Alternative (LCSC HSH80N20)
 Rds_sek = 0.0216;
 Qdrv_sek = 8.6e-9; % nC
-Idrv_sek = 4;
+Idrv_sek = 2;
 Qtot_sek = 31.6e-9;
+
+% SUP90100E (THT TO220, dafür teurer)
+Rds_sek = 0.0109;
+Qdrv_sek = 19e-9; % nC
+Idrv_sek = 4;
+Qtot_sek = 72.8e-9;
+
 
 % Only for High voltage diode
 %ADS12B3-ASARH
@@ -70,6 +83,10 @@ Vf_sek = 1.35;
 
 Rprim = Rds_prim + Rsns_prim;
 Rsek = Rds_sek + Rsns_sek;
+
+
+% Gatedriver : 1EDN7512BXTSA1
+
 
 %% Calculations
 % The design supports Boundary conduction mode, at maximum output power and nominal frequency
@@ -216,14 +233,3 @@ end
 P_wind_prim = Ipkrms_prim.^2.*R_wind_prim;
 P_wind_sek = Ipkrms_sek.^2.*R_wind_sek;
 fprintf("Winding Losses: \nPrimary: \t%.3f W\t%.3f W\t%.3f W\nSecondary: \t%.3f W\t%.3f W\t%.3f W\nTotal:    \t%.3f W\t%.3f W\t%.3f W\n\n",P_wind_prim, P_wind_sek, P_wind_prim+P_wind_sek);
-
-%% Possible: 
-% Fair-rite  9567250602 --> 2.80 per pair
-% 9567250802
-% or TDK B65525J0100A087 --> 
-
-%% Possible Power Semiconductors: 
-%Secondary: NTBG070N120M3S
-% Secondary: IPB95R130PFD7
-
-%Primary: PXN028-100QLJ --> 0.3440
