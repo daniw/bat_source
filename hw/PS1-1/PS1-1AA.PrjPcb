@@ -219,6 +219,23 @@ GenerateClassCluster=0
 DocumentUniqueId=UHPRQMJJ
 
 [Document11]
+DocumentPath=SCH\Measurement.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=IQTFAQGZ
+
+[Document12]
 DocumentPath=SCH\User_Interface.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -235,7 +252,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=BTGTTHFG
 
-[Document12]
+[Document13]
 DocumentPath=SCH\Controller.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -252,7 +269,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VSOXUDWY
 
-[Document13]
+[Document14]
 DocumentPath=SCH\Power_VCC.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -269,7 +286,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=SBAFOLVI
 
-[Document14]
+[Document15]
 DocumentPath=SCH\Power_3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -286,7 +303,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ZYTQMSDL
 
-[Document15]
+[Document16]
 DocumentPath=SCH\Mechanics.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -302,23 +319,6 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XJUXYKQJ
-
-[Document16]
-DocumentPath=SCH\User_Interface.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
 
 [Document17]
 DocumentPath=SCH\Controller.Harness
@@ -356,6 +356,40 @@ DocumentUniqueId=
 
 [Document19]
 DocumentPath=SCH\Battery_BMS.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document20]
+DocumentPath=SCH\Measurement.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document21]
+DocumentPath=SCH\User_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -1603,8 +1637,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/Integrated$
-ComponentDesignItemID0=WSP8814
-ComponentSymbolReference0=WSP8814
+ComponentDesignItemID0=ADS131M03 TSSOP
+ComponentSymbolReference0=ADS131M03 TSSOP
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -1628,28 +1662,20 @@ ParameterName2=Description
 ParameterUpdate2=1
 ParameterName3=HelpURL
 ParameterUpdate3=1
-ParameterName4=JLC Type
+ParameterName4=Library Reference
 ParameterUpdate4=1
-ParameterName5=Library Reference
+ParameterName5=Manufacturer
 ParameterUpdate5=1
-ParameterName6=Manufacturer
+ParameterName6=Manufacturer 1
 ParameterUpdate6=1
-ParameterName7=Manufacturer 3
+ParameterName7=Package
 ParameterUpdate7=1
-ParameterName8=Manufacturer Part Number 3
+ParameterName8=Part Number
 ParameterUpdate8=1
-ParameterName9=Package
-ParameterUpdate9=1
-ParameterName10=Part Number
-ParameterUpdate10=1
-ParameterName11=Supplier 3
-ParameterUpdate11=1
-ParameterName12=Supplier Part Number 3
-ParameterUpdate12=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=SOP065P650X110-8-NW
+ModelName0=SOP065P640X120-20NW
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
