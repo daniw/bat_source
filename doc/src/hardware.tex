@@ -15,16 +15,15 @@
 \begin{itemize}
     \item Cell selection
     \item Cell connection
+    \item 4S and 5S configuration with cell-tab shorting
     \item Cell mounting
 \end{itemize}
 
 \subsection{Battery Management System}
 \label{sec_bms}
-\begin{itemize}
-    \item Voltage monitoring
-    \item Current monitoring
-    \item Temperature monitoring
-\end{itemize}
+The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
+This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. Level shifters are also implemented on the \ac{I2C} and ALERT lines. 
+\todo{Detailed description and design}
 
 \FloatBarrier
 
