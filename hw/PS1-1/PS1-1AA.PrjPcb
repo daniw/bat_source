@@ -43,6 +43,7 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
+CurrentVariant=PS1-1AA
 
 [Preferences]
 PrefsVaultGUID=
@@ -157,7 +158,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -174,7 +175,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=2
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -191,7 +192,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=3
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -208,7 +209,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=4
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -225,7 +226,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=5
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -242,7 +243,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=6
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -259,7 +260,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=7
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -276,7 +277,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=8
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -293,7 +294,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=9
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -310,7 +311,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=10
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -405,32 +406,111 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
+[ProjectVariant1]
+UniqueID=82BD92ED-AEB8-43B6-B15C-6065858880BE
+Description=PS1-1AA
+AllowFabrication=1
+ParameterCount=1
+VariationCount=3
+Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart= 
+Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart= 
+Variation3=Designator=R?|UniqueId=\ODRUASON\ODOGMDIK|Kind=1|AlternatePart= 
+ParamVariationCount=0
+
+[Parameter2_1]
+Name=PCB_Title
+Value=PS1-1
+
+[ProjectVariant2]
+UniqueID=CA130F8F-DB15-4303-A03F-5DC6D85922CA
+Description=PS1-10AA
+AllowFabrication=1
+ParameterCount=1
+VariationCount=52
+Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart= 
+Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart= 
+Variation3=Designator=C15|UniqueId=\DMUNOPTP\RIKXCRHF|Kind=1|AlternatePart= 
+Variation4=Designator=D8|UniqueId=\DMUNOPTP\BZWOZKPO|Kind=1|AlternatePart= 
+Variation5=Designator=R39|UniqueId=\DMUNOPTP\CYRNQBLN|Kind=1|AlternatePart= 
+Variation6=Designator=R40|UniqueId=\DMUNOPTP\UKRXJGAE|Kind=1|AlternatePart= 
+Variation7=Designator=K2|UniqueId=\DMUNOPTP\FYJUDVDJ|Kind=1|AlternatePart= 
+Variation8=Designator=R41|UniqueId=\DMUNOPTP\NNEHSEVQ|Kind=1|AlternatePart= 
+Variation9=Designator=R38|UniqueId=\DMUNOPTP\WSGCEZHN|Kind=1|AlternatePart= 
+Variation10=Designator=D9|UniqueId=\DMUNOPTP\YGTPOOBD|Kind=1|AlternatePart= 
+Variation11=Designator=Q11|UniqueId=\DMUNOPTP\UICLBZNO|Kind=1|AlternatePart= 
+Variation12=Designator=D11|UniqueId=\DMUNOPTP\CAWKFUPN|Kind=1|AlternatePart= 
+Variation13=Designator=C37|UniqueId=\JMGMUPPD\DGHXZITN|Kind=1|AlternatePart= 
+Variation14=Designator=Q19|UniqueId=\JMGMUPPD\GGKEONPG|Kind=1|AlternatePart= 
+Variation15=Designator=Q18|UniqueId=\JMGMUPPD\FNVGXEAM|Kind=1|AlternatePart= 
+Variation16=Designator=R64|UniqueId=\JMGMUPPD\RMYLHRYI|Kind=1|AlternatePart= 
+Variation17=Designator=J1|UniqueId=\JMGMUPPD\RDIIBVKR|Kind=1|AlternatePart= 
+Variation18=Designator=R70|UniqueId=\JMGMUPPD\BNNORFFS|Kind=1|AlternatePart= 
+Variation19=Designator=R60|UniqueId=\JMGMUPPD\IXKYQAYC|Kind=1|AlternatePart= 
+Variation20=Designator=K3|UniqueId=\JMGMUPPD\KJLRTQVW|Kind=1|AlternatePart= 
+Variation21=Designator=R62|UniqueId=\JMGMUPPD\PWQYNIOA|Kind=1|AlternatePart= 
+Variation22=Designator=R61|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart= 
+Variation23=Designator=R65|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart= 
+Variation24=Designator=R63|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=1|AlternatePart= 
+Variation25=Designator=R69|UniqueId=\JMGMUPPD\FHFSFDJP|Kind=1|AlternatePart= 
+Variation26=Designator=D18|UniqueId=\JMGMUPPD\MFYSFTAG|Kind=1|AlternatePart= 
+Variation27=Designator=C39|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart= 
+Variation28=Designator=C41|UniqueId=\JMGMUPPD\MJYGTMQY|Kind=1|AlternatePart= 
+Variation29=Designator=U7|UniqueId=\JMGMUPPD\DCWKLIKI|Kind=1|AlternatePart= 
+Variation30=Designator=R71|UniqueId=\JMGMUPPD\JINZFXEE|Kind=1|AlternatePart= 
+Variation31=Designator=Q20|UniqueId=\JMGMUPPD\VNEIZRKH|Kind=1|AlternatePart= 
+Variation32=Designator=C38|UniqueId=\JMGMUPPD\IBZQWUYZ|Kind=1|AlternatePart= 
+Variation33=Designator=J2|UniqueId=\JMGMUPPD\ZFGFWRQQ|Kind=1|AlternatePart= 
+Variation34=Designator=R85|UniqueId=\ODRUASON\FJBJGYMG|Kind=1|AlternatePart= 
+Variation35=Designator=U9|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart= 
+Variation36=Designator=R86|UniqueId=\ODRUASON\UUVUHZYL|Kind=1|AlternatePart= 
+Variation37=Designator=R89|UniqueId=\ODRUASON\CQTONYHU|Kind=1|AlternatePart= 
+Variation38=Designator=R88|UniqueId=\ODRUASON\QDRXAOOY|Kind=1|AlternatePart= 
+Variation39=Designator=D23|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart= 
+Variation40=Designator=D28|UniqueId=\ODRUASON\WSCDMQMC|Kind=1|AlternatePart= 
+Variation41=Designator=U10|UniqueId=\ODRUASON\IOQCGSWM|Kind=1|AlternatePart= 
+Variation42=Designator=D27|UniqueId=\ODRUASON\HQUJYDJI|Kind=1|AlternatePart= 
+Variation43=Designator=R90|UniqueId=\ODRUASON\YMZMCXRO|Kind=1|AlternatePart= 
+Variation44=Designator=R87|UniqueId=\ODRUASON\QFAIOYJR|Kind=1|AlternatePart= 
+Variation45=Designator=D24|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart= 
+Variation46=Designator=Q21|UniqueId=\ODRUASON\MINCTPQP|Kind=1|AlternatePart= 
+Variation47=Designator=U12|UniqueId=\ODRUASON\THZUZQCJ|Kind=1|AlternatePart= 
+Variation48=Designator=R97|UniqueId=\ODRUASON\UGHMEZQQ|Kind=1|AlternatePart= 
+Variation49=Designator=R92|UniqueId=\ODRUASON\TKZDSQYT|Kind=1|AlternatePart= 
+Variation50=Designator=R94|UniqueId=\ODRUASON\JVFJBSFY|Kind=1|AlternatePart= 
+Variation51=Designator=R95|UniqueId=\ODRUASON\BJNRLEQX|Kind=1|AlternatePart= 
+Variation52=Designator=R96|UniqueId=\ODRUASON\HCYZZLHW|Kind=1|AlternatePart= 
+ParamVariationCount=0
+
+[Parameter3_1]
+Name=PCB_Title
+Value=PS1-10
+
 [Parameter1]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source
 
 [Parameter3]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-1
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=PCB_NAME
-Value=PS1-1
+Name=Index_Sub
+Value=A
 
 [Parameter6]
-Name=Project
-Value=Battery Source
+Name=Index_Main
+Value=A
 
 [Parameter7]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Configuration1]
@@ -1637,10 +1717,16 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/Integrated$
-ComponentDesignItemID0=ADS131M03 TSSOP
-ComponentSymbolReference0=ADS131M03 TSSOP
+ComponentDesignItemID0=ADS131M04 TSSOP
+ComponentSymbolReference0=ADS131M04 TSSOP
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
+ComponentLibIdentifierKind1=Library Name And Type
+ComponentLibraryIdentifier1=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID1=CSACTT004
+ComponentSymbolReference1=Case
+ComponentUpdate1=1
+ComponentIsDeviceSheet1=0
 FullReplace=0
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1668,15 +1754,24 @@ ParameterName5=Manufacturer
 ParameterUpdate5=1
 ParameterName6=Manufacturer 1
 ParameterUpdate6=1
-ParameterName7=Package
+ParameterName7=Manufacturer Part Number 1
 ParameterUpdate7=1
-ParameterName8=Part Number
+ParameterName8=Package
 ParameterUpdate8=1
+ParameterName9=Part Number
+ParameterUpdate9=1
+ParameterName10=Supplier 1
+ParameterUpdate10=1
+ParameterName11=Supplier Part Number 1
+ParameterUpdate11=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=SOP065P640X120-20NW
+ModelName0=CSACTT004
 ModelUpdate0=1
+ModelType1=PCBLIB
+ModelName1=SOP065P640X120-20NW
+ModelUpdate1=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
