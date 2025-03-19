@@ -43,7 +43,7 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=PS1-1AA
+CurrentVariant=PS1-10AA
 
 [Preferences]
 PrefsVaultGUID=
@@ -77,7 +77,7 @@ AnnotateOrder=0
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -162,7 +162,7 @@ AnnotateOrder=1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -179,7 +179,7 @@ AnnotateOrder=2
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -196,7 +196,7 @@ AnnotateOrder=3
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -213,7 +213,7 @@ AnnotateOrder=4
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -230,7 +230,7 @@ AnnotateOrder=5
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -247,7 +247,7 @@ AnnotateOrder=6
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -264,7 +264,7 @@ AnnotateOrder=7
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -281,7 +281,7 @@ AnnotateOrder=8
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -298,7 +298,7 @@ AnnotateOrder=9
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -315,7 +315,7 @@ AnnotateOrder=10
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -411,10 +411,24 @@ UniqueID=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-1AA
 AllowFabrication=1
 ParameterCount=1
-VariationCount=3
+VariationCount=17
 Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart= 
 Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart= 
-Variation3=Designator=R?|UniqueId=\ODRUASON\ODOGMDIK|Kind=1|AlternatePart= 
+Variation3=Designator=R126|UniqueId=\ODRUASON\ODOGMDIK|Kind=1|AlternatePart= 
+Variation4=Designator=C61|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart= 
+Variation5=Designator=D40|UniqueId=\XMTFOVOX\DHHRJPDE|Kind=1|AlternatePart= 
+Variation6=Designator=R54|UniqueId=\DMUNOPTP\CEHTVTVQ|Kind=1|AlternatePart= 
+Variation7=Designator=BAT1|UniqueId=\OPVNZNGZ\EOUNMPJQ|Kind=1|AlternatePart= 
+Variation8=Designator=BAT3|UniqueId=\OPVNZNGZ\YYTKMNXV|Kind=1|AlternatePart= 
+Variation9=Designator=BAT6|UniqueId=\OPVNZNGZ\QMAAXSAG|Kind=1|AlternatePart= 
+Variation10=Designator=BAT5|UniqueId=\OPVNZNGZ\SYFFMRSG|Kind=1|AlternatePart= 
+Variation11=Designator=BAT8|UniqueId=\OPVNZNGZ\IFDYOFEN|Kind=1|AlternatePart= 
+Variation12=Designator=R60|UniqueId=\JMGMUPPD\EBRHPUBU|Kind=1|AlternatePart= 
+Variation13=Designator=C37|UniqueId=\JMGMUPPD\DHQRRQSI|Kind=1|AlternatePart= 
+Variation14=Designator=M2|UniqueId=\ZHBRPPEI\QXDLHDRX|Kind=1|AlternatePart= 
+Variation15=Designator=M3|UniqueId=\ZHBRPPEI\NRQHDVKC|Kind=1|AlternatePart= 
+Variation16=Designator=M4|UniqueId=\ZHBRPPEI\RSRJUCXJ|Kind=1|AlternatePart= 
+Variation17=Designator=M5|UniqueId=\ZHBRPPEI\AFASDTKJ|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -426,7 +440,7 @@ UniqueID=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10AA
 AllowFabrication=1
 ParameterCount=1
-VariationCount=52
+VariationCount=76
 Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart= 
 Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart= 
 Variation3=Designator=C15|UniqueId=\DMUNOPTP\RIKXCRHF|Kind=1|AlternatePart= 
@@ -439,78 +453,134 @@ Variation9=Designator=R38|UniqueId=\DMUNOPTP\WSGCEZHN|Kind=1|AlternatePart=
 Variation10=Designator=D9|UniqueId=\DMUNOPTP\YGTPOOBD|Kind=1|AlternatePart= 
 Variation11=Designator=Q11|UniqueId=\DMUNOPTP\UICLBZNO|Kind=1|AlternatePart= 
 Variation12=Designator=D11|UniqueId=\DMUNOPTP\CAWKFUPN|Kind=1|AlternatePart= 
-Variation13=Designator=C37|UniqueId=\JMGMUPPD\DGHXZITN|Kind=1|AlternatePart= 
-Variation14=Designator=Q19|UniqueId=\JMGMUPPD\GGKEONPG|Kind=1|AlternatePart= 
-Variation15=Designator=Q18|UniqueId=\JMGMUPPD\FNVGXEAM|Kind=1|AlternatePart= 
-Variation16=Designator=R64|UniqueId=\JMGMUPPD\RMYLHRYI|Kind=1|AlternatePart= 
-Variation17=Designator=J1|UniqueId=\JMGMUPPD\RDIIBVKR|Kind=1|AlternatePart= 
-Variation18=Designator=R70|UniqueId=\JMGMUPPD\BNNORFFS|Kind=1|AlternatePart= 
-Variation19=Designator=R60|UniqueId=\JMGMUPPD\IXKYQAYC|Kind=1|AlternatePart= 
-Variation20=Designator=K3|UniqueId=\JMGMUPPD\KJLRTQVW|Kind=1|AlternatePart= 
-Variation21=Designator=R62|UniqueId=\JMGMUPPD\PWQYNIOA|Kind=1|AlternatePart= 
-Variation22=Designator=R61|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart= 
-Variation23=Designator=R65|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart= 
-Variation24=Designator=R63|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=1|AlternatePart= 
-Variation25=Designator=R69|UniqueId=\JMGMUPPD\FHFSFDJP|Kind=1|AlternatePart= 
-Variation26=Designator=D18|UniqueId=\JMGMUPPD\MFYSFTAG|Kind=1|AlternatePart= 
-Variation27=Designator=C39|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart= 
-Variation28=Designator=C41|UniqueId=\JMGMUPPD\MJYGTMQY|Kind=1|AlternatePart= 
-Variation29=Designator=U7|UniqueId=\JMGMUPPD\DCWKLIKI|Kind=1|AlternatePart= 
-Variation30=Designator=R71|UniqueId=\JMGMUPPD\JINZFXEE|Kind=1|AlternatePart= 
-Variation31=Designator=Q20|UniqueId=\JMGMUPPD\VNEIZRKH|Kind=1|AlternatePart= 
-Variation32=Designator=C38|UniqueId=\JMGMUPPD\IBZQWUYZ|Kind=1|AlternatePart= 
-Variation33=Designator=J2|UniqueId=\JMGMUPPD\ZFGFWRQQ|Kind=1|AlternatePart= 
-Variation34=Designator=R85|UniqueId=\ODRUASON\FJBJGYMG|Kind=1|AlternatePart= 
-Variation35=Designator=U9|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart= 
-Variation36=Designator=R86|UniqueId=\ODRUASON\UUVUHZYL|Kind=1|AlternatePart= 
-Variation37=Designator=R89|UniqueId=\ODRUASON\CQTONYHU|Kind=1|AlternatePart= 
-Variation38=Designator=R88|UniqueId=\ODRUASON\QDRXAOOY|Kind=1|AlternatePart= 
-Variation39=Designator=D23|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart= 
-Variation40=Designator=D28|UniqueId=\ODRUASON\WSCDMQMC|Kind=1|AlternatePart= 
-Variation41=Designator=U10|UniqueId=\ODRUASON\IOQCGSWM|Kind=1|AlternatePart= 
-Variation42=Designator=D27|UniqueId=\ODRUASON\HQUJYDJI|Kind=1|AlternatePart= 
-Variation43=Designator=R90|UniqueId=\ODRUASON\YMZMCXRO|Kind=1|AlternatePart= 
-Variation44=Designator=R87|UniqueId=\ODRUASON\QFAIOYJR|Kind=1|AlternatePart= 
-Variation45=Designator=D24|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart= 
-Variation46=Designator=Q21|UniqueId=\ODRUASON\MINCTPQP|Kind=1|AlternatePart= 
-Variation47=Designator=U12|UniqueId=\ODRUASON\THZUZQCJ|Kind=1|AlternatePart= 
-Variation48=Designator=R97|UniqueId=\ODRUASON\UGHMEZQQ|Kind=1|AlternatePart= 
-Variation49=Designator=R92|UniqueId=\ODRUASON\TKZDSQYT|Kind=1|AlternatePart= 
-Variation50=Designator=R94|UniqueId=\ODRUASON\JVFJBSFY|Kind=1|AlternatePart= 
-Variation51=Designator=R95|UniqueId=\ODRUASON\BJNRLEQX|Kind=1|AlternatePart= 
-Variation52=Designator=R96|UniqueId=\ODRUASON\HCYZZLHW|Kind=1|AlternatePart= 
-ParamVariationCount=0
+Variation13=Designator=J1|UniqueId=\JMGMUPPD\RDIIBVKR|Kind=1|AlternatePart= 
+Variation14=Designator=R61|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart= 
+Variation15=Designator=R65|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart= 
+Variation16=Designator=R63|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=2|AlternatePart=0R/1206|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib/R$|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=0R/1206|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=daniw_altium_lib.DbLib|AltLibLink_UseDBTableName=True|AltLibLink_DatabaseTableName=R$|AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=R1206-0.80-WW|AltLibLink_IsSameFootprint=True
+ParamVariation1=ParameterName=Comment|VariantValue=0R/1206
+ParamDesignator1=R63
+ParamVariation2=ParameterName=Absolute Value|VariantValue=0
+ParamDesignator2=R63
+ParamVariation3=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator3=R63
+ParamVariation4=ParameterName=Database Table Name|VariantValue=R$
+ParamDesignator4=R63
+ParamVariation5=ParameterName=Description|VariantValue=RES SM 1206 0R
+ParamDesignator5=R63
+ParamVariation6=ParameterName=Footprint|VariantValue=R1206-0.80-WW
+ParamDesignator6=R63
+ParamVariation7=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator7=R63
+ParamVariation8=ParameterName=Library Reference|VariantValue=0R/1206
+ParamDesignator8=R63
+ParamVariation9=ParameterName=Manufacturer|VariantValue=GENERIC
+ParamDesignator9=R63
+ParamVariation10=ParameterName=Package|VariantValue=1206
+ParamDesignator10=R63
+ParamVariation11=ParameterName=Part Number|VariantValue=0R/1206
+ParamDesignator11=R63
+ParamVariation12=ParameterName=PCB3D|VariantValue= 
+ParamDesignator12=R63
+ParamVariation13=ParameterName=Pin Info|VariantValue= 
+ParamDesignator13=R63
+ParamVariation14=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator14=R63
+ParamVariation15=ParameterName=Simulation|VariantValue= 
+ParamDesignator15=R63
+ParamVariation16=ParameterName=Value|VariantValue=0R
+ParamDesignator16=R63
+Variation17=Designator=C39|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart= 
+Variation18=Designator=Q20|UniqueId=\JMGMUPPD\VNEIZRKH|Kind=1|AlternatePart= 
+Variation19=Designator=J2|UniqueId=\JMGMUPPD\ZFGFWRQQ|Kind=1|AlternatePart= 
+Variation20=Designator=U9|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart= 
+Variation21=Designator=D23|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart= 
+Variation22=Designator=U10|UniqueId=\ODRUASON\IOQCGSWM|Kind=1|AlternatePart= 
+Variation23=Designator=R90|UniqueId=\ODRUASON\YMZMCXRO|Kind=1|AlternatePart= 
+Variation24=Designator=R87|UniqueId=\ODRUASON\QFAIOYJR|Kind=1|AlternatePart= 
+Variation25=Designator=D24|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart= 
+Variation26=Designator=Q21|UniqueId=\ODRUASON\MINCTPQP|Kind=1|AlternatePart= 
+Variation27=Designator=U12|UniqueId=\ODRUASON\THZUZQCJ|Kind=1|AlternatePart= 
+Variation28=Designator=R97|UniqueId=\ODRUASON\UGHMEZQQ|Kind=1|AlternatePart= 
+Variation29=Designator=R92|UniqueId=\ODRUASON\TKZDSQYT|Kind=1|AlternatePart= 
+Variation30=Designator=R94|UniqueId=\ODRUASON\JVFJBSFY|Kind=1|AlternatePart= 
+Variation31=Designator=R95|UniqueId=\ODRUASON\BJNRLEQX|Kind=1|AlternatePart= 
+Variation32=Designator=R96|UniqueId=\ODRUASON\HCYZZLHW|Kind=1|AlternatePart= 
+Variation33=Designator=C61|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart= 
+Variation34=Designator=D40|UniqueId=\XMTFOVOX\DHHRJPDE|Kind=1|AlternatePart= 
+Variation35=Designator=L1|UniqueId=\DMUNOPTP\TFWJESPH|Kind=1|AlternatePart= 
+Variation36=Designator=C37|UniqueId=\JMGMUPPD\DHQRRQSI|Kind=1|AlternatePart= 
+Variation37=Designator=R60|UniqueId=\JMGMUPPD\EBRHPUBU|Kind=1|AlternatePart= 
+Variation38=Designator=C41|UniqueId=\JMGMUPPD\IXRBDBLK|Kind=1|AlternatePart= 
+Variation39=Designator=C71|UniqueId=\JMGMUPPD\PXOOHDQG|Kind=1|AlternatePart= 
+Variation40=Designator=R64|UniqueId=\JMGMUPPD\ZCKTVUJI|Kind=1|AlternatePart= 
+Variation41=Designator=Q19|UniqueId=\JMGMUPPD\RNATANMP|Kind=1|AlternatePart= 
+Variation42=Designator=Q26|UniqueId=\JMGMUPPD\PZCWALOU|Kind=1|AlternatePart= 
+Variation43=Designator=Q18|UniqueId=\JMGMUPPD\IRDJWQXF|Kind=1|AlternatePart= 
+Variation44=Designator=D28|UniqueId=\JMGMUPPD\WGPWARHM|Kind=1|AlternatePart= 
+Variation45=Designator=D41|UniqueId=\JMGMUPPD\LWFBUYIM|Kind=1|AlternatePart= 
+Variation46=Designator=C72|UniqueId=\JMGMUPPD\OUEJXTNK|Kind=1|AlternatePart= 
+Variation47=Designator=R109|UniqueId=\JMGMUPPD\OJINTPNG|Kind=1|AlternatePart= 
+Variation48=Designator=U21|UniqueId=\DMUNOPTP\CQZMDIGA|Kind=1|AlternatePart= 
+Variation49=Designator=R107|UniqueId=\JMGMUPPD\FWTVTAWE|Kind=1|AlternatePart= 
+Variation50=Designator=R69|UniqueId=\JMGMUPPD\ZIPDCILX|Kind=1|AlternatePart= 
+Variation51=Designator=R128|UniqueId=\JMGMUPPD\TVHKECMT|Kind=1|AlternatePart= 
+Variation52=Designator=R98|UniqueId=\JMGMUPPD\IDBNVFUC|Kind=1|AlternatePart= 
+Variation53=Designator=R71|UniqueId=\JMGMUPPD\VIHNCKWJ|Kind=1|AlternatePart= 
+Variation54=Designator=R88|UniqueId=\JMGMUPPD\DYGLZMTR|Kind=1|AlternatePart= 
+Variation55=Designator=R106|UniqueId=\JMGMUPPD\NPZJUZIH|Kind=1|AlternatePart= 
+Variation56=Designator=R86|UniqueId=\JMGMUPPD\CDHVBLCE|Kind=1|AlternatePart= 
+Variation57=Designator=R62|UniqueId=\JMGMUPPD\JRXZAGSG|Kind=1|AlternatePart= 
+Variation58=Designator=D42|UniqueId=\FYQSFHEG\WKJXEDNJ|Kind=1|AlternatePart= 
+Variation59=Designator=R130|UniqueId=\FYQSFHEG\AWHYOEYQ|Kind=1|AlternatePart= 
+Variation60=Designator=D43|UniqueId=\FYQSFHEG\TCAPSZYN|Kind=1|AlternatePart= 
+Variation61=Designator=R131|UniqueId=\FYQSFHEG\YGSDJHCU|Kind=1|AlternatePart= 
+Variation62=Designator=D44|UniqueId=\FYQSFHEG\BURJJQNE|Kind=1|AlternatePart= 
+Variation63=Designator=R132|UniqueId=\FYQSFHEG\EUOHFBZF|Kind=1|AlternatePart= 
+Variation64=Designator=D45|UniqueId=\FYQSFHEG\YHIMBWDC|Kind=1|AlternatePart= 
+Variation65=Designator=R133|UniqueId=\FYQSFHEG\SVKHDFJI|Kind=1|AlternatePart= 
+Variation66=Designator=BAT1|UniqueId=\OPVNZNGZ\EOUNMPJQ|Kind=1|AlternatePart= 
+Variation67=Designator=BAT3|UniqueId=\OPVNZNGZ\YYTKMNXV|Kind=1|AlternatePart= 
+Variation68=Designator=BAT6|UniqueId=\OPVNZNGZ\QMAAXSAG|Kind=1|AlternatePart= 
+Variation69=Designator=BAT5|UniqueId=\OPVNZNGZ\SYFFMRSG|Kind=1|AlternatePart= 
+Variation70=Designator=BAT8|UniqueId=\OPVNZNGZ\IFDYOFEN|Kind=1|AlternatePart= 
+Variation71=Designator=M2|UniqueId=\ZHBRPPEI\QXDLHDRX|Kind=1|AlternatePart= 
+Variation72=Designator=M3|UniqueId=\ZHBRPPEI\NRQHDVKC|Kind=1|AlternatePart= 
+Variation73=Designator=M4|UniqueId=\ZHBRPPEI\RSRJUCXJ|Kind=1|AlternatePart= 
+Variation74=Designator=M5|UniqueId=\ZHBRPPEI\AFASDTKJ|Kind=1|AlternatePart= 
+Variation75=Designator=J10|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart= 
+Variation76=Designator=J9|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart= 
+ParamVariationCount=16
 
 [Parameter3_1]
 Name=PCB_Title
 Value=PS1-10
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project
-Value=Battery Source
+Name=Index_Main
+Value=A
 
 [Parameter3]
-Name=PCB_NAME
-Value=PS1-1
+Name=Index_Sub
+Value=A
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-1
 
 [Parameter6]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source
 
 [Parameter7]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]
@@ -1711,22 +1781,694 @@ NetClassManualEnabled=1
 NetClassSeparateForBusSections=0
 
 [LibraryUpdateOptions]
-SelectedOnly=1
+SelectedOnly=0
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
-ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/Integrated$
-ComponentDesignItemID0=ADS131M04 TSSOP
-ComponentSymbolReference0=ADS131M04 TSSOP
+ComponentLibIdentifierKind0=Library Full Path
+ComponentLibraryIdentifier0=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib
+ComponentDesignItemID0=0R/1206
+ComponentSymbolReference0=0R/1206
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 ComponentLibIdentifierKind1=Library Name And Type
-ComponentLibraryIdentifier1=daniw_altium_lib.DbLib/Misc$
-ComponentDesignItemID1=CSACTT004
-ComponentSymbolReference1=Case
+ComponentLibraryIdentifier1=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID1=100N/0603/100V/X7R
+ComponentSymbolReference1=C
 ComponentUpdate1=1
 ComponentIsDeviceSheet1=0
+ComponentLibIdentifierKind2=Library Name And Type
+ComponentLibraryIdentifier2=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID2=100N/0603/50V/X7R
+ComponentSymbolReference2=C
+ComponentUpdate2=1
+ComponentIsDeviceSheet2=0
+ComponentLibIdentifierKind3=Library Name And Type
+ComponentLibraryIdentifier3=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID3=100P/0603/50V/X7R
+ComponentSymbolReference3=C
+ComponentUpdate3=1
+ComponentIsDeviceSheet3=0
+ComponentLibIdentifierKind4=Library Name And Type
+ComponentLibraryIdentifier4=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID4=10P/0603/50V/C0G
+ComponentSymbolReference4=C
+ComponentUpdate4=1
+ComponentIsDeviceSheet4=0
+ComponentLibIdentifierKind5=Library Name And Type
+ComponentLibraryIdentifier5=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID5=10U/0805/50V/X5R
+ComponentSymbolReference5=C
+ComponentUpdate5=1
+ComponentIsDeviceSheet5=0
+ComponentLibIdentifierKind6=Library Name And Type
+ComponentLibraryIdentifier6=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID6=15U/RADIAL/100V
+ComponentSymbolReference6=C_ELEC
+ComponentUpdate6=1
+ComponentIsDeviceSheet6=0
+ComponentLibIdentifierKind7=Library Name And Type
+ComponentLibraryIdentifier7=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID7=1N/0603/50V/C0G
+ComponentSymbolReference7=C
+ComponentUpdate7=1
+ComponentIsDeviceSheet7=0
+ComponentLibIdentifierKind8=Library Name And Type
+ComponentLibraryIdentifier8=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID8=1N2/0603/50V/C0G
+ComponentSymbolReference8=C
+ComponentUpdate8=1
+ComponentIsDeviceSheet8=0
+ComponentLibIdentifierKind9=Library Name And Type
+ComponentLibraryIdentifier9=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID9=1U/0603/50V/X7R
+ComponentSymbolReference9=C
+ComponentUpdate9=1
+ComponentIsDeviceSheet9=0
+ComponentLibIdentifierKind10=Library Name And Type
+ComponentLibraryIdentifier10=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID10=1U/1206/100V
+ComponentSymbolReference10=C
+ComponentUpdate10=1
+ComponentIsDeviceSheet10=0
+ComponentLibIdentifierKind11=Library Name And Type
+ComponentLibraryIdentifier11=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID11=22N/1210/1.5kV
+ComponentSymbolReference11=C
+ComponentUpdate11=1
+ComponentIsDeviceSheet11=0
+ComponentLibIdentifierKind12=Library Name And Type
+ComponentLibraryIdentifier12=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID12=22U/0805/25V/X5R
+ComponentSymbolReference12=C
+ComponentUpdate12=1
+ComponentIsDeviceSheet12=0
+ComponentLibIdentifierKind13=Library Name And Type
+ComponentLibraryIdentifier13=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID13=2N2/0603/50V/C0G
+ComponentSymbolReference13=C
+ComponentUpdate13=1
+ComponentIsDeviceSheet13=0
+ComponentLibIdentifierKind14=Library Name And Type
+ComponentLibraryIdentifier14=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID14=33N/1210/1.5kV
+ComponentSymbolReference14=C
+ComponentUpdate14=1
+ComponentIsDeviceSheet14=0
+ComponentLibIdentifierKind15=Library Name And Type
+ComponentLibraryIdentifier15=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID15=47P/0603/50V/C0G
+ComponentSymbolReference15=C
+ComponentUpdate15=1
+ComponentIsDeviceSheet15=0
+ComponentLibIdentifierKind16=Library Name And Type
+ComponentLibraryIdentifier16=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID16=47U/0805/6.3V
+ComponentSymbolReference16=C
+ComponentUpdate16=1
+ComponentIsDeviceSheet16=0
+ComponentLibIdentifierKind17=Library Name And Type
+ComponentLibraryIdentifier17=daniw_altium_lib.DbLib/C$
+ComponentDesignItemID17=680U/RADIAL/6.3V
+ComponentSymbolReference17=C_ELEC
+ComponentUpdate17=1
+ComponentIsDeviceSheet17=0
+ComponentLibIdentifierKind18=Library Name And Type
+ComponentLibraryIdentifier18=daniw_altium_lib.DbLib/CON$
+ComponentDesignItemID18=MC1.5/2-G-3.81
+ComponentSymbolReference18=CON2
+ComponentUpdate18=1
+ComponentIsDeviceSheet18=0
+ComponentLibIdentifierKind19=Library Name And Type
+ComponentLibraryIdentifier19=daniw_altium_lib.DbLib/CON$
+ComponentDesignItemID19=MC1.5/3-G-3.81
+ComponentSymbolReference19=CON3
+ComponentUpdate19=1
+ComponentIsDeviceSheet19=0
+ComponentLibIdentifierKind20=Library Name And Type
+ComponentLibraryIdentifier20=daniw_altium_lib.DbLib/CON$
+ComponentDesignItemID20=SLB4-F6.3 BLACK
+ComponentSymbolReference20=CON1
+ComponentUpdate20=1
+ComponentIsDeviceSheet20=0
+ComponentLibIdentifierKind21=Library Name And Type
+ComponentLibraryIdentifier21=daniw_altium_lib.DbLib/CON$
+ComponentDesignItemID21=SLB4-F6.3 RED
+ComponentSymbolReference21=CON1
+ComponentUpdate21=1
+ComponentIsDeviceSheet21=0
+ComponentLibIdentifierKind22=Library Name And Type
+ComponentLibraryIdentifier22=daniw_altium_lib.DbLib/CON$
+ComponentDesignItemID22=Tab_025_THT
+ComponentSymbolReference22=CON1
+ComponentUpdate22=1
+ComponentIsDeviceSheet22=0
+ComponentLibIdentifierKind23=Library Name And Type
+ComponentLibraryIdentifier23=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID23=B5819W SL
+ComponentSymbolReference23=D_Schottky
+ComponentUpdate23=1
+ComponentIsDeviceSheet23=0
+ComponentLibIdentifierKind24=Library Name And Type
+ComponentLibraryIdentifier24=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID24=BAV199
+ComponentSymbolReference24=D_Serie
+ComponentUpdate24=1
+ComponentIsDeviceSheet24=0
+ComponentLibIdentifierKind25=Library Name And Type
+ComponentLibraryIdentifier25=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID25=BZT52C15T
+ComponentSymbolReference25=D_Zener
+ComponentUpdate25=1
+ComponentIsDeviceSheet25=0
+ComponentLibIdentifierKind26=Library Name And Type
+ComponentLibraryIdentifier26=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID26=BZT52C18T
+ComponentSymbolReference26=D_Zener
+ComponentUpdate26=1
+ComponentIsDeviceSheet26=0
+ComponentLibIdentifierKind27=Library Name And Type
+ComponentLibraryIdentifier27=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID27=BZT52C3V3T
+ComponentSymbolReference27=D_Zener
+ComponentUpdate27=1
+ComponentIsDeviceSheet27=0
+ComponentLibIdentifierKind28=Library Name And Type
+ComponentLibraryIdentifier28=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID28=BZT52C75
+ComponentSymbolReference28=D_Zener
+ComponentUpdate28=1
+ComponentIsDeviceSheet28=0
+ComponentLibIdentifierKind29=Library Name And Type
+ComponentLibraryIdentifier29=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID29=LED Green 0805
+ComponentSymbolReference29=LED_GREEN
+ComponentUpdate29=1
+ComponentIsDeviceSheet29=0
+ComponentLibIdentifierKind30=Library Name And Type
+ComponentLibraryIdentifier30=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID30=LED Red 0805
+ComponentSymbolReference30=LED_RED
+ComponentUpdate30=1
+ComponentIsDeviceSheet30=0
+ComponentLibIdentifierKind31=Library Name And Type
+ComponentLibraryIdentifier31=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID31=LED Yellow 0805
+ComponentSymbolReference31=LED_YELLOW
+ComponentUpdate31=1
+ComponentIsDeviceSheet31=0
+ComponentLibIdentifierKind32=Library Name And Type
+ComponentLibraryIdentifier32=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID32=STTH112A
+ComponentSymbolReference32=D
+ComponentUpdate32=1
+ComponentIsDeviceSheet32=0
+ComponentLibIdentifierKind33=Library Name And Type
+ComponentLibraryIdentifier33=daniw_altium_lib.DbLib/D$
+ComponentDesignItemID33=TYN30-600
+ComponentSymbolReference33=SCR_1K_2A_3G
+ComponentUpdate33=1
+ComponentIsDeviceSheet33=0
+ComponentLibIdentifierKind34=Library Name And Type
+ComponentLibraryIdentifier34=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID34=1EDN7512B
+ComponentSymbolReference34=1EDNx512 SOT23-5
+ComponentUpdate34=1
+ComponentIsDeviceSheet34=0
+ComponentLibIdentifierKind35=Library Name And Type
+ComponentLibraryIdentifier35=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID35=ADS131M04 TSSOP
+ComponentSymbolReference35=ADS131M04 TSSOP
+ComponentUpdate35=1
+ComponentIsDeviceSheet35=0
+ComponentLibIdentifierKind36=Library Name And Type
+ComponentLibraryIdentifier36=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID36=BQ76905
+ComponentSymbolReference36=BQ76905
+ComponentUpdate36=1
+ComponentIsDeviceSheet36=0
+ComponentLibIdentifierKind37=Library Name And Type
+ComponentLibraryIdentifier37=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID37=BSS138
+ComponentSymbolReference37=MOSFET N_SOT23
+ComponentUpdate37=1
+ComponentIsDeviceSheet37=0
+ComponentLibIdentifierKind38=Library Name And Type
+ComponentLibraryIdentifier38=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID38=BSS84
+ComponentSymbolReference38=MOSFET P_SOT23
+ComponentUpdate38=1
+ComponentIsDeviceSheet38=0
+ComponentLibIdentifierKind39=Library Name And Type
+ComponentLibraryIdentifier39=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID39=LM5168P
+ComponentSymbolReference39=LM5168
+ComponentUpdate39=1
+ComponentIsDeviceSheet39=0
+ComponentLibIdentifierKind40=Library Name And Type
+ComponentLibraryIdentifier40=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID40=LV3842XF
+ComponentSymbolReference40=LV3842X
+ComponentUpdate40=1
+ComponentIsDeviceSheet40=0
+ComponentLibIdentifierKind41=Library Name And Type
+ComponentLibraryIdentifier41=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID41=MCG35P04-TP
+ComponentSymbolReference41=MOSFET P
+ComponentUpdate41=1
+ComponentIsDeviceSheet41=0
+ComponentLibIdentifierKind42=Library Name And Type
+ComponentLibraryIdentifier42=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID42=MCP6N11-001 SO-8
+ComponentSymbolReference42=MCP6N11
+ComponentUpdate42=1
+ComponentIsDeviceSheet42=0
+ComponentLibIdentifierKind43=Library Name And Type
+ComponentLibraryIdentifier43=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID43=MMBT4403L
+ComponentSymbolReference43=BJT_PNP_SOT23
+ComponentUpdate43=1
+ComponentIsDeviceSheet43=0
+ComponentLibIdentifierKind44=Library Name And Type
+ComponentLibraryIdentifier44=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID44=OPA4197 TSSOP
+ComponentSymbolReference44=OPA4_O1-7-8-14_P3-5-10-12_N2-6-9-13_VCC4_VEE11
+ComponentUpdate44=1
+ComponentIsDeviceSheet44=0
+ComponentLibIdentifierKind45=Library Name And Type
+ComponentLibraryIdentifier45=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID45=PCA9554A SO16
+ComponentSymbolReference45=PCA9554 SOP16
+ComponentUpdate45=1
+ComponentIsDeviceSheet45=0
+ComponentLibIdentifierKind46=Library Name And Type
+ComponentLibraryIdentifier46=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID46=PMV213SN
+ComponentSymbolReference46=MOSFET N_SOT23
+ComponentUpdate46=1
+ComponentIsDeviceSheet46=0
+ComponentLibIdentifierKind47=Library Name And Type
+ComponentLibraryIdentifier47=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID47=PXN028-100QLJ
+ComponentSymbolReference47=MOSFET N
+ComponentUpdate47=1
+ComponentIsDeviceSheet47=0
+ComponentLibIdentifierKind48=Library Name And Type
+ComponentLibraryIdentifier48=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID48=STM32F334C8T
+ComponentSymbolReference48=STM32F334 QFP-48
+ComponentUpdate48=1
+ComponentIsDeviceSheet48=0
+ComponentLibIdentifierKind49=Library Name And Type
+ComponentLibraryIdentifier49=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID49=SUM90220E-GE3
+ComponentSymbolReference49=MOSFET N
+ComponentUpdate49=1
+ComponentIsDeviceSheet49=0
+ComponentLibIdentifierKind50=Library Name And Type
+ComponentLibraryIdentifier50=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID50=TLV1701 SOT23
+ComponentSymbolReference50=OPA_O4_P1_N3_VCC5_VEE2
+ComponentUpdate50=1
+ComponentIsDeviceSheet50=0
+ComponentLibIdentifierKind51=Library Name And Type
+ComponentLibraryIdentifier51=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID51=TLV314 SOT23
+ComponentSymbolReference51=OPA_O1_P3_N4_VCC5_VEE2
+ComponentUpdate51=1
+ComponentIsDeviceSheet51=0
+ComponentLibIdentifierKind52=Library Name And Type
+ComponentLibraryIdentifier52=daniw_altium_lib.DbLib/Integrated$
+ComponentDesignItemID52=ZD24C02B
+ComponentSymbolReference52=EEPROM_I2C_WP_3ADDR
+ComponentUpdate52=1
+ComponentIsDeviceSheet52=0
+ComponentLibIdentifierKind53=Library Name And Type
+ComponentLibraryIdentifier53=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID53=1MH/THT/CMC
+ComponentSymbolReference53=L_CMC_2
+ComponentUpdate53=1
+ComponentIsDeviceSheet53=0
+ComponentLibIdentifierKind54=Library Name And Type
+ComponentLibraryIdentifier54=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID54=22UH\7643
+ComponentSymbolReference54=L
+ComponentUpdate54=1
+ComponentIsDeviceSheet54=0
+ComponentLibIdentifierKind55=Library Name And Type
+ComponentLibraryIdentifier55=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID55=330UH\7643
+ComponentSymbolReference55=L
+ComponentUpdate55=1
+ComponentIsDeviceSheet55=0
+ComponentLibIdentifierKind56=Library Name And Type
+ComponentLibraryIdentifier56=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID56=EELP22
+ComponentSymbolReference56=CORE_CLAMP
+ComponentUpdate56=1
+ComponentIsDeviceSheet56=0
+ComponentLibIdentifierKind57=Library Name And Type
+ComponentLibraryIdentifier57=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID57=ELP22/6/16 1WDG PCB 0.6MM
+ComponentSymbolReference57=L_POL
+ComponentUpdate57=1
+ComponentIsDeviceSheet57=0
+ComponentLibIdentifierKind58=Library Name And Type
+ComponentLibraryIdentifier58=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID58=ELP22/6/16 24WDG PCB 0.6MM
+ComponentSymbolReference58=L_POL
+ComponentUpdate58=1
+ComponentIsDeviceSheet58=0
+ComponentLibIdentifierKind59=Library Name And Type
+ComponentLibraryIdentifier59=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID59=ELP22/6/16 2WDG PCB 0.6MM
+ComponentSymbolReference59=L_POL
+ComponentUpdate59=1
+ComponentIsDeviceSheet59=0
+ComponentLibIdentifierKind60=Library Name And Type
+ComponentLibraryIdentifier60=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID60=ELP22/6/16 8WDG 4L
+ComponentSymbolReference60=L_POL
+ComponentUpdate60=1
+ComponentIsDeviceSheet60=0
+ComponentLibIdentifierKind61=Library Name And Type
+ComponentLibraryIdentifier61=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID61=ELP22/6/16 N87 0.3MM
+ComponentSymbolReference61=CORE_HALF
+ComponentUpdate61=1
+ComponentIsDeviceSheet61=0
+ComponentLibIdentifierKind62=Library Name And Type
+ComponentLibraryIdentifier62=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID62=AZ733-2CE-12DE
+ComponentSymbolReference62=REL_DPDT
+ComponentUpdate62=1
+ComponentIsDeviceSheet62=0
+ComponentLibIdentifierKind63=Library Name And Type
+ComponentLibraryIdentifier63=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID63=AZ822-2C-12
+ComponentSymbolReference63=REL_DPDT
+ComponentUpdate63=1
+ComponentIsDeviceSheet63=0
+ComponentLibIdentifierKind64=Library Name And Type
+ComponentLibraryIdentifier64=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID64=BAT_LFP-26700-4.5AH
+ComponentSymbolReference64=Battery
+ComponentUpdate64=1
+ComponentIsDeviceSheet64=0
+ComponentLibIdentifierKind65=Library Name And Type
+ComponentLibraryIdentifier65=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID65=BAT_LFP-26700-4.5AH-2NEG
+ComponentSymbolReference65=Battery_2NEG
+ComponentUpdate65=1
+ComponentIsDeviceSheet65=0
+ComponentLibIdentifierKind66=Library Name And Type
+ComponentLibraryIdentifier66=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID66=CSACTT004
+ComponentSymbolReference66=Case
+ComponentUpdate66=1
+ComponentIsDeviceSheet66=0
+ComponentLibIdentifierKind67=Library Name And Type
+ComponentLibraryIdentifier67=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID67=MERP11-15125BM7
+ComponentSymbolReference67=ENC_INC_SW
+ComponentUpdate67=1
+ComponentIsDeviceSheet67=0
+ComponentLibIdentifierKind68=Library Name And Type
+ComponentLibraryIdentifier68=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID68=SLB4-F6.3 BLACK
+ComponentSymbolReference68=CON1
+ComponentUpdate68=1
+ComponentIsDeviceSheet68=0
+ComponentLibIdentifierKind69=Library Name And Type
+ComponentLibraryIdentifier69=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID69=SLB4-F6.3 RED
+ComponentSymbolReference69=CON1
+ComponentUpdate69=1
+ComponentIsDeviceSheet69=0
+ComponentLibIdentifierKind70=Library Name And Type
+ComponentLibraryIdentifier70=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID70=SW-DPDT-RND-210-00450
+ComponentSymbolReference70=SW_DPDT
+ComponentUpdate70=1
+ComponentIsDeviceSheet70=0
+ComponentLibIdentifierKind71=Library Name And Type
+ComponentLibraryIdentifier71=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID71=0R/0603
+ComponentSymbolReference71=R
+ComponentUpdate71=1
+ComponentIsDeviceSheet71=0
+ComponentLibIdentifierKind72=Library Name And Type
+ComponentLibraryIdentifier72=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID72=0R/0805
+ComponentSymbolReference72=R
+ComponentUpdate72=1
+ComponentIsDeviceSheet72=0
+ComponentLibIdentifierKind73=Library Name And Type
+ComponentLibraryIdentifier73=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID73=0R/2512
+ComponentSymbolReference73=R
+ComponentUpdate73=1
+ComponentIsDeviceSheet73=0
+ComponentLibIdentifierKind74=Library Name And Type
+ComponentLibraryIdentifier74=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID74=0R005/2512
+ComponentSymbolReference74=R
+ComponentUpdate74=1
+ComponentIsDeviceSheet74=0
+ComponentLibIdentifierKind75=Library Name And Type
+ComponentLibraryIdentifier75=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID75=100K/0603
+ComponentSymbolReference75=R
+ComponentUpdate75=1
+ComponentIsDeviceSheet75=0
+ComponentLibIdentifierKind76=Library Name And Type
+ComponentLibraryIdentifier76=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID76=100R/0603
+ComponentSymbolReference76=R
+ComponentUpdate76=1
+ComponentIsDeviceSheet76=0
+ComponentLibIdentifierKind77=Library Name And Type
+ComponentLibraryIdentifier77=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID77=100R/1206
+ComponentSymbolReference77=R
+ComponentUpdate77=1
+ComponentIsDeviceSheet77=0
+ComponentLibIdentifierKind78=Library Name And Type
+ComponentLibraryIdentifier78=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID78=10A/3AB,3AG/FUSE
+ComponentSymbolReference78=Fuse_Nolead
+ComponentUpdate78=1
+ComponentIsDeviceSheet78=0
+ComponentLibIdentifierKind79=Library Name And Type
+ComponentLibraryIdentifier79=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID79=10K/0603/NTC/3380K
+ComponentSymbolReference79=R_NTC
+ComponentUpdate79=1
+ComponentIsDeviceSheet79=0
+ComponentLibIdentifierKind80=Library Name And Type
+ComponentLibraryIdentifier80=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID80=10K/0603
+ComponentSymbolReference80=R
+ComponentUpdate80=1
+ComponentIsDeviceSheet80=0
+ComponentLibIdentifierKind81=Library Name And Type
+ComponentLibraryIdentifier81=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID81=10M/0603
+ComponentSymbolReference81=R
+ComponentUpdate81=1
+ComponentIsDeviceSheet81=0
+ComponentLibIdentifierKind82=Library Name And Type
+ComponentLibraryIdentifier82=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID82=10R/1210
+ComponentSymbolReference82=R
+ComponentUpdate82=1
+ComponentIsDeviceSheet82=0
+ComponentLibIdentifierKind83=Library Name And Type
+ComponentLibraryIdentifier83=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID83=110K/0603
+ComponentSymbolReference83=R
+ComponentUpdate83=1
+ComponentIsDeviceSheet83=0
+ComponentLibIdentifierKind84=Library Name And Type
+ComponentLibraryIdentifier84=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID84=120K/0603
+ComponentSymbolReference84=R
+ComponentUpdate84=1
+ComponentIsDeviceSheet84=0
+ComponentLibIdentifierKind85=Library Name And Type
+ComponentLibraryIdentifier85=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID85=13K/0603
+ComponentSymbolReference85=R
+ComponentUpdate85=1
+ComponentIsDeviceSheet85=0
+ComponentLibIdentifierKind86=Library Name And Type
+ComponentLibraryIdentifier86=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID86=150K/0603
+ComponentSymbolReference86=R
+ComponentUpdate86=1
+ComponentIsDeviceSheet86=0
+ComponentLibIdentifierKind87=Library Name And Type
+ComponentLibraryIdentifier87=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID87=15K/0603
+ComponentSymbolReference87=R
+ComponentUpdate87=1
+ComponentIsDeviceSheet87=0
+ComponentLibIdentifierKind88=Library Name And Type
+ComponentLibraryIdentifier88=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID88=160R/0603
+ComponentSymbolReference88=R
+ComponentUpdate88=1
+ComponentIsDeviceSheet88=0
+ComponentLibIdentifierKind89=Library Name And Type
+ComponentLibraryIdentifier89=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID89=180K/0603
+ComponentSymbolReference89=R
+ComponentUpdate89=1
+ComponentIsDeviceSheet89=0
+ComponentLibIdentifierKind90=Library Name And Type
+ComponentLibraryIdentifier90=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID90=1K/0603
+ComponentSymbolReference90=R
+ComponentUpdate90=1
+ComponentIsDeviceSheet90=0
+ComponentLibIdentifierKind91=Library Name And Type
+ComponentLibraryIdentifier91=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID91=1K/1210
+ComponentSymbolReference91=R
+ComponentUpdate91=1
+ComponentIsDeviceSheet91=0
+ComponentLibIdentifierKind92=Library Name And Type
+ComponentLibraryIdentifier92=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID92=1M/0603
+ComponentSymbolReference92=R
+ComponentUpdate92=1
+ComponentIsDeviceSheet92=0
+ComponentLibIdentifierKind93=Library Name And Type
+ComponentLibraryIdentifier93=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID93=1M1/0603
+ComponentSymbolReference93=R
+ComponentUpdate93=1
+ComponentIsDeviceSheet93=0
+ComponentLibIdentifierKind94=Library Name And Type
+ComponentLibraryIdentifier94=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID94=20K/0603
+ComponentSymbolReference94=R
+ComponentUpdate94=1
+ComponentIsDeviceSheet94=0
+ComponentLibIdentifierKind95=Library Name And Type
+ComponentLibraryIdentifier95=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID95=240K/0603
+ComponentSymbolReference95=R
+ComponentUpdate95=1
+ComponentIsDeviceSheet95=0
+ComponentLibIdentifierKind96=Library Name And Type
+ComponentLibraryIdentifier96=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID96=240K/0805
+ComponentSymbolReference96=R
+ComponentUpdate96=1
+ComponentIsDeviceSheet96=0
+ComponentLibIdentifierKind97=Library Name And Type
+ComponentLibraryIdentifier97=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID97=27K/0603
+ComponentSymbolReference97=R
+ComponentUpdate97=1
+ComponentIsDeviceSheet97=0
+ComponentLibIdentifierKind98=Library Name And Type
+ComponentLibraryIdentifier98=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID98=2K/0603
+ComponentSymbolReference98=R
+ComponentUpdate98=1
+ComponentIsDeviceSheet98=0
+ComponentLibIdentifierKind99=Library Name And Type
+ComponentLibraryIdentifier99=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID99=300K/0603
+ComponentSymbolReference99=R
+ComponentUpdate99=1
+ComponentIsDeviceSheet99=0
+ComponentLibIdentifierKind100=Library Name And Type
+ComponentLibraryIdentifier100=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID100=30K/0603
+ComponentSymbolReference100=R
+ComponentUpdate100=1
+ComponentIsDeviceSheet100=0
+ComponentLibIdentifierKind101=Library Name And Type
+ComponentLibraryIdentifier101=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID101=360K/0603
+ComponentSymbolReference101=R
+ComponentUpdate101=1
+ComponentIsDeviceSheet101=0
+ComponentLibIdentifierKind102=Library Name And Type
+ComponentLibraryIdentifier102=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID102=36R/0603
+ComponentSymbolReference102=R
+ComponentUpdate102=1
+ComponentIsDeviceSheet102=0
+ComponentLibIdentifierKind103=Library Name And Type
+ComponentLibraryIdentifier103=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID103=390R/0603
+ComponentSymbolReference103=R
+ComponentUpdate103=1
+ComponentIsDeviceSheet103=0
+ComponentLibIdentifierKind104=Library Name And Type
+ComponentLibraryIdentifier104=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID104=3M9/2512
+ComponentSymbolReference104=R
+ComponentUpdate104=1
+ComponentIsDeviceSheet104=0
+ComponentLibIdentifierKind105=Library Name And Type
+ComponentLibraryIdentifier105=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID105=4M7/2512
+ComponentSymbolReference105=R
+ComponentUpdate105=1
+ComponentIsDeviceSheet105=0
+ComponentLibIdentifierKind106=Library Name And Type
+ComponentLibraryIdentifier106=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID106=51K/5W/0617/28MM
+ComponentSymbolReference106=R
+ComponentUpdate106=1
+ComponentIsDeviceSheet106=0
+ComponentLibIdentifierKind107=Library Name And Type
+ComponentLibraryIdentifier107=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID107=5K1/0603
+ComponentSymbolReference107=R
+ComponentUpdate107=1
+ComponentIsDeviceSheet107=0
+ComponentLibIdentifierKind108=Library Name And Type
+ComponentLibraryIdentifier108=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID108=62K/0603
+ComponentSymbolReference108=R
+ComponentUpdate108=1
+ComponentIsDeviceSheet108=0
+ComponentLibIdentifierKind109=Library Name And Type
+ComponentLibraryIdentifier109=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID109=6M8/0603
+ComponentSymbolReference109=R
+ComponentUpdate109=1
+ComponentIsDeviceSheet109=0
+ComponentLibIdentifierKind110=Library Name And Type
+ComponentLibraryIdentifier110=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID110=75K/0603
+ComponentSymbolReference110=R
+ComponentUpdate110=1
+ComponentIsDeviceSheet110=0
+ComponentLibIdentifierKind111=Library Name And Type
+ComponentLibraryIdentifier111=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID111=8M2/0603
+ComponentSymbolReference111=R
+ComponentUpdate111=1
+ComponentIsDeviceSheet111=0
+ComponentLibIdentifierKind112=Library Name And Type
+ComponentLibraryIdentifier112=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID112=91K/0603
+ComponentSymbolReference112=R
+ComponentUpdate112=1
+ComponentIsDeviceSheet112=0
+ComponentLibIdentifierKind113=Library Name And Type
+ComponentLibraryIdentifier113=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID113=Fuseholder/3AB,3AG
+ComponentSymbolReference113=Fuse_Holder
+ComponentUpdate113=1
+ComponentIsDeviceSheet113=0
 FullReplace=0
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1740,38 +2482,188 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
-ParameterName0=Comment
+ParameterName0=Absolute Value
 ParameterUpdate0=1
-ParameterName1=Component Kind
+ParameterName1=Comment
 ParameterUpdate1=1
-ParameterName2=Description
+ParameterName2=Component Kind
 ParameterUpdate2=1
-ParameterName3=HelpURL
+ParameterName3=Description
 ParameterUpdate3=1
-ParameterName4=Library Reference
+ParameterName4=Eurocircuits GPN
 ParameterUpdate4=1
-ParameterName5=Manufacturer
+ParameterName5=HelpURL
 ParameterUpdate5=1
-ParameterName6=Manufacturer 1
+ParameterName6=JLC Type
 ParameterUpdate6=1
-ParameterName7=Manufacturer Part Number 1
+ParameterName7=Library Reference
 ParameterUpdate7=1
-ParameterName8=Package
+ParameterName8=Manufacturer
 ParameterUpdate8=1
-ParameterName9=Part Number
+ParameterName9=Manufacturer 1
 ParameterUpdate9=1
-ParameterName10=Supplier 1
+ParameterName10=Manufacturer 2
 ParameterUpdate10=1
-ParameterName11=Supplier Part Number 1
+ParameterName11=Manufacturer 3
 ParameterUpdate11=1
+ParameterName12=Manufacturer Part Number 1
+ParameterUpdate12=1
+ParameterName13=Manufacturer Part Number 2
+ParameterUpdate13=1
+ParameterName14=Manufacturer Part Number 3
+ParameterUpdate14=1
+ParameterName15=Package
+ParameterUpdate15=1
+ParameterName16=Part Number
+ParameterUpdate16=1
+ParameterName17=Supplier 1
+ParameterUpdate17=1
+ParameterName18=Supplier 2
+ParameterUpdate18=1
+ParameterName19=Supplier 3
+ParameterUpdate19=1
+ParameterName20=Supplier Part Number 1
+ParameterUpdate20=1
+ParameterName21=Supplier Part Number 2
+ParameterUpdate21=1
+ParameterName22=Supplier Part Number 3
+ParameterUpdate22=1
+ParameterName23=Value
+ParameterUpdate23=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=CSACTT004
+ModelName0=AZ733
 ModelUpdate0=1
 ModelType1=PCBLIB
-ModelName1=SOP065P640X120-20NW
+ModelName1=AZ822
 ModelUpdate1=1
+ModelType2=PCBLIB
+ModelName2=BAT-26700-PS
+ModelUpdate2=1
+ModelType3=PCBLIB
+ModelName3=BAT-26700-PS-2NEG
+ModelUpdate3=1
+ModelType4=PCBLIB
+ModelName4=CAP0603_C0G
+ModelUpdate4=1
+ModelType5=PCBLIB
+ModelName5=CAP0603_X7R
+ModelUpdate5=1
+ModelType6=PCBLIB
+ModelName6=CAP0805_X7R
+ModelUpdate6=1
+ModelType7=PCBLIB
+ModelName7=CAP1210_X7R
+ModelUpdate7=1
+ModelType8=PCBLIB
+ModelName8=CSACTT004
+ModelUpdate8=1
+ModelType9=PCBLIB
+ModelName9=DFKH-CASE-50-2
+ModelUpdate9=1
+ModelType10=PCBLIB
+ModelName10=DIOM5226X230
+ModelUpdate10=1
+ModelType11=PCBLIB
+ModelName11=ELP22/6/16
+ModelUpdate11=1
+ModelType12=PCBLIB
+ModelName12=ELP22/6/18
+ModelUpdate12=1
+ModelType13=PCBLIB
+ModelName13=ELP22/6/20
+ModelUpdate13=1
+ModelType14=PCBLIB
+ModelName14=ELP22/6/21
+ModelUpdate14=1
+ModelType15=PCBLIB
+ModelName15=ELP22/6/24
+ModelUpdate15=1
+ModelType16=PCBLIB
+ModelName16=INDM7676X43
+ModelUpdate16=1
+ModelType17=PCBLIB
+ModelName17=LED0805_GREEN
+ModelUpdate17=1
+ModelType18=PCBLIB
+ModelName18=LED0805_RED
+ModelUpdate18=1
+ModelType19=PCBLIB
+ModelName19=LED0805_YELLOW
+ModelUpdate19=1
+ModelType20=PCBLIB
+ModelName20=MC1.5/2-G-3.81
+ModelUpdate20=1
+ModelType21=PCBLIB
+ModelName21=MC1.5/3-G-3.81
+ModelUpdate21=1
+ModelType22=PCBLIB
+ModelName22=MERP11-15125BM7
+ModelUpdate22=1
+ModelType23=PCBLIB
+ModelName23=QFN050P350X350X100-20-EP200X200
+ModelUpdate23=1
+ModelType24=PCBLIB
+ModelName24=QFP050P900X900X160-48
+ModelUpdate24=1
+ModelType25=PCBLIB
+ModelName25=R0603-0.40-WW
+ModelUpdate25=1
+ModelType26=PCBLIB
+ModelName26=R0805-0.50-WW
+ModelUpdate26=1
+ModelType27=PCBLIB
+ModelName27=R1206-0.80-WW
+ModelUpdate27=1
+ModelType28=PCBLIB
+ModelName28=R2512-0.65-WW
+ModelUpdate28=1
+ModelType29=PCBLIB
+ModelName29=RESAD2000W75L1750D650B
+ModelUpdate29=1
+ModelType30=PCBLIB
+ModelName30=RND_DPDT_12.6mm_210-00450
+ModelUpdate30=1
+ModelType31=PCBLIB
+ModelName31=SOD1608X065
+ModelUpdate31=1
+ModelType32=PCBLIB
+ModelName32=SOD3718X125
+ModelUpdate32=1
+ModelType33=PCBLIB
+ModelName33=SON065P330X330X075-5-TH245X175
+ModelUpdate33=1
+ModelType34=PCBLIB
+ModelName34=SOP065P640X120-14NW
+ModelUpdate34=1
+ModelType35=PCBLIB
+ModelName35=SOP065P640X120-20NW
+ModelUpdate35=1
+ModelType36=PCBLIB
+ModelName36=SOP127P1065X265-16-NW
+ModelUpdate36=1
+ModelType37=PCBLIB
+ModelName37=SOP127P600X155-8-EP330x240-NW
+ModelUpdate37=1
+ModelType38=PCBLIB
+ModelName38=SOP127P600X155-8-SW
+ModelUpdate38=1
+ModelType39=PCBLIB
+ModelName39=SOT2395P280X125-3-SE
+ModelUpdate39=1
+ModelType40=PCBLIB
+ModelName40=SOT2395P280X125-5-NW
+ModelUpdate40=1
+ModelType41=PCBLIB
+ModelName41=SOT2395P280X125-6-NW
+ModelUpdate41=1
+ModelType42=PCBLIB
+ModelName42=Tab_THT_635
+ModelUpdate42=1
+ModelType43=PCBLIB
+ModelName43=TO254P1530X1035-3
+ModelUpdate43=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
