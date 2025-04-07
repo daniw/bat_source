@@ -33,8 +33,8 @@ FSMCodingStyle=eFMSDropDownList_OneProcess
 FSMEncodingStyle=eFMSDropDownList_OneHot
 IsProjectConflictPreventionWarningsEnabled=0
 ConstraintManagerFlow=0
-OutputPath=
-LogFolderPath=
+OutputPath=Manufacturing
+LogFolderPath=Manufacturing\Logs
 ManagedProjectGUID=
 IncludeDesignInRelease=0
 CrossRefSheetStyle=2
@@ -562,31 +562,31 @@ Name=PCB_Title
 Value=PS1-10
 
 [Parameter1]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source
 
 [Parameter3]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-1
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=PCB_NAME
-Value=PS1-1
+Name=Index_Sub
+Value=A
 
 [Parameter6]
-Name=Project
-Value=Battery Source
+Name=Index_Main
+Value=A
 
 [Parameter7]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Configuration1]
@@ -598,6 +598,9 @@ Variant=[No Variations]
 OutputJobsCount=0
 ContentTypeGUID=CB6F2064-E317-11DF-B822-12313F0024A2
 ConfigurationType=Source
+
+[Generic_EDE]
+OutputDir=Manufacturing
 
 [OutputGroup1]
 Name=Netlist Outputs
