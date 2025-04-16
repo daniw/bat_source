@@ -77,7 +77,7 @@ AnnotateOrder=0
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
+ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -562,31 +562,31 @@ Name=PCB_Title
 Value=PS1-10
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project
-Value=Battery Source
+Name=Index_Main
+Value=A
 
 [Parameter3]
-Name=PCB_NAME
-Value=PS1-1
+Name=Index_Sub
+Value=A
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-1
 
 [Parameter6]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source
 
 [Parameter7]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]
@@ -1795,9 +1795,9 @@ UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=daniw_altium_lib.DbLib
-ComponentDesignItemID0=Fidu_1mm
-ComponentSymbolReference0=Fidu
+ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/Misc$
+ComponentDesignItemID0=SERIAL 2D 10MM RESTRICT
+ComponentSymbolReference0=SERIAL-2D
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -1828,7 +1828,7 @@ ParameterUpdate5=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=FIDU
+ModelName0=SERIAL-2D-10MM-RESTRICT
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
