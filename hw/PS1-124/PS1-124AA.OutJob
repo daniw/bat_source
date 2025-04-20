@@ -124,7 +124,7 @@ OutputEnabled5_OutputMedium3=0
 OutputEnabled5_OutputMedium4=1
 OutputDefault5=0
 Configuration5_Name1=OutputConfigurationParameter1
-Configuration5_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModelsOption=2|ExportHolesOption=0|CanSelectPrimitives=False|IncludeMechanicalPadHoles=True|IncludeElectricalPadHoles=True|IncludeFreePadHoles=True|ExportFoldedBoard=True|ExportFoldedBoardRate=0|ComponentSuffixType=1|ComponentSuffix= |ExportCopperOption=0|ExportCopperLayer=0|ExportPadAndViaBarrelsOnly=False|IgnoreBoardCopperLayerColors=False|ExportAsSinglePart=False|IncludeCoverLayer=True|SkipFreeBodies=True|SkipHidden=False|DocumentPath=C:\Daten\Daniel\studium\amz\inverter_wr_2023\PCB\Ctrl\DOCUMENTS\Layout\I_WR_23_Ctrl.PcbDoc
+Configuration5_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModelsOption=2|ExportHolesOption=0|CanSelectPrimitives=False|IncludeMechanicalPadHoles=True|IncludeElectricalPadHoles=True|IncludeFreePadHoles=True|ExportFoldedBoard=True|ExportFoldedBoardRate=0|ComponentSuffixType=1|ComponentSuffix= |ExportCopperOption=0|ExportCopperLayer=0|ExportPadAndViaBarrelsOnly=False|IgnoreBoardCopperLayerColors=False|ExportAsSinglePart=False|IncludeCoverLayer=True|SkipFreeBodies=False|SkipHidden=False|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-124\PCB\PS1-124A-BASIS.PcbDoc
 OutputType6=PCB Print
 OutputName6=Dimension
 OutputCategory6=Documentation
@@ -398,7 +398,7 @@ OutputEnabled15_OutputMedium3=0
 OutputEnabled15_OutputMedium4=2
 OutputDefault15=0
 Configuration15_Name1=OutputConfigurationParameter1
-Configuration15_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModelsOption=2|ExportHolesOption=0|CanSelectPrimitives=False|IncludeMechanicalPadHoles=True|IncludeElectricalPadHoles=True|IncludeFreePadHoles=True|ExportFoldedBoard=False|ExportFoldedBoardRate=0|ComponentSuffixType=1|ComponentSuffix= |ExportCopperOption=4|ExportCopperLayer=1|ExportPadAndViaBarrelsOnly=False|IgnoreBoardCopperLayerColors=False|ExportAsSinglePart=False|IncludeCoverLayer=True|SkipFreeBodies=True|SkipHidden=False|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-124\PCB\PS1-124A-BASIS.PcbDoc
+Configuration15_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModelsOption=2|ExportHolesOption=0|CanSelectPrimitives=False|IncludeMechanicalPadHoles=True|IncludeElectricalPadHoles=True|IncludeFreePadHoles=True|ExportFoldedBoard=False|ExportFoldedBoardRate=0|ComponentSuffixType=1|ComponentSuffix= |ExportCopperOption=4|ExportCopperLayer=1|ExportPadAndViaBarrelsOnly=False|IgnoreBoardCopperLayerColors=False|ExportAsSinglePart=False|IncludeCoverLayer=True|SkipFreeBodies=False|SkipHidden=False|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-124\PCB\PS1-124A-BASIS.PcbDoc
 
 [PublishSettings]
 OutputFilePath1=C:\Daten\Temp\night-cones\hw\NC1-1BA\Manufacturing\01 - PCB Manufacturing\

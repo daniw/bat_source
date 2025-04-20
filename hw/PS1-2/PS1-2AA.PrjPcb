@@ -240,7 +240,8 @@ UniqueID=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-2AA
 AllowFabrication=1
 ParameterCount=1
-VariationCount=0
+VariationCount=1
+Variation1=Designator=SW3|UniqueId=\FYQSFHEG\UUVKJITO|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -248,31 +249,31 @@ Name=PCB_Title
 Value=PS1-2
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project
-Value=Battery Source - User Interface
+Name=Index_Main
+Value=A
 
 [Parameter3]
-Name=PCB_NAME
-Value=PS1-2
+Name=Index_Sub
+Value=A
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-2
 
 [Parameter6]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source - User Interface
 
 [Parameter7]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]

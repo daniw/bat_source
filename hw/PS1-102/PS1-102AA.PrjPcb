@@ -149,31 +149,31 @@ Name=PCB_Title
 Value=PS1-102
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project
-Value=Battery Source - Transformer 1Wdg
+Name=Index_Main
+Value=A
 
 [Parameter3]
-Name=PCB_NAME
-Value=PS1-102
+Name=Index_Sub
+Value=A
 
 [Parameter4]
 Name=Layout_Designer
 Value=daniw
 
 [Parameter5]
-Name=Index_Sub
-Value=A
+Name=PCB_NAME
+Value=PS1-102
 
 [Parameter6]
-Name=Index_Main
-Value=A
+Name=Project
+Value=Battery Source - Transformer 1Wdg
 
 [Parameter7]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]

@@ -148,6 +148,10 @@ ParamVariationCount=0
 Name=PCB_Title
 Value=PS1-124
 
+[GeneratedDocument1]
+DocumentPath=Manufacturing\Design Rule Check - PS1-124A-BASIS.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Schema_Designer
 Value=ahorat / daniw
@@ -158,7 +162,7 @@ Value=Battery Source - Transformer 1Wdg
 
 [Parameter3]
 Name=PCB_NAME
-Value=PS1-101
+Value=PS1-124
 
 [Parameter4]
 Name=Layout_Designer
