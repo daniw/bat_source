@@ -68,6 +68,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-1AA.PrjPcb
+VaultURL=
+VaultName=
 
 [Document2]
 DocumentPath=..\PS1-2\PS1-2AA.PrjPcb
@@ -89,6 +91,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-2AA.PrjPcb
+VaultURL=
+VaultName=
 
 [Document3]
 DocumentPath=..\PS1-101\PS1-101AA.PrjPcb
@@ -110,6 +114,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-101AA.PrjPcb
+VaultURL=
+VaultName=
 
 [Document4]
 DocumentPath=..\PS1-102\PS1-102AA.PrjPcb
@@ -131,6 +137,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-102AA.PrjPcb
+VaultURL=
+VaultName=
 
 [Document5]
 DocumentPath=..\PS1-124\PS1-124AA.PrjPcb
@@ -152,6 +160,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-124AA.PrjPcb
+VaultURL=
+VaultName=
 
 [Document6]
 DocumentPath=Bat_Source_Assembly.MbsDoc
