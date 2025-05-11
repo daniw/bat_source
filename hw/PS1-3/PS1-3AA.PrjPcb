@@ -196,6 +196,10 @@ ParamVariationCount=0
 Name=PCB_Title
 Value=PS1-3
 
+[GeneratedDocument1]
+DocumentPath=Manufacturing\Design Rule Check - PS1-3A-BASIS.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Author
 Value=ahorat / daniw

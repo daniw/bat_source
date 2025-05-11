@@ -21,7 +21,7 @@ TargetOutputMedium=51 - Mechanical
 VariantName=PS1-3AA
 VariantScope=1
 CurrentConfigurationName=
-TargetPrinter=\\SCHSPR02\SCHPAB3_ENTWICKLUNG
+TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 OutputMedium1=11 - PCB Manufacturing
 OutputMedium1_Type=GeneratedFiles
@@ -62,7 +62,7 @@ Configuration2_Item1=Record=SchPrintView|ShowNoERC=True|ShowParamSet=False|ShowP
 OutputType3=PCB Print
 OutputName3=Assembly_Plan
 OutputCategory3=Documentation
-OutputDocumentPath3=PS1-1A-BASIS.PcbDoc
+OutputDocumentPath3=PS1-3A-BASIS.PcbDoc
 OutputVariantName3=
 OutputEnabled3=0
 OutputEnabled3_OutputMedium1=0
@@ -128,7 +128,7 @@ Configuration5_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModels
 OutputType6=PCB Print
 OutputName6=Dimension
 OutputCategory6=Documentation
-OutputDocumentPath6=PS1-1A-PANEL.PcbDoc
+OutputDocumentPath6=PS1-3A-BASIS.PcbDoc
 OutputVariantName6=
 OutputEnabled6=0
 OutputEnabled6_OutputMedium1=0
@@ -149,7 +149,7 @@ PcbPrintPreferences6=SubsititueFont_Default=True|SubsititueFont_Serif=True|Subsi
 OutputType7=PCB Print
 OutputName7=Layers
 OutputCategory7=Documentation
-OutputDocumentPath7=PS1-1A-BASIS.PcbDoc
+OutputDocumentPath7=PS1-3A-BASIS.PcbDoc
 OutputVariantName7=
 OutputEnabled7=0
 OutputEnabled7_OutputMedium1=0
@@ -260,7 +260,7 @@ PcbPrintPreferences7=SubsititueFont_Default=True|SubsititueFont_Serif=True|Subsi
 OutputType8=Gerber
 OutputName8=Gerber Files
 OutputCategory8=Fabrication
-OutputDocumentPath8=PS1-1A-PANEL.PcbDoc
+OutputDocumentPath8=PS1-3A-BASIS.PcbDoc
 OutputVariantName8=
 OutputEnabled8=0
 OutputEnabled8_OutputMedium1=1
@@ -273,7 +273,7 @@ Configuration8_Item1=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayer
 OutputType9=NC Drill
 OutputName9=NC Drill Files
 OutputCategory9=Fabrication
-OutputDocumentPath9=PS1-1A-PANEL.PcbDoc
+OutputDocumentPath9=PS1-3A-BASIS.PcbDoc
 OutputVariantName9=
 OutputEnabled9=0
 OutputEnabled9_OutputMedium1=2
@@ -314,7 +314,7 @@ Configuration10_Item8=Line #=100|Comment=100|Description=100|Designator=100|Manu
 OutputType11=Pick Place
 OutputName11=PIK
 OutputCategory11=Assembly
-OutputDocumentPath11=PS1-1A-PANEL.PcbDoc
+OutputDocumentPath11=PS1-3A-BASIS.PcbDoc
 OutputVariantName11=
 OutputEnabled11=0
 OutputEnabled11_OutputMedium1=0
@@ -327,7 +327,7 @@ Configuration11_Item1=Record=PickPlaceView|Units=Metric|GenerateCSVFormat=True|G
 OutputType12=PDF3D
 OutputName12=PDF3D
 OutputCategory12=Documentation
-OutputDocumentPath12=PS1-1A-BASIS.PcbDoc
+OutputDocumentPath12=PS1-3A-BASIS.PcbDoc
 OutputVariantName12=
 OutputEnabled12=0
 OutputEnabled12_OutputMedium1=0
@@ -441,7 +441,7 @@ OutputFileNameMulti3==PCB_Title+Index_Main+Index_Sub+'_'+OutputName+'_'+CurrentD
 UseOutputNameForMulti3=0
 OutputFileNameSpecial3=
 OpenOutput3=0
-OutputFilePath4=C:\Daten\Daniel\ele\bat_source\hw\PS1-3\Manufacturing\05 - Mechanical\
+OutputFilePath4=C:\Daten\Temp\bat_source\hw\PS1-3\Manufacturing\05 - Mechanical\
 ReleaseManaged4=0
 OutputBasePath4=Manufacturing\
 OutputPathMedia4=05 - Mechanical
@@ -478,7 +478,7 @@ OpenGerberOutput3=0
 OpenNCDrillOutput3=0
 OpenIPCOutput3=0
 EnableReload3=0
-RelativeOutputPath4=C:\Daten\Daniel\ele\bat_source\hw\PS1-3\Manufacturing\05 - Mechanical\
+RelativeOutputPath4=C:\Daten\Temp\bat_source\hw\PS1-3\Manufacturing\05 - Mechanical\
 OpenOutputs4=0
 AddToProject4=0
 TimestampFolder4=0
