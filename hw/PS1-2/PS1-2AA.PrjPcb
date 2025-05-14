@@ -185,23 +185,6 @@ GenerateClassCluster=0
 DocumentUniqueId=VSOXUDWY
 
 [Document9]
-DocumentPath=SCH\Mechanics.SchDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=10
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=XJUXYKQJ
-
-[Document10]
 DocumentPath=SCH\Connector.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -218,7 +201,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document11]
+[Document10]
 DocumentPath=SCH\User_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1

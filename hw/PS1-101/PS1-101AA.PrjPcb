@@ -149,35 +149,35 @@ Name=PCB_Title
 Value=PS1-101
 
 [Parameter1]
-Name=Project_URL
-Value=https://github.com/daniw/bat_source
-
-[Parameter2]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
-[Parameter3]
-Name=Project
-Value=Battery Source - Transformer 1Wdg
-
-[Parameter4]
-Name=PCB_NAME
-Value=PS1-101
-
-[Parameter5]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter6]
-Name=Index_Sub
-Value=A
-
-[Parameter7]
+[Parameter2]
 Name=Index_Main
 Value=A
 
+[Parameter3]
+Name=Index_Sub
+Value=A
+
+[Parameter4]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter5]
+Name=PCB_NAME
+Value=PS1-101
+
+[Parameter6]
+Name=Project
+Value=Battery Source - Transformer 1Wdg
+
+[Parameter7]
+Name=Project_URL
+Value=https://github.com/daniw/bat_source
+
 [Parameter8]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]
