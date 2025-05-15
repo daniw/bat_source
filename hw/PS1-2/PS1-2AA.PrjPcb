@@ -43,6 +43,7 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
+CurrentVariant=PS1-2AA
 
 [Preferences]
 PrefsVaultGUID=
@@ -223,7 +224,10 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-2AA
 AllowFabrication=1
 ParameterCount=1
-VariationCount=0
+VariationCount=3
+Variation1=Designator=J1|UniqueId=\FYQSFHEG\DGYHNIKQ|Kind=1|AlternatePart=
+Variation2=Designator=J3|UniqueId=\FYQSFHEG\RFNNACZG|Kind=1|AlternatePart=
+Variation3=Designator=J2|UniqueId=\FYQSFHEG\VZTGLBSK|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
