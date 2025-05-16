@@ -153,6 +153,10 @@ cad/print/
 # LT Spice
 *.op.raw
 *.raw
+hw/sim/*.zip
+hw/sim/MCP6N11_MM_D
+hw/sim/sbom974c
+hw/sim/sboma34d
 
 # Python
 __pycache__
