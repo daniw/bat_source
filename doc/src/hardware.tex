@@ -130,3 +130,6 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 
 \subsubsection{BMS wakeup from shutdown}
 When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin of the microcontroller to alow wakeup from shutdown mode. 
+
+\subsubsection{LED polarity marking}
+The LEDs have no polarity markings. This was caused by the insufficient spacing between the polarity marker and the cathode pad, which resulted in the automatic removal of the marker during silkscreen cleanup. The marker should be restored and moved away from the pad. 
