@@ -27,7 +27,7 @@ Manufacturing
 # *.ps
 # *.eps
 # *.pdf
-doc/night-cones.pdf
+doc/bat_source.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl

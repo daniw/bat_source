@@ -1,0 +1,9 @@
+
+# Build Artifacts
+*.o
+*.su
+*.d
+*.cyclo
+*.mk
+
+bat_source/Debug
