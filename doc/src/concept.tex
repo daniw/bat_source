@@ -146,7 +146,25 @@ If the cover of the enclosure is transparent, the display can be placed inside t
         An assymmetric interface with a magnetic field for one direction and optical communication for the oposite direction allows for wireless communication with inherent galvanic insulation. As this would be a custom interface, the implementation will require more effort. The magnetic field might interfere with the measurements during calibration. 
 \end{itemize}
 
+\FloatBarrier
 \subsection{Mechanical Design}
+\todo[inline]{Check which parts belong to the hardware / mechanical section rather than concept}
+
+\subsubsection{Enclosure}
+An off-the-shelf enclose CSACTT04 manufactured by Camdenboss is used to house all components. The variant with a transparent lid is used. 
+
+\subsubsection{Battery}
+The battery cells are mechanically mounted using a battery holder that is produced using additive manufacturing. \todo{better word for 3D-printing?} 
+Nickel strips are spot-welded to the cell tabs and soldered into the PCB. The nickel strips have a width of \qty{6}{\milli\meter} and a thickness of \qty{0.3}{\milli\meter}. 
+The battery holder and the \ac{PCB} are mounted to the mounting posts of the enclosure using four screws. 
+
+\subsubsection{Output terminals}
+Shrouded \qty{4}{\milli\meter} plugs SLB4-F6.3 produced by Stäubli are used for the output terminals. Due to space constraints on the main PCB, the plugs are moved outside the enclosure by \qty{100}{\milli\meter} \todo{Add actual spacing} by an additively manufactured spacer. The spacer is glued to the enclosure. \todo{Specify glue?} The plugs need to be pushed into the spacer from the outside and fastened from the inside. Because the original tool \todo{better name?} is too long for use inside the enclosure, a custom nut is manufactured to tighten the plugs. 
+
+\subsubsection{User interface}
+The user interface PCB is mounted to the lid of the enclosure using screws and spacers. The buttons must be mounted to the lid before soldering them on the PCB. 
+
+\subsubsection{Ingress protection}
 
 \FloatBarrier
 \subsection{EMI Concept}
