@@ -148,12 +148,15 @@ int main(void)
  //HAL_Delay(2000);
   /* USER CODE BEGIN WHILE */
   uint8_t res;
+  uint16_t loop_cnt;
+  uint8_t disp_update = true;
   res = ssd1309_basic_init(SSD1309_INTERFACE_IIC, SSD1309_ADDR_SA0_0);
   //    if (res != 0)
   //    {
   //        return 1;
   //    }
   printf("Hello World\n\r");
+  loop_cnt = 0;
   while (1)
   {
     /* USER CODE END WHILE */
@@ -161,34 +164,43 @@ int main(void)
 	  //printf("Hello World\n\r");
       cli_loop();
 
-      res = ssd1309_basic_clear();
-      if (res != 0)
+      if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 == 0) & disp_update)
       {
-          ssd1309_interface_debug_print("ssd1309: clear screen failed.\n");
-          (void)ssd1309_basic_deinit();
+    	  res = ssd1309_basic_clear();
+    	  if (res != 0)
+          {
+              ssd1309_interface_debug_print("ssd1309: clear screen failed.\n");
+              (void)ssd1309_basic_deinit();
 
-          return 1;
+              return 1;
+          }
       }
 
-      HAL_Delay(500);
-      res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
-      if (res != 0)
+      if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 != 0) & disp_update)
       {
-          ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
-          (void)ssd1309_basic_deinit();
+    	  res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
+          if (res != 0)
+          {
+              ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
+              (void)ssd1309_basic_deinit();
 
-          return 1;
+              return 1;
+          }
+
+          res = ssd1309_basic_rect(0, 31, 31, 50, 1);
+    	  if (res != 0)
+          {
+              ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              return 1;
+          }
       }
 
-      res = ssd1309_basic_rect(0, 31, 31, 50, 1);
-      if (res != 0)
-      {
-          ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
-          (void)ssd1309_basic_deinit();
 
-          return 1;
-      }
-      HAL_Delay(500);
+
+      HAL_Delay(1);
+      loop_cnt++;
 
 
     /* USER CODE BEGIN 3 */
