@@ -174,10 +174,12 @@ int main(void)
 
               return 1;
           }
+    	  aux_io_ctrl_manual_set_io(9, 0x00);
       }
 
       if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 != 0) & disp_update)
       {
+    	  aux_io_ctrl_manual_set_io(9, 0x14);
     	  res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
           if (res != 0)
           {
@@ -195,6 +197,7 @@ int main(void)
 
               return 1;
           }
+    	  aux_io_ctrl_manual_set_io(9, 0x28);
       }
 
       if ((loop_cnt % 1024 >= 512) & (loop_cnt % 8 == 0) & disp_update)
@@ -208,6 +211,7 @@ int main(void)
 
               return 1;
           }
+    	  aux_io_ctrl_manual_set_io(9, 0x28);
        }
 
       HAL_Delay(1);
