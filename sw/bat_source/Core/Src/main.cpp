@@ -197,7 +197,18 @@ int main(void)
           }
       }
 
+      if ((loop_cnt % 1024 >= 512) & (loop_cnt % 8 == 0) & disp_update)
+       {
 
+          res = ssd1309_basic_rect(0, 52, ((loop_cnt-512)/4)%128+1, 63, 1);
+    	  if (res != 0)
+          {
+              ssd1309_interface_debug_print("ssd1309: show bar failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              return 1;
+          }
+       }
 
       HAL_Delay(1);
       loop_cnt++;
