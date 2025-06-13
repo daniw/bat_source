@@ -222,7 +222,8 @@ void cmd_setGPIO(void) {
 
 
 void cmd_setDAC(void) {
-	uint8_t pin, value;
+	uint8_t  pin;
+	uint16_t value;
 	if (number_of_args != 3)
 		return;
 
