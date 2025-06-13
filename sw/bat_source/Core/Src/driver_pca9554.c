@@ -40,7 +40,7 @@ void pca9554_set_direction(PCA9554_handle* hpca9554, uint8_t direction)
 void pca9554_set_output(PCA9554_handle* hpca9554, uint8_t value)
 {
 	hpca9554->output = value;
-    uint8_t buffer[2] = {PCA9554_CONFIG, hpca9554->config};
+    uint8_t buffer[2] = {PCA9554_OUTPUT, hpca9554->output};
     i2c_Write(hpca9554->address, buffer, sizeof(buffer), (void*)0);
 }
 

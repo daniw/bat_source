@@ -69,11 +69,15 @@ void aux_io_ctrl_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CTRL_EN_GPIO_Port, &GPIO_InitStruct);
+}
+
+void aux_io_ctrl_PCA9554_Init(void)
+{
 
   hpca_hw_rev.address = PCA9554_ADDRESS_HW_REV;
-  pca9554_set_direction(&hpca_UI, 0xFF);
+  pca9554_set_direction(&hpca_hw_rev, 0xFF);
 
-  hpca_UI.address = PCA9554_ADDRESS_HW_REV;
+  hpca_UI.address = PCA9554_ADDRESS_UI;
   pca9554_set_direction(&hpca_UI, 0x0);
 }
 

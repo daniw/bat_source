@@ -13,10 +13,12 @@
 #include "stdio.h"
 #include "driver_pca9554.h"
 
-#define PCA9554_ADDRESS_HW_REV 0x40
-#define PCA9554_ADDRESS_UI 0x42
+#define PCA9554_ADDRESS_HW_REV 0x70
+#define PCA9554_ADDRESS_UI 0x72
 
 void aux_io_ctrl_GPIO_Init(void);
+
+void aux_io_ctrl_PCA9554_Init(void);
 /**
  * Prints all input pin states
  */

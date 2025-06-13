@@ -125,6 +125,8 @@ int main(void)
 
   i2c_Init();
 
+  aux_io_ctrl_PCA9554_Init();
+
   MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
