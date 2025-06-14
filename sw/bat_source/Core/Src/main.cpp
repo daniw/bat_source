@@ -150,6 +150,7 @@ int main(void)
   uint8_t res;
   uint16_t loop_cnt;
   uint8_t disp_update = true;
+  uint8_t disp_lock = false;
   res = ssd1309_basic_init(SSD1309_INTERFACE_IIC, SSD1309_ADDR_SA0_0);
   //    if (res != 0)
   //    {
@@ -172,7 +173,10 @@ int main(void)
               ssd1309_interface_debug_print("ssd1309: clear screen failed.\n");
               (void)ssd1309_basic_deinit();
 
-              return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
           }
     	  aux_io_ctrl_manual_set_io(9, 0x00);
       }
@@ -186,7 +190,10 @@ int main(void)
               ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
               (void)ssd1309_basic_deinit();
 
-              return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
           }
 
           res = ssd1309_basic_rect(0, 31, 31, 50, 1);
@@ -195,7 +202,10 @@ int main(void)
               ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
               (void)ssd1309_basic_deinit();
 
-              return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
           }
     	  aux_io_ctrl_manual_set_io(9, 0x28);
       }
@@ -209,7 +219,10 @@ int main(void)
               ssd1309_interface_debug_print("ssd1309: show bar failed.\n");
               (void)ssd1309_basic_deinit();
 
-              return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
           }
     	  aux_io_ctrl_manual_set_io(9, 0x28);
        }
