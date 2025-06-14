@@ -23,6 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "driver_bq76905.h"
+#include "driver_bq76905_config.h"
 
 /* USER CODE END Includes */
 
@@ -62,6 +64,8 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
+
+BQ76905 bms = BQ76905(BQ76905_I2C_ADDRESS);
 
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
@@ -147,6 +151,7 @@ int main(void)
  //myDisplay.show();
  //HAL_Delay(2000);
   /* USER CODE BEGIN WHILE */
+
   uint8_t res;
   uint16_t loop_cnt;
   uint8_t disp_update = true;
@@ -164,6 +169,40 @@ int main(void)
 
 	  //printf("Hello World\n\r");
       cli_loop();
+
+      if(loop_cnt == 0)
+      {
+    	  bms.readAllValues();
+
+    	  printf("SafetyRegisters.safetyAlertA = %u\n", bms.SafetyRegisters.safetyAlertA);
+    	  printf("SafetyRegisters.safetyStatusA = %u\n", bms.SafetyRegisters.safetyStatusA);
+    	  printf("SafetyRegisters.safetyAlertB = %u\n", bms.SafetyRegisters.safetyAlertB);
+    	  printf("SafetyRegisters.safetyStatusB = %u\n", bms.SafetyRegisters.safetyStatusB);
+
+    	  printf("CellVoltageRegisters.BatteryStatus = %u\n", bms.CellVoltageRegisters.BatteryStatus);
+    	  for (int i = 0; i < 5; ++i) {
+    	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
+    	  }
+
+    	  printf("VoltageRegisters.Reg18Voltage = %u\n", bms.VoltageRegisters.Reg18Voltage);
+    	  printf("VoltageRegisters.VssVoltage = %u\n", bms.VoltageRegisters.VssVoltage);
+    	  printf("VoltageRegisters.StackVoltage = %u\n", bms.VoltageRegisters.StackVoltage);
+    	  printf("VoltageRegisters.IntTemp = %u\n", bms.VoltageRegisters.IntTemp);
+    	  printf("VoltageRegisters.TSTemp = %u\n", bms.VoltageRegisters.TSTemp);
+
+    	  printf("CurrentRegisters.RawCurrent = %d%d\n", (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
+    	  printf("CurrentRegisters.CC2Current = %d\n", bms.CurrentRegisters.CC2Current);
+    	  printf("CurrentRegisters.CC1Current = %d\n", bms.CurrentRegisters.CC1Current);
+
+    	  printf("SystemCtrl.AlarmStatus = %u\n", bms.SystemCtrl.AlarmStatus);
+    	  printf("SystemCtrl.AlarmRawStatus = %u\n", bms.SystemCtrl.AlarmRawStatus);
+    	  printf("SystemCtrl.AlarmEnable = %u\n", bms.SystemCtrl.AlarmEnable);
+    	  printf("SystemCtrl.FETCtrl = %u\n", bms.SystemCtrl.FETCtrl);
+    	  printf("SystemCtrl.RegoutCtrl = %u\n", bms.SystemCtrl.RegoutCtrl);
+    	  printf("SystemCtrl.DSGFetPWM = %u\n", bms.SystemCtrl.DSGFetPWM);
+    	  printf("SystemCtrl.CHGFetPWM = %u\n", bms.SystemCtrl.CHGFetPWM);
+
+      }
 
       if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 == 0) & disp_update)
       {

@@ -22,5 +22,6 @@ void i2c_Start(void);
 void i2c_Read(uint8_t address, uint8_t* buf, uint32_t numbytes, void* ret);
 void i2c_Write(uint8_t address, uint8_t* buf, uint32_t numbytes, void* ret);
 uint8_t i2c_WriteBlocking(uint8_t address, uint8_t* buf, uint32_t numbytes);
+uint8_t i2c_ReadBlocking(uint8_t address, uint8_t* buf, uint32_t numbytes);
 
 #endif /* INC_I2C_H_ */
