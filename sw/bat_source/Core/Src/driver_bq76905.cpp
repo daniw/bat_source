@@ -17,6 +17,32 @@ BQ76905::BQ76905(uint8_t address)
 void BQ76905::begin(void) {
     // Apply configuration from config header
  //   configure();
+	uint8_t command[16];
+	command[0] = BQ76905_SUBCOMMAND_ADDRESS_LOW;
+	command[1] = 0x90;
+	command[2] = 0x00;
+	i2c_WriteBlocking(address, command, 3);
+
+	command[0] = BQ76905_SUBCOMMAND_ADDRESS_LOW;
+	command[1] = 0x1B;
+	command[2] = 0x90;
+	command[3] = 0x04;
+	i2c_WriteBlocking(address, command, 4);
+
+	command[0] = 0x60;
+	command[1] = 0x50;
+	command[2] = 0x05;
+	i2c_WriteBlocking(address, command, 3);
+
+	command[0] = BQ76905_SUBCOMMAND_ADDRESS_LOW;
+	command[1] = 0x92;
+	command[2] = 0x00;
+	i2c_WriteBlocking(address, command, 3);
+
+	command[0] = BQ76905_SUBCOMMAND_ADDRESS_LOW;
+	command[1] = 0x22;
+	command[2] = 0x00;
+	i2c_WriteBlocking(address, command, 3);
 }
 
 //void BQ76905::configure() {

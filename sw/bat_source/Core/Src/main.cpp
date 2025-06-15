@@ -161,46 +161,49 @@ int main(void)
   //    {
   //        return 1;
   //    }
-  printf("Hello World\n\r");
+  printf("Hello World\n");
+  bms.begin();
+  aux_io_ctrl_manual_set_io(AUX_IO_ON_REQ, 1);
+  aux_io_ctrl_manual_set_io(AUX_IO_I_1A_DIS, 1);
   loop_cnt = 0;
   while (1)
   {
     /* USER CODE END WHILE */
 
-	  //printf("Hello World\n\r");
+	  //printf("Hello World\n");
       cli_loop();
 
-      if(loop_cnt == 0)
+      if(loop_cnt % 1024 == 0)
       {
     	  bms.readAllValues();
 
-    	  printf("SafetyRegisters.safetyAlertA = %u\n", bms.SafetyRegisters.safetyAlertA);
-    	  printf("SafetyRegisters.safetyStatusA = %u\n", bms.SafetyRegisters.safetyStatusA);
-    	  printf("SafetyRegisters.safetyAlertB = %u\n", bms.SafetyRegisters.safetyAlertB);
-    	  printf("SafetyRegisters.safetyStatusB = %u\n", bms.SafetyRegisters.safetyStatusB);
-
-    	  printf("CellVoltageRegisters.BatteryStatus = %u\n", bms.CellVoltageRegisters.BatteryStatus);
+    	  printf("SafetyRegisters.safetyAlertA         = 0x%04X\n", bms.SafetyRegisters.safetyAlertA);
+    	  printf("SafetyRegisters.safetyStatusA        = 0x%04X\n", bms.SafetyRegisters.safetyStatusA);
+    	  printf("SafetyRegisters.safetyAlertB         = 0x%04X\n", bms.SafetyRegisters.safetyAlertB);
+    	  printf("SafetyRegisters.safetyStatusB        = 0x%04X\n", bms.SafetyRegisters.safetyStatusB);
+    	  printf("\n");
+    	  printf("CellVoltageRegisters.BatteryStatus   = 0x%04X\n", bms.CellVoltageRegisters.BatteryStatus);
     	  for (int i = 0; i < 5; ++i) {
     	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
     	  }
-
-    	  printf("VoltageRegisters.Reg18Voltage = %u\n", bms.VoltageRegisters.Reg18Voltage);
-    	  printf("VoltageRegisters.VssVoltage = %u\n", bms.VoltageRegisters.VssVoltage);
-    	  printf("VoltageRegisters.StackVoltage = %u\n", bms.VoltageRegisters.StackVoltage);
-    	  printf("VoltageRegisters.IntTemp = %u\n", bms.VoltageRegisters.IntTemp);
-    	  printf("VoltageRegisters.TSTemp = %u\n", bms.VoltageRegisters.TSTemp);
-
-    	  printf("CurrentRegisters.RawCurrent = %d%d\n", (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
-    	  printf("CurrentRegisters.CC2Current = %d\n", bms.CurrentRegisters.CC2Current);
-    	  printf("CurrentRegisters.CC1Current = %d\n", bms.CurrentRegisters.CC1Current);
-
-    	  printf("SystemCtrl.AlarmStatus = %u\n", bms.SystemCtrl.AlarmStatus);
-    	  printf("SystemCtrl.AlarmRawStatus = %u\n", bms.SystemCtrl.AlarmRawStatus);
-    	  printf("SystemCtrl.AlarmEnable = %u\n", bms.SystemCtrl.AlarmEnable);
-    	  printf("SystemCtrl.FETCtrl = %u\n", bms.SystemCtrl.FETCtrl);
-    	  printf("SystemCtrl.RegoutCtrl = %u\n", bms.SystemCtrl.RegoutCtrl);
-    	  printf("SystemCtrl.DSGFetPWM = %u\n", bms.SystemCtrl.DSGFetPWM);
-    	  printf("SystemCtrl.CHGFetPWM = %u\n", bms.SystemCtrl.CHGFetPWM);
+    	  printf("\n");
+    	  printf("VoltageRegisters.Reg18Voltage        = %u\n", bms.VoltageRegisters.Reg18Voltage);
+    	  printf("VoltageRegisters.VssVoltage          = %u\n", bms.VoltageRegisters.VssVoltage);
+    	  printf("VoltageRegisters.StackVoltage        = %u\n", bms.VoltageRegisters.StackVoltage);
+    	  printf("VoltageRegisters.IntTemp             = %u\n", bms.VoltageRegisters.IntTemp);
+    	  printf("VoltageRegisters.TSTemp              = %u\n", bms.VoltageRegisters.TSTemp);
+    	  printf("\n");
+    	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\n", (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
+    	  printf("CurrentRegisters.CC2Current          = %d\n", bms.CurrentRegisters.CC2Current);
+    	  printf("CurrentRegisters.CC1Current          = %d\n", bms.CurrentRegisters.CC1Current);
+    	  printf("\n");
+    	  printf("SystemCtrl.AlarmStatus               = 0x%04X\n", bms.SystemCtrl.AlarmStatus);
+    	  printf("SystemCtrl.AlarmRawStatus            = 0x%04X\n", bms.SystemCtrl.AlarmRawStatus);
+    	  printf("SystemCtrl.AlarmEnable               = 0x%04X\n", bms.SystemCtrl.AlarmEnable);
+    	  printf("SystemCtrl.FETCtrl                   = 0x%04X\n", bms.SystemCtrl.FETCtrl);
+    	  printf("SystemCtrl.RegoutCtrl                = 0x%04X\n", bms.SystemCtrl.RegoutCtrl);
+    	  printf("SystemCtrl.DSGFetPWM                 = 0x%04X\n", bms.SystemCtrl.DSGFetPWM);
+    	  printf("SystemCtrl.CHGFetPWM                 = 0x%04X\n", bms.SystemCtrl.CHGFetPWM);
 
       }
 
@@ -217,7 +220,7 @@ int main(void)
               else
             	  disp_update = false;
           }
-    	  aux_io_ctrl_manual_set_io(9, 0x00);
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x00);
       }
 
       if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 != 0) & disp_update)
@@ -246,7 +249,7 @@ int main(void)
               else
             	  disp_update = false;
           }
-    	  aux_io_ctrl_manual_set_io(9, 0x28);
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
       }
 
       if ((loop_cnt % 1024 >= 512) & (loop_cnt % 8 == 0) & disp_update)
@@ -263,7 +266,7 @@ int main(void)
               else
             	  disp_update = false;
           }
-    	  aux_io_ctrl_manual_set_io(9, 0x28);
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
        }
 
       HAL_Delay(1);
