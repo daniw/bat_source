@@ -1,0 +1,29 @@
+\begin{formtable}
+ \formTitle{BMS}
+ \formNote{Apply \qty{12.8}{\volt} between BAT+ and BAT-}{Add a \qty{10}{\kilo\ohm} resistor to each battery}
+ \formHeader
+ \formMeasure{Voltage between C1 and BAT-}  {\qtyrange{3.0}{3.4}{\volt}}
+ \formMeasure{Voltage between C2 and C1}    {\qtyrange{3.0}{3.4}{\volt}}
+ \formMeasure{Voltage between C4 and C2}    {\qtyrange{3.0}{3.4}{\volt}}
+ \formMeasure{Voltage between BAT+ and C4}  {\qtyrange{3.0}{3.4}{\volt}}
+ \formMeasure{Supply current}               {\qty{0.0}{\ampere}}
+ \formNoteV{Apply \qty{18}{\V} to the output plugs, activate BMS}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.5}{12.5}{\volt}}
+ \formNoteV{Disconnect supply from output plugs}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.5}{12.5}{\volt}}
+ \formMeasure{Quiescent Current}             {$\qtyrange{20}{30}{\micro\ampere}$} 
+ \formNoteV{Add an additional \qty{10}{\kilo\ohm} resistor parallel to one of the cells}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Remove additional resistor, apply \qty{18}{\V} to the output plugs, activate BMS, disconnect supply from output plugs}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.5}{12.5}{\volt}}
+ \formNoteV{Heat the NTC R16 above }{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Let the NTC cool down to room temperature, apply \qty{18}{\V} to the output plugs, activate BMS, disconnect supply from output plugs}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.5}{12.5}{\volt}}
+ \formNoteV{Connect a load to VBAT, set the load to a current of \qty{5}{\ampere}}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.0}{12.5}{\volt}}
+ \formMeasure{Voltage on I\_BAT}            {\qtyrange{230}{270}{\milli\volt}}
+ \formNoteV{Increase load to a current to \qty{10}{\ampere}}{GND}
+ \formMeasure{Voltage on VBAT}              {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Remove load from VBAT}{GND}
+\end{formtable}
