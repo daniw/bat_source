@@ -126,6 +126,9 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 
 \subsection{Modifications PS1-1AA $\to$ AB}
 
+\subsubsection{BMS wakeup from shutdown}
+When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. 
+
 \subsubsection{Relay footprint mirrored}
 The footprint of the relais is mirrored. The pins of the relay must be bent and extended to fit the footprint. This correction increases the height of the PCB stack by about \qty{2}{\milli\meter}, due to which the enclosure cannot be completely closed. 
 
@@ -139,8 +142,9 @@ The voltage drop of the supplies on the user interface is too large.
 
 R188 and R189 should be replaced with 0R/0603. 
 
-\subsubsection{BMS wakeup from shutdown}
-When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. 
+\subsubsection{High voltage detection always active when battery powered}
+The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
+Pin 2 (cathode) of D11 and D14 are lifted and connected to the respective pad using a \qty{100}{\kilo\ohm} resistor. A \qty{2.2}{\volt} Zener diode is placed between pin 2 (cathode) and pin 1 (anode) of each diode D11 and D14. 
 
 \subsection{Modifications PS1-1AA $\to$ BA}
 
@@ -154,6 +158,18 @@ The footprint of the relais is mirrored. The footprint must be corrected.
 The signal CONF\_ISO has no defined state when it is not driven. This can happen, when the microcontroller is unprogrammed or held in reset. This can lead to the relais K2 and K3 to flatter when the device is powered from the output plugs. 
 A pull-down resistor to GND should be placed on the signal CONF\_ISO. 
 
+\subsubsection{Voltage drop on UI supply}
+The voltage drop of the supplies on the user interface is too large. 
+
+R188 and R189 should be replaced with 0R/0603. 
+
+\subsubsection{Insufficient memory}
+The flash memory of the microcontroller is barely sufficient. It should be considered to replace the microcontroller with a similar type that includes more flash memory. The STM32G474 series seems to be suitable. 
+
+\subsubsection{High voltage detection always active when battery powered}
+The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
+The clamping circuit must be modified to clamp to a lower voltage than the supply voltage. 
+
 \subsection{Modifications PS1-2AA $\to$ AB}
 
 \subsubsection{\acs{I2C} signals swapped}
@@ -166,9 +182,6 @@ The LEDs have no polarity markings. This was caused by the insufficient spacing 
 
 \subsubsection{Labels for plugs poorly readable}
 The labels of the plugs is partly located under the step of the enclosure lid and threefore poorly readable. The labels should be moved. 
-
-\subsubsection{Insufficient memory}
-The flash memory of the microcontroller is barely sufficient. Adding an additional microcontroller on the user interface PCB should be considered to handler the management of the display and therefore free up memory on the main microcontroller. 
 
 \subsubsection{\acs{I2C} signals swapped}
 The \ac{I2C} signals SCL nad SDA are swapped on the header in comparison to the main PCB PS1-1. They need to be swapped back. 
