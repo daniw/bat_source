@@ -22,8 +22,30 @@
 \subsection{Battery Management System}
 \label{sec_bms}
 The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
-This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. Level shifters are also implemented on the \ac{I2C} and ALERT lines. 
+This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. 
 \todo{Detailed description and design}
+
+\FloatBarrier
+
+\subsection{On/off controller}
+\label{sec_onoff}
+The on/off controller enables power to the device using the high-side P-channel \ac{MOSFET} Q5. The \ac{MOSFET} can be enabled by pushing any of the buttons that allow turn-off. The selection of on-capable buttons is done with assemblyng the diodes D45, D46 and D47 in the \nameref{sec_ui}. Once the power to the device is enabled, the microcontroller can keep the power enabled by setting the \ac{GPIO} ON\_REQ high. To turn-off the device, the signal ON\_REQ is set low. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=550 530 200 120, clip]{\schfilemain}
+    \caption{On/off controller - main switch}
+    \label{fig_onoff_switch}
+\end{figure}
+
+To switch off the device when the microcontroller is unable to turn off the device, an emergency shut-off is implemented. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C14. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 through the level shifters Q7 and Q6. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is supplied with the BUTTON\_OFF signal through D6. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=70 375 490 140, clip]{\schfilemain}
+    \caption{On/off controller - emergency off circuit}
+    \label{fig_onoff_emergency_off}
+\end{figure}
 
 \FloatBarrier
 
@@ -64,15 +86,6 @@ This protection is implemented with the battery monitor and protector BQ76905. I
     \item Common mode choke
     \item Fuse
     \item Reverse polarity protection
-\end{itemize}
-
-\FloatBarrier
-
-\subsection{On/off controller}
-\label{sec_onoff}
-\begin{itemize}
-    \item On
-    \item Off
 \end{itemize}
 
 \FloatBarrier
