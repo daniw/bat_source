@@ -159,6 +159,13 @@ R188 and R189 should be replaced with 0R/0603.
 The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
 Pin 2 (cathode) of D11 and D14 are lifted and connected to the respective pad using a \qty{100}{\kilo\ohm} resistor. A \qty{2.2}{\volt} Zener diode is placed between pin 2 (cathode) and pin 1 (anode) of each diode D11 and D14. 
 
+\subsubsection{Inrush current at startup}
+The inrush current at startup is \qty{26}{\ampere}. This triggers the BMS, which disables the device. 
+
+A temporary workaround is to keep the startup button pushed until the BMS resets. The BMS switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. 
+
+\todo[inline]{Solution for inrush current problem}
+
 \subsection{Modifications PS1-1AA $\to$ BA}
 
 \subsubsection{BMS wakeup from shutdown}
@@ -182,6 +189,13 @@ The flash memory of the microcontroller is barely sufficient. It should be consi
 \subsubsection{High voltage detection always active when battery powered}
 The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
 The clamping circuit must be modified to clamp to a lower voltage than the supply voltage. 
+
+\subsubsection{Inrush current at startup}
+The inrush current at startup is \qty{26}{\ampere}. This triggers the BMS, which disables the device. 
+
+A temporary workaround is to keep the startup button pushed until the BMS resets. The BMS switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. 
+
+\todo[inline]{Solution for inrush current problem}
 
 \subsection{Modifications PS1-2AA $\to$ AB}
 
