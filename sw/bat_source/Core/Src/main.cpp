@@ -229,7 +229,7 @@ int main(void)
     	  res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
           if (res != 0)
           {
-              ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
+              //ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
               (void)ssd1309_basic_deinit();
 
               if (disp_lock)
@@ -241,7 +241,7 @@ int main(void)
           res = ssd1309_basic_rect(0, 31, 31, 50, 1);
     	  if (res != 0)
           {
-              ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
+              //ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
               (void)ssd1309_basic_deinit();
 
               if (disp_lock)
@@ -258,7 +258,29 @@ int main(void)
           res = ssd1309_basic_rect(0, 52, ((loop_cnt-512)/4)%128+1, 63, 1);
     	  if (res != 0)
           {
-              ssd1309_interface_debug_print("ssd1309: show bar failed.\n");
+              //ssd1309_interface_debug_print("ssd1309: show bar failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
+       }
+
+      if ((loop_cnt % 8 == 0) & disp_update)
+       {
+    	  bms.readAllValues();
+    	  char curr_str[10];
+    	  sprintf(curr_str, "%d.%dmA", bms.CurrentRegisters.CC1Current/5, abs(bms.CurrentRegisters.CC1Current%5)*2);
+    	  res = ssd1309_basic_string(33, 12, curr_str, 10, 1, SSD1309_FONT_12);
+    	  char volt_str[10];
+    	  sprintf(volt_str, "%d.%dV", bms.VoltageRegisters.StackVoltage/1000, bms.VoltageRegisters.StackVoltage%1000);
+    	  res |= ssd1309_basic_string(33, 0, volt_str, 10, 1, SSD1309_FONT_12);
+    	  if (res != 0)
+          {
+              //ssd1309_interface_debug_print("ssd1309: show current failed.\n");
               (void)ssd1309_basic_deinit();
 
               if (disp_lock)
