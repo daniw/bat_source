@@ -63,8 +63,10 @@ extern "C"{
 #define SSD1309_BASIC_DEFAULT_DISPLAY_OFFSET                   0x00                                       /**< set display offset */
 #define SSD1309_BASIC_DEFAULT_MULTIPLEX_RATIO                  0x3F                                       /**< set ratio */
 #define SSD1309_BASIC_DEFAULT_DISPLAY_MODE                     SSD1309_DISPLAY_MODE_NORMAL                /**< set normal mode */
-#define SSD1309_BASIC_DEFAULT_SCAN_DIRECTION                   SSD1309_SCAN_DIRECTION_COMN_1_START        /**< set scan 1 */
-#define SSD1309_BASIC_DEFAULT_SEGMENT                          SSD1309_SEGMENT_COLUMN_ADDRESS_127         /**< set column 127 */
+//#define SSD1309_BASIC_DEFAULT_SCAN_DIRECTION                   SSD1309_SCAN_DIRECTION_COMN_1_START        /**< set scan 1 */
+#define SSD1309_BASIC_DEFAULT_SCAN_DIRECTION                   SSD1309_SCAN_DIRECTION_COM0_START        /**< set scan 1 */
+//#define SSD1309_BASIC_DEFAULT_SEGMENT                          SSD1309_SEGMENT_COLUMN_ADDRESS_127         /**< set column 127 */
+#define SSD1309_BASIC_DEFAULT_SEGMENT                          SSD1309_SEGMENT_COLUMN_ADDRESS_0         /**< set column 127 */
 #define SSD1309_BASIC_DEFAULT_CONTRAST                         0xCF                                       /**< set contrast 0xCF */
 #define SSD1309_BASIC_DEFAULT_GPIO_CONFIG                      SSD1309_GPIO_OUTPUT_LOW                    /**< output low */
 #define SSD1309_BASIC_DEFAULT_DISPLAY_START_LINE               0x00                                       /**< set start line 0 */

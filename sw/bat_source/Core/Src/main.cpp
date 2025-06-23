@@ -23,6 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "driver_bq76905.h"
+#include "driver_bq76905_config.h"
 
 /* USER CODE END Includes */
 
@@ -62,6 +64,8 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
+
+BQ76905 bms = BQ76905(BQ76905_I2C_ADDRESS);
 
 /* USER CODE BEGIN PV */
 /* USER CODE END PV */
@@ -125,6 +129,8 @@ int main(void)
 
   i2c_Init();
 
+  aux_io_ctrl_PCA9554_Init();
+
   MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
@@ -145,48 +151,148 @@ int main(void)
  //myDisplay.show();
  //HAL_Delay(2000);
   /* USER CODE BEGIN WHILE */
+
   uint8_t res;
+  uint16_t loop_cnt;
+  uint8_t disp_update = true;
+  uint8_t disp_lock = false;
   res = ssd1309_basic_init(SSD1309_INTERFACE_IIC, SSD1309_ADDR_SA0_0);
   //    if (res != 0)
   //    {
   //        return 1;
   //    }
-  printf("Hello World\n\r");
+  printf("Hello World\n");
+  bms.begin();
+  aux_io_ctrl_manual_set_io(AUX_IO_ON_REQ, 1);
+  aux_io_ctrl_manual_set_io(AUX_IO_I_1A_DIS, 1);
+  loop_cnt = 0;
   while (1)
   {
     /* USER CODE END WHILE */
 
-	  //printf("Hello World\n\r");
+	  //printf("Hello World\n");
       cli_loop();
 
-      res = ssd1309_basic_clear();
-      if (res != 0)
+      if(loop_cnt % 1024 == 0)
       {
-          ssd1309_interface_debug_print("ssd1309: clear screen failed.\n");
-          (void)ssd1309_basic_deinit();
+    	  bms.readAllValues();
 
-          return 1;
+    	  printf("SafetyRegisters.safetyAlertA         = 0x%04X\n", bms.SafetyRegisters.safetyAlertA);
+    	  printf("SafetyRegisters.safetyStatusA        = 0x%04X\n", bms.SafetyRegisters.safetyStatusA);
+    	  printf("SafetyRegisters.safetyAlertB         = 0x%04X\n", bms.SafetyRegisters.safetyAlertB);
+    	  printf("SafetyRegisters.safetyStatusB        = 0x%04X\n", bms.SafetyRegisters.safetyStatusB);
+    	  printf("\n");
+    	  printf("CellVoltageRegisters.BatteryStatus   = 0x%04X\n", bms.CellVoltageRegisters.BatteryStatus);
+    	  for (int i = 0; i < 5; ++i) {
+    	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
+    	  }
+    	  printf("\n");
+    	  printf("VoltageRegisters.Reg18Voltage        = %u\n", bms.VoltageRegisters.Reg18Voltage);
+    	  printf("VoltageRegisters.VssVoltage          = %u\n", bms.VoltageRegisters.VssVoltage);
+    	  printf("VoltageRegisters.StackVoltage        = %u\n", bms.VoltageRegisters.StackVoltage);
+    	  printf("VoltageRegisters.IntTemp             = %u\n", bms.VoltageRegisters.IntTemp);
+    	  printf("VoltageRegisters.TSTemp              = %u\n", bms.VoltageRegisters.TSTemp);
+    	  printf("\n");
+    	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\n", (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
+    	  printf("CurrentRegisters.CC2Current          = %d\n", bms.CurrentRegisters.CC2Current);
+    	  printf("CurrentRegisters.CC1Current          = %d\n", bms.CurrentRegisters.CC1Current);
+    	  printf("\n");
+    	  printf("SystemCtrl.AlarmStatus               = 0x%04X\n", bms.SystemCtrl.AlarmStatus);
+    	  printf("SystemCtrl.AlarmRawStatus            = 0x%04X\n", bms.SystemCtrl.AlarmRawStatus);
+    	  printf("SystemCtrl.AlarmEnable               = 0x%04X\n", bms.SystemCtrl.AlarmEnable);
+    	  printf("SystemCtrl.FETCtrl                   = 0x%04X\n", bms.SystemCtrl.FETCtrl);
+    	  printf("SystemCtrl.RegoutCtrl                = 0x%04X\n", bms.SystemCtrl.RegoutCtrl);
+    	  printf("SystemCtrl.DSGFetPWM                 = 0x%04X\n", bms.SystemCtrl.DSGFetPWM);
+    	  printf("SystemCtrl.CHGFetPWM                 = 0x%04X\n", bms.SystemCtrl.CHGFetPWM);
+
       }
 
-      HAL_Delay(500);
-      res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
-      if (res != 0)
+      if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 == 0) & disp_update)
       {
-          ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
-          (void)ssd1309_basic_deinit();
+    	  res = ssd1309_basic_clear();
+    	  if (res != 0)
+          {
+              ssd1309_interface_debug_print("ssd1309: clear screen failed.\n");
+              (void)ssd1309_basic_deinit();
 
-          return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x00);
       }
 
-      res = ssd1309_basic_rect(0, 31, 31, 50, 1);
-      if (res != 0)
+      if ((loop_cnt % 512 == 0) & (loop_cnt % 1024 != 0) & disp_update)
       {
-          ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
-          (void)ssd1309_basic_deinit();
+    	  aux_io_ctrl_manual_set_io(9, 0x14);
+    	  res = ssd1309_basic_string(0, 0, (char*)"123", 3, 1, SSD1309_FONT_16);
+          if (res != 0)
+          {
+              //ssd1309_interface_debug_print("ssd1309: show tc failed.\n");
+              (void)ssd1309_basic_deinit();
 
-          return 1;
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+
+          res = ssd1309_basic_rect(0, 31, 31, 50, 1);
+    	  if (res != 0)
+          {
+              //ssd1309_interface_debug_print("ssd1309: show rect failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
       }
-      HAL_Delay(500);
+
+      if ((loop_cnt % 1024 >= 512) & (loop_cnt % 8 == 0) & disp_update)
+       {
+
+          res = ssd1309_basic_rect(0, 52, ((loop_cnt-512)/4)%128+1, 63, 1);
+    	  if (res != 0)
+          {
+              //ssd1309_interface_debug_print("ssd1309: show bar failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
+       }
+
+      if ((loop_cnt % 8 == 0) & disp_update)
+       {
+    	  bms.readAllValues();
+    	  char curr_str[10];
+    	  sprintf(curr_str, "%d.%dmA", bms.CurrentRegisters.CC1Current/5, abs(bms.CurrentRegisters.CC1Current%5)*2);
+    	  res = ssd1309_basic_string(33, 12, curr_str, 10, 1, SSD1309_FONT_12);
+    	  char volt_str[10];
+    	  sprintf(volt_str, "%d.%dV", bms.VoltageRegisters.StackVoltage/1000, bms.VoltageRegisters.StackVoltage%1000);
+    	  res |= ssd1309_basic_string(33, 0, volt_str, 10, 1, SSD1309_FONT_12);
+    	  if (res != 0)
+          {
+              //ssd1309_interface_debug_print("ssd1309: show current failed.\n");
+              (void)ssd1309_basic_deinit();
+
+              if (disp_lock)
+            	  return 1;
+              else
+            	  disp_update = false;
+          }
+    	  aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x28);
+       }
+
+      HAL_Delay(1);
+      loop_cnt++;
 
 
     /* USER CODE BEGIN 3 */
