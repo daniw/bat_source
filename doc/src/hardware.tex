@@ -12,18 +12,58 @@
 
 \subsection{Battery}
 \label{sec_battery}
-\begin{itemize}
-    \item Cell selection
-    \item Cell connection
-    \item 4S and 5S configuration with cell-tab shorting
-    \item Cell mounting
-\end{itemize}
+For the cell chemistry, a \ac{LFP} battery is selectedi. This due to its rather high energy and power density and especially due to the safer handling compared with \ac{LiIon} and \ac{LiPo} batteries.  
+
+To select a suitable cell, a market analysis is performed. 
+\begin{table}[h!]
+    \centering
+    %\begin{spreadtab}{{zebratabular}{p{0.27\linewidth}lN{3}{2}n{5}{2}p{0.4\linewidth}}}
+    \begin{spreadtab}{{zebratabular}{llllllllllllll}}
+        \rowcolor{gray}
+        @Manufacturer,  Type                & @$C_{typ}$                & @$I_{max}$            & @Cells    & @$P_{max}$        & @$W_{max}$                 & @Cost per device & @Runtime      \\
+        @Lithium Werks, ANR26650            & @\qty{2.6}{\ampere\hour}  & @\qty{50}{\ampere}    & @5        & @\qty{500}{\watt} & @\qty{40}{\watt\hour}      & @35.75           & @\qty{32}{\minute}    \\
+        @JGNE,          HTPFR26650          & @\qty{3.0}{\ampere\hour}  & @\qty{30}{\ampere}    & @5        & @\qty{375}{\watt} & @\qty{46.4}{\watt\hour}    & @17.70           & @\qty{37.12}{\minute} \\
+        @JGNE,          HTCFR26650          & @\qty{3.6}{\ampere\hour}  & @\qty{10.2}{\ampere}  & @4        & @\qty{375}{\watt} & @\qty{45.44}{\watt\hour}   & @8.60            & @\qty{36.352}{\minute} \\
+        @JGNE,          HTCFR26650          & @\qty{3.8}{\ampere\hour}  & @\qty{11.4}{\ampere}  & @4        & @\qty{114}{\watt} & @\qty{48}{\watt\hour}      & @10.76           & @\qty{38.4}{\minute} \\
+        @JGNE,          JGCFR26650-4\ldots  & @\qty{4.0}{\ampere\hour}  & @\qty{12}{\ampere}    & @3        & @\qty{90}{\watt}  & @\qty{37.92}{\watt\hour}   & @8.97            & @\qty{30.336}{\minute} \\
+        @Tenpower,      IFR26700-45HE       & @\qty{4.5}{\ampere\hour}  & @\qty{9}{\ampere}     & @4        & @\qty{90}{\watt}  & @\qty{56.96}{\watt\hour}   & @7.80            & @\qty{45.568}{\minute} \\
+        @Tenpower,      IFR26700-40HE       & @\qty{4.0}{\ampere\hour}  & @\qty{8}{\ampere}     & @4        & @\qty{80}{\watt}  & @\qty{50.56}{\watt\hour}   & @7.40            & @\qty{40.448}{\minute} \\
+    \end{spreadtab}
+    \caption{Cell selection}
+    \label{tab_cell_selection}
+\end{table}
+The IFR26700-45HE made by Tenpower is selected as a compromise between low cost and reasonable margin in runtime and output power. 4 cells in series are used. The cells are mounted using custom cell holders. Nickel tabs are spot-welded to the cells and soldered to the \ac{PCB}. 
+\todo[inline]{Description of cell holder}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=60 370 840 120, clip]{\schfilemain}
+    \caption{\acs{BMS} - battery cells}
+    \label{fig_onoff_switch}
+\end{figure}
+
+The schematic is prepared for a configuration with 5 cells in series. To enable the 5S configuration, BAT5 to BAT9 are set to fitted, the text C3 is replaced with a matching net label and the connection between C2 and C3 is removed. If both, 4S and 5S should be possible with the same \ac{PCB}, BAT2 is replaced with the design item id BAT\_LFP-26700-4.5AH-2NEG. It includes an extra pad, which is shorted to the negative cell connection using the cell tab by bending it and soldering it to both pads. This extra pad is used to short BAT7, which is not used in 4S configuration. \autoref{fig_bat_2neg} demonstrates the use of this third pad. 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/bat_2neg.png}
+    \caption{Visualisation of third pad which is bridged by the negative cell tab}
+    \label{fig_bat_2neg}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{Battery Management System}
 \label{sec_bms}
 The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
 This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. 
 \todo{Detailed description and design}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=490 100 60 420, clip]{\schfilemain}
+    \caption{\acs{BMS} - current measurement}
+    \label{fig_onoff_switch}
+\end{figure}
 
 \FloatBarrier
 

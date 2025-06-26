@@ -2,6 +2,26 @@
 \subsection{Requirements}\label{app:requirements}
 \clearpage
 
+\subsection{Battery cell selection}
+\label{app:cell_selection}
+\begin{table}[h!]
+    \centering
+    %\begin{spreadtab}{{zebratabular}{p{0.27\linewidth}lN{3}{2}n{5}{2}p{0.4\linewidth}}}
+    \begin{spreadtab}{{zebratabular}{llllllllllllll}}
+        \rowcolor{gray}
+        @Supplier   & @Manufacturer     & @Type                     & @Typical Voltage  & @Minimum voltage  & @Minimum capacity         & @Typical capacity         & @Current              & @Cost per cell    & @Cells    & @Maximum power    & @Energy                    & @Cost per device & @Runtime      \\
+        @NKON       & @Lithium Werks    & @ANR26650                 & @\qty{3.2}{\volt} & @\qty{2.0}{\volt} & @\qty{2.5}{\ampere\hour}  & @\qty{2.6}{\ampere\hour}  & @\qty{50}{\ampere}    & @7.15             & @5        & @\qty{500}{\watt} & @\qty{40}{\watt\hour}      & @35.75           & @\qty{32}{\minute}    \\
+        @NKON       & @JGNE             & @HTPFR26650               & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{2.9}{\ampere\hour}  & @\qty{3.0}{\ampere\hour}  & @\qty{30}{\ampere}    & @3.54             & @5        & @\qty{375}{\watt} & @\qty{46.4}{\watt\hour}    & @17.70           & @\qty{37.12}{\minute} \\
+        @NKON       & @JGNE             & @HTCFR26650               & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{3.55}{\ampere\hour} & @\qty{3.6}{\ampere\hour}  & @\qty{10.2}{\ampere}  & @2.15             & @4        & @\qty{375}{\watt} & @\qty{45.44}{\watt\hour}   & @8.60            & @\qty{36.352}{\minute} \\
+        @NKON       & @JGNE             & @HTCFR26650               & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{3.75}{\ampere\hour} & @\qty{3.8}{\ampere\hour}  & @\qty{11.4}{\ampere}  & @2.69             & @4        & @\qty{114}{\watt} & @\qty{48}{\watt\hour}      & @10.76           & @\qty{38.4}{\minute} \\
+        @NKON       & @JGNE             & @JGCFR26650-4000mAh-3.2V  & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{3.95}{\ampere\hour} & @\qty{4.0}{\ampere\hour}  & @\qty{12}{\ampere}    & @2.99             & @3        & @\qty{90}{\watt}  & @\qty{37.92}{\watt\hour}   & @8.97            & @\qty{30.336}{\minute} \\
+        @NKON       & @Tenpower         & @IFR26700-45HE            & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{4.45}{\ampere\hour} & @\qty{4.5}{\ampere\hour}  & @\qty{9}{\ampere}     & @1.95             & @4        & @\qty{90}{\watt}  & @\qty{56.96}{\watt\hour}   & @7.80            & @\qty{45.568}{\minute} \\
+        @NKON       & @Tenpower         & @IFR26700-40HE            & @\qty{3.2}{\volt} & @\qty{2.5}{\volt} & @\qty{3.95}{\ampere\hour} & @\qty{4.0}{\ampere\hour}  & @\qty{8}{\ampere}     & @1.85             & @4        & @\qty{80}{\watt}  & @\qty{50.56}{\watt\hour}   & @7.40            & @\qty{40.448}{\minute} \\
+    \end{spreadtab}
+    \caption{Cell selection - complete table}
+    \label{tab_cell_selection_detail}
+\end{table}
+
 \subsection{Schematics}
 \label{app:schematic}
 %\includepdf[pages=-, offset=0cm -2.5cm, frame=true, angle=0, fitpaper]{\schfile}
