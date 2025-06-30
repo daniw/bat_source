@@ -17,11 +17,11 @@ RevisionNamingSchemeGUID=
 [OutputGroup1]
 Name=PS1-1AA.OutJob
 Description=
-TargetOutputMedium=42 - PCB Assembly
+TargetOutputMedium=51 - Mechanical
 VariantName=PS1-1AA
 VariantScope=1
 CurrentConfigurationName=
-TargetPrinter=Microsoft Print to PDF
+TargetPrinter=\\SCHSPR02\SCHPAB3_ENTWICKLUNG
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 OutputMedium1=11 - PCB Manufacturing
 OutputMedium1_Type=GeneratedFiles
@@ -117,7 +117,7 @@ OutputName5=3D STEP
 OutputCategory5=Export
 OutputDocumentPath5=PS1-1A-BASIS.PcbDoc
 OutputVariantName5=
-OutputEnabled5=0
+OutputEnabled5=1
 OutputEnabled5_OutputMedium1=0
 OutputEnabled5_OutputMedium2=0
 OutputEnabled5_OutputMedium3=0
@@ -316,7 +316,7 @@ OutputName11=PIK
 OutputCategory11=Assembly
 OutputDocumentPath11=PS1-1A-PANEL.PcbDoc
 OutputVariantName11=
-OutputEnabled11=1
+OutputEnabled11=0
 OutputEnabled11_OutputMedium1=0
 OutputEnabled11_OutputMedium2=0
 OutputEnabled11_OutputMedium3=1
@@ -367,7 +367,7 @@ OutputName14=BOM JLC
 OutputCategory14=Report
 OutputDocumentPath14=
 OutputVariantName14=
-OutputEnabled14=1
+OutputEnabled14=0
 OutputEnabled14_OutputMedium1=0
 OutputEnabled14_OutputMedium2=0
 OutputEnabled14_OutputMedium3=2
@@ -388,7 +388,7 @@ Configuration14_Name6=VisibleOrder_Flat
 Configuration14_Item6=Comment=120|Designator=120|Footprint=100|Supplier Part Number 3=100
 
 [PublishSettings]
-OutputFilePath1=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
+OutputFilePath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
 ReleaseManaged1=0
 OutputBasePath1=Manufacturing\
 OutputPathMedia1=01 - PCB Manufacturing
@@ -428,7 +428,7 @@ ShowComponentParameters2=1
 GlobalBookmarks2=0
 PDFACompliance2=Disabled
 PDFVersion2=Default
-OutputFilePath3=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+OutputFilePath3=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
 ReleaseManaged3=0
 OutputBasePath3=Manufacturing\
 OutputPathMedia3=04 - PCB Assembly
@@ -456,7 +456,7 @@ OutputFileNameSpecial4=
 OpenOutput4=0
 
 [GeneratedFilesSettings]
-RelativeOutputPath1=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
+RelativeOutputPath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
 OpenOutputs1=0
 AddToProject1=0
 TimestampFolder1=0
@@ -468,7 +468,7 @@ OpenIPCOutput1=0
 EnableReload1=0
 RelativeOutputPath2=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
 OpenOutputs2=0
-RelativeOutputPath3=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+RelativeOutputPath3=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
 OpenOutputs3=0
 AddToProject3=0
 TimestampFolder3=0
