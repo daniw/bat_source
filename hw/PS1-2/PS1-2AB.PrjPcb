@@ -43,14 +43,14 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=PS1-2AA
+CurrentVariant=PS1-2AB
 
 [Preferences]
 PrefsVaultGUID=
 PrefsRevisionGUID=
 
 [Document1]
-DocumentPath=PS1-2AA.OutJob
+DocumentPath=PS1-2AB.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -135,7 +135,7 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document6]
-DocumentPath=PS1-2AA.Annotation
+DocumentPath=PS1-2AB.Annotation
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -221,7 +221,7 @@ DocumentUniqueId=
 
 [ProjectVariant1]
 UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
-Description=PS1-2AA
+Description=PS1-2AB
 AllowFabrication=1
 ParameterCount=1
 VariationCount=3
@@ -239,35 +239,35 @@ DocumentPath=Manufacturing\Design Rule Check - PS1-2A-BASIS.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Index_Main
-Value=A
-
-[Parameter3]
-Name=Index_Sub
-Value=A
-
-[Parameter4]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter5]
-Name=PCB_NAME
-Value=PS1-2
-
-[Parameter6]
-Name=Project
-Value=Battery Source - User Interface
-
-[Parameter7]
 Name=Project_URL
 Value=https://github.com/daniw/bat_source
 
+[Parameter3]
+Name=Project
+Value=Battery Source - User Interface
+
+[Parameter4]
+Name=PCB_NAME
+Value=PS1-2
+
+[Parameter5]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter6]
+Name=Index_Sub
+Value=B
+
+[Parameter7]
+Name=Index_Main
+Value=A
+
 [Parameter8]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Configuration1]
