@@ -56,7 +56,7 @@ The schematic is prepared for a configuration with 5 cells in series. To enable 
 \label{sec_bms}
 The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
 This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. 
-\todo{Detailed description and design}
+\todo[inline]{Detailed description and design}
 
 \begin{figure}[h!]
     \centering
@@ -102,7 +102,16 @@ To switch off the device when the microcontroller is unable to turn off the devi
 
 \FloatBarrier
 
-\subsection{Voltage measurement}
+\subsection{Measurement}
+\label{sec_meas}
+\begin{itemize}
+    \item ADC
+    \item Output voltage
+    \item 4-wire voltage
+    \item Output current
+\end{itemize}
+
+\subsubsection{Voltage measurement}
 \label{sec_volt_meas}
 \begin{itemize}
     \item Voltage divider
@@ -111,7 +120,7 @@ To switch off the device when the microcontroller is unable to turn off the devi
 
 \FloatBarrier
 
-\subsection{Current measurement}
+\subsubsection{Current measurement}
 \label{sec_cur_meas}
 \begin{itemize}
     \item Shunt selection
@@ -123,9 +132,10 @@ To switch off the device when the microcontroller is unable to turn off the devi
 \subsection{Output terminals}
 \label{sec_out_term}
 \begin{itemize}
-    \item Common mode choke
+    \item Crowbar
     \item Fuse
     \item Reverse polarity protection
+    \item current controller
 \end{itemize}
 
 \FloatBarrier
@@ -150,6 +160,7 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 
 \subsection{User interface}
 \label{sec_ui}
+A display shows the current operating mode and measurement values to the user. Initially an \ac{OLED} display was evaluated. During testing it was discovered, that the brightness of the display was insufficient for use in direct sunlight. 
 \begin{itemize}
     \item Display
     \item Buttons
@@ -273,7 +284,7 @@ The spacing between TAG-Connect header and BOOT header is insufficient. A 2-pin 
 \subsection{Modifications on PS1-3 AA $\to$ BA}
 
 \subsubsection{Incorrect connector type for STLINK-V3-MINIE}
-The connector for the STLINK-V3-MINIE has a pitch of \qty{2.54}{\milli\meter}. The spacing should be \qty{1.27}{\milli\meter}. The connecter need to be replaced. 
+The connector for the STLINK-V3-MINIE has a pitch of \qty{2.54}{\milli\meter}. The spacing should be \qty{1.27}{\milli\meter}. The connector need to be replaced. 
 
 \subsubsection{Insufficient spacing between TAG-Connect header and BOOT header}
 The spacing between TAG-Connect header and BOOT header is insufficient. The BOOT header should be moved. 
