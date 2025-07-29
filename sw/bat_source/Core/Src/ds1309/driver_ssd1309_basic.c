@@ -68,7 +68,6 @@ uint8_t ssd1309_basic_init(ssd1309_interface_t interface, ssd1309_address_t addr
     DRIVER_SSD1309_LINK_DELAY_MS(&gs_handle, ssd1309_interface_delay_ms);
     DRIVER_SSD1309_LINK_DEBUG_PRINT(&gs_handle, ssd1309_interface_debug_print);
 
-    ssd1309_interface_debug_print("ssd1309: Start Init.\n");
     /* set interface */
     res = ssd1309_set_interface(&gs_handle, interface);
     if (res != 0)
@@ -287,7 +286,7 @@ uint8_t ssd1309_basic_init(ssd1309_interface_t interface, ssd1309_address_t addr
     }
     
     /* set page memory addressing mode */
-    res = ssd1309_set_memory_addressing_mode(&gs_handle, SSD1309_MEMORY_ADDRESSING_MODE_PAGE);
+    res = ssd1309_set_memory_addressing_mode(&gs_handle, SSD1309_MEMORY_ADDRESSING_MODE_VERTICAL);
     if (res != 0)
     {
         ssd1309_interface_debug_print("ssd1309: set memory addressing level failed.\n");

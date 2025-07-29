@@ -97,7 +97,7 @@ uint32_t event_Timer(EVENTS e)
  * @param e event to be added.
  * @param data event data.
  */
-void event_Add(EVENTS e, void* data)
+void event_Add(EVENTS e, void* callback, void* argument)
 {
 	int newhead, oldhead;
 	do
@@ -117,7 +117,8 @@ void event_Add(EVENTS e, void* data)
 		newhead = __sync_val_compare_and_swap(&event_queue.head, oldhead, newhead);
 	} while (newhead != oldhead);
 	event_queue.queue[oldhead].event = e;
-	event_queue.queue[oldhead].data = data;
+	event_queue.queue[oldhead].callback = callback;
+	event_queue.queue[oldhead].argument = argument;
 }
 
 /**
@@ -131,7 +132,8 @@ EVENT_STRUCT event_Get(void)
 	if (queue_NotEmpty(event_queue))
 	{
 		e.event = queue_Get(event_queue).event;
-		e.data = queue_Get(event_queue).data;
+		e.callback = queue_Get(event_queue).callback;
+		e.argument = queue_Get(event_queue).argument;
 		queue_Pop(event_queue, EVENT_QUEUE_SIZE);
 	}
 	event_Take(e.event);
