@@ -1,7 +1,12 @@
 #include "ADS131M04.h"
 #include "stdio.h"
 
-
+const int32_t adc_offset[4]={
+		-1361,
+		0,
+		0,
+		23328
+};
 
 /**
  * @brief Sends a 16-bit command to the ADC.
@@ -53,16 +58,16 @@ void ADS131M04_selftest(ADS131M04_handle *handle) {
 
 		for (int ch = 0; ch < 4; ch++)
 			buffer[ch] += handle->channelData[ch];
-		printf("Got Zero Voltages \t%i, \t%i, \t%i, \t%i\n",
+		/*printf("Got Zero Voltages \t%i, \t%i, \t%i, \t%i\n",
 				handle->channelData[0],
 				handle->channelData[1],
 				handle->channelData[2],
-				handle->channelData[3]);
+				handle->channelData[3]);*/
 	}
 
 	// Measure Positive test voltage
 	for (int ch = 0; ch < 4; ch++) {
-		ADS131M04_setOffsetCalibration(handle, ch, buffer[ch] >> 4);
+		ADS131M04_setOffsetCalibration(handle, ch, (buffer[ch] >> 4)+adc_offset[ch]);
 		ADS131M04_setChannelConfig(handle, ch, ADS131M04_FLAG_CH0_CFG_MUX_TPOS);
 	}
 
@@ -73,11 +78,11 @@ void ADS131M04_selftest(ADS131M04_handle *handle) {
 
 		for (int ch = 0; ch < 4; ch++)
 			buffer[ch] += handle->channelData[ch];
-		printf("Got Pos Test Voltages \t%i, \t%i, \t%i, \t%i\n",
+		/*printf("Got Pos Test Voltages \t%i, \t%i, \t%i, \t%i\n",
 				(handle->channelData[0] * 1200) >> 23,
 				(handle->channelData[1] * 1200) >> 23,
 				(handle->channelData[2] * 1200) >> 23,
-				(handle->channelData[3] * 1200) >> 23);
+				(handle->channelData[3] * 1200) >> 23);*/
 	}
 	// Measure negative test voltage
 	for (int ch = 0; ch < 4; ch++) {
@@ -91,11 +96,11 @@ void ADS131M04_selftest(ADS131M04_handle *handle) {
 
 		for (int ch = 0; ch < 4; ch++)
 			buffer[ch] += handle->channelData[ch];
-		printf("Got Neg Test Voltages \t%i, \t%i, \t%i, \t%i\n",
+		/*printf("Got Neg Test Voltages \t%i, \t%i, \t%i, \t%i\n",
 				(handle->channelData[0] * 1200) >> 23,
 				(handle->channelData[1] * 1200) >> 23,
 				(handle->channelData[2] * 1200) >> 23,
-				(handle->channelData[3] * 1200) >> 23);
+				(handle->channelData[3] * 1200) >> 23);*/
 	}
 	// Switch back to normal
 	for (int i = 0; i < 4; i++)
@@ -104,11 +109,11 @@ void ADS131M04_selftest(ADS131M04_handle *handle) {
 	HAL_Delay(100);
 	ADS131M04_readData(handle);
 	HAL_Delay(4);
-	printf("Got Measured Voltages \t%i, \t%i, \t%i, \t%i\n",
+	/*printf("Got Measured Voltages \t%i, \t%i, \t%i, \t%i\n",
 			(handle->channelData[0] * 1200) >> 23,
 			(handle->channelData[1] * 1200) >> 23,
 			(handle->channelData[2] * 1200) >> 23,
-			(handle->channelData[3] * 1200) >> 23);
+			(handle->channelData[3] * 1200) >> 23);*/
 }
 
 void ADS131M04_configureSPI(ADS131M04_handle* handle) {

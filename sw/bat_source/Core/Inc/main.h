@@ -43,6 +43,11 @@ extern "C" {
 #include "bq76905_config.h"
 #include "adc.h"
 #include "ADS131M04.h"
+#include "pwm.h"
+#include "ctrl_main.h"
+#include "timer.h"
+#include "statemachine.h"
+#include "display.h"
 
 /* USER CODE END Includes */
 

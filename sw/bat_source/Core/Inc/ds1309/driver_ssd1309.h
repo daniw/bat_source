@@ -197,11 +197,11 @@ typedef enum
  */
 typedef enum  
 {
+    SSD1309_FONT_08 = 0x08,        /**< font  8 */
     SSD1309_FONT_12 = 0x0C,        /**< font 12 */
     SSD1309_FONT_16 = 0x10,        /**< font 16 */
-#if USE_2412_FONT
     SSD1309_FONT_24 = 0x18,        /**< font 24 */
-#endif
+
 } ssd1309_font_t;
 
 /**

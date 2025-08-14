@@ -130,6 +130,7 @@ typedef struct{
 	struct{
 		int64_t accumulatedCharge;
 		uint32_t passedTime;
+		uint8_t charge_percentage;
 	} Accumulator;
 
 	BQ76905_asyncState asyncState;

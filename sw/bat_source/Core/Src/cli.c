@@ -291,7 +291,7 @@ void cmd_printBMS(void){
 
 
 void cmd_printADC() {
-	for(int i=0; i<10; i++){
+	//for(int i=0; i<10; i++){
 	adc_convert_data();
     printf("ADC Measurements:\n");
     printf("  v_in         (ADC1_IN1)  : %u \t: %u mV\n",adc_data.v_in_raw, adc_data.v_in_mV);
@@ -307,11 +307,13 @@ void cmd_printADC() {
     printf("  i_iso        (ADC2_IN13) : %u \t: %u mA\n",adc_data.i_iso_raw, adc_data.i_iso_mA);
     printf("  temp_trafo   (ADC2_IN15) : %u \t: %u °C\n",adc_data.temp_trafo_raw, adc_data.temp_trafo_deg);
 
-    printf("  Ext ADC 1 : %i : %i\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
-    printf("  Ext ADC 2 : %i : %i\n", ext_adc.channelData[1], adc_data.v_meas_ext_mv);
-    printf("  Ext ADC 3 : %i : %i\n", ext_adc.channelData[2], adc_data.i_iso_ext_mA );
-    printf("  Ext ADC 4 : %i : %i\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
-}}
+    printf("  Ext V_Term : %i : %i mV\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
+    printf("  Ext V_Sns  : %i : %i mV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
+    printf("  Ext I_Iso  : %i : %i mA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
+    printf("  Ext I_Out  : %i : %i mA\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
+//}
+}
+
 
 
 void cmd_pulse(){

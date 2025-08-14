@@ -86,7 +86,7 @@ extern "C"{
  *            - 1 init failed
  * @note      none
  */
-uint8_t ssd1309_basic_init(ssd1309_interface_t interface, ssd1309_address_t addr);
+uint8_t ssd1309_basic_init(ssd1309_handle_t* handle, ssd1309_interface_t interface, ssd1309_address_t addr);
 
 /**
  * @brief  basic example deinit

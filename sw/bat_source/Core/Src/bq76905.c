@@ -9,6 +9,8 @@
 #include "bq76905_config.h"
 #include "bq76905_data_memory_map.h"
 #include "i2c.h"
+#include "event.h"
+#include "timer.h"
 
 
     /**
@@ -48,7 +50,17 @@
 void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	handle->address = i2c_address;
 	handle->asyncState = IDLE;
-	BQ76905_configure(handle);
+	uint8_t command = BQ76905_COMMAND_BAT_STATUS;
+	i2c_WriteBlocking(handle->address, &command, 1);
+	i2c_ReadBlocking(handle->address, (uint8_t*) &handle->CellVoltageRegisters,
+			sizeof(handle->CellVoltageRegisters));
+
+	//if(handle->CellVoltageRegisters.BatteryStatus & 0x80 == 0){
+		BQ76905_configure(handle);
+	//}else{
+	//	printf("Skipped BMS reconfiguration: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
+	//}
+	timer_add(1000,  TIMER_TYPE_TICK, EVENT_BMS_TIMER, 0);
 }
 
 /**************************** Public Functions ***********************************/

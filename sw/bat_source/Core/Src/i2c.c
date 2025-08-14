@@ -157,7 +157,7 @@ int i2c_Init(void)
 	i2c_work = WORK_I2C_IDLE;
 	i2c_exclusiveAccess = 0;
 	  i2c_handle->Instance = I2C1;
-	  i2c_handle->Init.Timing = 0x0010020A;
+	  i2c_handle->Init.Timing = 0x0010020A;	//0x00201D2B
 	  i2c_handle->Init.OwnAddress1 = 0;
 	  i2c_handle->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 	  i2c_handle->Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;

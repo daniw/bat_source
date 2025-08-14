@@ -273,7 +273,11 @@ static uint8_t a_ssd1309_gram_show_char(ssd1309_handle_t *handle, uint8_t x, uin
     chr = chr - ' ';                                                                /* get index */
     for (t = 0; t < csize; t++)                                                     /* write size */
     {   
-        if (size == 12)                                                             /* if size 12 */
+        if (size == 8)                                                             /* if size 08 */
+        {
+            temp = gsc_ssd1309_ascii_0804[chr][t];                                  /* get ascii 0804 */
+        }
+        else if (size == 12)                                                        /* if size 12 */
         {
             temp = gsc_ssd1309_ascii_1206[chr][t];                                  /* get ascii 1206 */
         }
@@ -281,7 +285,7 @@ static uint8_t a_ssd1309_gram_show_char(ssd1309_handle_t *handle, uint8_t x, uin
         {
             temp = gsc_ssd1309_ascii_1608[chr][t];                                  /* get ascii 1608 */
         }
-#if USE_2412_FONT
+#ifdef USE_2412_FONT
         else if(size == 24)                                                         /* if size 24 */
         {
             temp = gsc_ssd1309_ascii_2412[chr][t];                                  /* get ascii 2412 */
