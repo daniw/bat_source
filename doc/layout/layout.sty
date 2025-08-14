@@ -157,7 +157,9 @@
         %\usetikztiminglibrary{advnodes}
     \usepackage{placeins}       % For \FloatBarrier
     \newcommand{\schscale}{0.8}   % Scale for Schematics
-    \newcommand{\schfile}{appendix/PS1-1AA_Schematic_2024-09-16.PDF}    % Schematics file
+    \newcommand{\schfilemain}{appendix/PS1-1AA_Schematic_2025-05-21.PDF}    % Schematics file main PCB
+    \newcommand{\schfileui}{appendix/PS1-2AA_Schematic_2025-05-21.PDF}      % Schematics file user interface
+    \newcommand{\schfileprog}{appendix/PS1-3AA_Schematic_2025-05-21.PDF}    % Schematics file programming adapter
     % Dotted box
     \usepackage{dashbox}
     \newcommand\dashedph[1][H]{\setlength{\fboxsep}{0pt}\setlength{\dashlength}{2.2pt}\setlength{\dashdash}{1.1pt} \dbox{\phantom{#1}}}
@@ -537,7 +539,7 @@
     \@ifclassloaded{letter}{
         \fancyhead[LO]{Bat Source}              % Kopfeile links
         \fancyhead[CO]{Commissioning protocol}  % zentrierte Kopfzeile
-        \fancyhead[RO]{\includegraphics[width=1.5cm]{../img/LogoFSCH-Color.pdf}} % Kopfzeile rechts
+        \fancyhead[RO]{\includegraphics[width=0.5cm]{../img/LogoWHE.pdf}} % Kopfzeile rechts
         \fancyhead[LE]{}               % Kopfeile links
         \fancyhead[CE]{\leftmark}  % zentrierte Kopfzeile
         \fancyhead[RE]{}                             % Kopfzeile rechts
@@ -603,6 +605,7 @@
 
 \newcommand{\formTitle}[1]{\hline \multicolumn{5}{|c|}{\textbf{#1}} \\ \hline \hline}
 \newcommand{\formHeader}{Description & Expected Value & Measured Value & Passed & Comments \endfirsthead \hline Description & Expected Value & Measured Value & Passed & Comments \endhead \hline}
+\newcommand{\formHeaderS}{\multicolumn{3}{|l|}{Description} & Passed & Comments \endfirsthead \hline \multicolumn{3}{|l|}{Description} & Passed & Comments \endhead \hline}
 \newcommand{\formMeasure}[2]{#1 & #2 & \formfieldMW & \formCB{black} & \formfieldCO \\ \hline}
 \newcommand{\formWork}[1]{\multicolumn{3}{|l|}{\textbf{\textcolor{darkgreen}{#1}}} &\formCB{darkgreen} &\formfieldCO \\ \hline \hline}
 \newcommand{\formCheck}[1]{\multicolumn{3}{|l|}{\textbf{#1}} &\formCB{black} &\formfieldCO \\ \hline}

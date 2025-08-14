@@ -147,6 +147,7 @@ cad/print/
 
 # FreeCAD
 *.FCStd1
+*.FCBak
 *.step
 *.dxf
 

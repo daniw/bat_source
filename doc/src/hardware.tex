@@ -12,18 +12,80 @@
 
 \subsection{Battery}
 \label{sec_battery}
-\begin{itemize}
-    \item Cell selection
-    \item Cell connection
-    \item 4S and 5S configuration with cell-tab shorting
-    \item Cell mounting
-\end{itemize}
+For the cell chemistry, a \ac{LFP} battery is selectedi. This due to its rather high energy and power density and especially due to the safer handling compared with \ac{LiIon} and \ac{LiPo} batteries.  
+
+To select a suitable cell, a market analysis is performed. 
+\begin{table}[h!]
+    \centering
+    %\begin{spreadtab}{{zebratabular}{p{0.27\linewidth}lN{3}{2}n{5}{2}p{0.4\linewidth}}}
+    \begin{spreadtab}{{zebratabular}{llllllllllllll}}
+        \rowcolor{gray}
+        @Manufacturer,  Type                & @$C_{typ}$                & @$I_{max}$            & @Cells    & @$P_{max}$        & @$W_{max}$                 & @Cost per device & @Runtime      \\
+        @Lithium Werks, ANR26650            & @\qty{2.6}{\ampere\hour}  & @\qty{50}{\ampere}    & @5        & @\qty{500}{\watt} & @\qty{40}{\watt\hour}      & @35.75           & @\qty{32}{\minute}    \\
+        @JGNE,          HTPFR26650          & @\qty{3.0}{\ampere\hour}  & @\qty{30}{\ampere}    & @5        & @\qty{375}{\watt} & @\qty{46.4}{\watt\hour}    & @17.70           & @\qty{37.12}{\minute} \\
+        @JGNE,          HTCFR26650          & @\qty{3.6}{\ampere\hour}  & @\qty{10.2}{\ampere}  & @4        & @\qty{375}{\watt} & @\qty{45.44}{\watt\hour}   & @8.60            & @\qty{36.352}{\minute} \\
+        @JGNE,          HTCFR26650          & @\qty{3.8}{\ampere\hour}  & @\qty{11.4}{\ampere}  & @4        & @\qty{114}{\watt} & @\qty{48}{\watt\hour}      & @10.76           & @\qty{38.4}{\minute} \\
+        @JGNE,          JGCFR26650-4\ldots  & @\qty{4.0}{\ampere\hour}  & @\qty{12}{\ampere}    & @3        & @\qty{90}{\watt}  & @\qty{37.92}{\watt\hour}   & @8.97            & @\qty{30.336}{\minute} \\
+        @Tenpower,      IFR26700-45HE       & @\qty{4.5}{\ampere\hour}  & @\qty{9}{\ampere}     & @4        & @\qty{90}{\watt}  & @\qty{56.96}{\watt\hour}   & @7.80            & @\qty{45.568}{\minute} \\
+        @Tenpower,      IFR26700-40HE       & @\qty{4.0}{\ampere\hour}  & @\qty{8}{\ampere}     & @4        & @\qty{80}{\watt}  & @\qty{50.56}{\watt\hour}   & @7.40            & @\qty{40.448}{\minute} \\
+    \end{spreadtab}
+    \caption{Cell selection}
+    \label{tab_cell_selection}
+\end{table}
+The IFR26700-45HE made by Tenpower is selected as a compromise between low cost and reasonable margin in runtime and output power. 4 cells in series are used. The cells are mounted using custom cell holders. Nickel tabs are spot-welded to the cells and soldered to the \ac{PCB}. 
+\todo[inline]{Description of cell holder}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=60 370 840 120, clip]{\schfilemain}
+    \caption{\acs{BMS} - battery cells}
+    \label{fig_onoff_switch}
+\end{figure}
+
+The schematic is prepared for a configuration with 5 cells in series. To enable the 5S configuration, BAT5 to BAT9 are set to fitted, the text C3 is replaced with a matching net label and the connection between C2 and C3 is removed. If both, 4S and 5S should be possible with the same \ac{PCB}, BAT2 is replaced with the design item id BAT\_LFP-26700-4.5AH-2NEG. It includes an extra pad, which is shorted to the negative cell connection using the cell tab by bending it and soldering it to both pads. This extra pad is used to short BAT7, which is not used in 4S configuration. \autoref{fig_bat_2neg} demonstrates the use of this third pad. 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{img/bat_2neg.png}
+    \caption{Visualisation of third pad which is bridged by the negative cell tab}
+    \label{fig_bat_2neg}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{Battery Management System}
 \label{sec_bms}
 The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
-This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. Level shifters are also implemented on the \ac{I2C} and ALERT lines. 
+This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. 
 \todo{Detailed description and design}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=490 100 60 420, clip]{\schfilemain}
+    \caption{\acs{BMS} - current measurement}
+    \label{fig_onoff_switch}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{On/off controller}
+\label{sec_onoff}
+The on/off controller enables power to the device using the high-side P-channel \ac{MOSFET} Q5. The \ac{MOSFET} can be enabled by pushing any of the buttons that allow turn-off. The selection of on-capable buttons is done with assemblyng the diodes D45, D46 and D47 in the \nameref{sec_ui}. Once the power to the device is enabled, the microcontroller can keep the power enabled by setting the \ac{GPIO} ON\_REQ high. To turn-off the device, the signal ON\_REQ is set low. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=550 530 200 120, clip]{\schfilemain}
+    \caption{On/off controller - main switch}
+    \label{fig_onoff_switch}
+\end{figure}
+
+To switch off the device when the microcontroller is unable to turn off the device, an emergency shut-off is implemented. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C14. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 through the level shifters Q7 and Q6. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is supplied with the BUTTON\_OFF signal through D6. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=70 375 490 140, clip]{\schfilemain}
+    \caption{On/off controller - emergency off circuit}
+    \label{fig_onoff_emergency_off}
+\end{figure}
 
 \FloatBarrier
 
@@ -64,15 +126,6 @@ This protection is implemented with the battery monitor and protector BQ76905. I
     \item Common mode choke
     \item Fuse
     \item Reverse polarity protection
-\end{itemize}
-
-\FloatBarrier
-
-\subsection{On/off controller}
-\label{sec_onoff}
-\begin{itemize}
-    \item On
-    \item Off
 \end{itemize}
 
 \FloatBarrier
@@ -124,12 +177,104 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 
 \FloatBarrier
 
-\subsection{Modifications from index AA to index AB}
-
-\subsection{Modifications from index AA to index BA}
+\subsection{Modifications PS1-1AA $\to$ AB}
 
 \subsubsection{BMS wakeup from shutdown}
-When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin of the microcontroller to alow wakeup from shutdown mode. 
+When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. 
+
+\subsubsection{Relay footprint mirrored}
+The footprint of the relais is mirrored. The pins of the relay must be bent and extended to fit the footprint. This correction increases the height of the PCB stack by about \qty{2}{\milli\meter}, due to which the enclosure cannot be completely closed. 
+
+\subsubsection{Undefined signal CONF\_ISO when microcontroller unprogrammed or in reset}
+The signal CONF\_ISO has no defined state when it is not driven. This can happen, when the microcontroller is unprogrammed or held in reset. This can lead to the relais K2 and K3 to flatter when the device is powered from the output plugs. 
+
+A pull-down resistor to GND should be manually placed between gate and source of Q13. 
+
+\subsubsection{Voltage drop on UI supply}
+The voltage drop of the supplies on the user interface is too large. 
+
+R188 and R189 should be replaced with 0R/0603. 
+
+\subsubsection{High voltage detection always active when battery powered}
+The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
+Pin 2 (cathode) of D11 and D14 are lifted and connected to the respective pad using a \qty{100}{\kilo\ohm} resistor. A \qty{2.2}{\volt} Zener diode is placed between pin 2 (cathode) and pin 1 (anode) of each diode D11 and D14. 
+
+\subsubsection{Inrush current at startup}
+The inrush current at startup is \qty{26}{\ampere}. This triggers the BMS, which disables the device. 
+
+A temporary workaround is to keep the startup button pushed until the BMS resets. The BMS switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. 
+
+\todo[inline]{Solution for inrush current problem}
+
+\subsubsection{Low resolution for battery current measurement}
+The resolution of the battery current measurement is \qty{16}{\milli\ampere} with a range of $\pm$\qty{33}{\ampere}. A current range of $\pm$\qty{10}{\ampere} is sufficient. By increasing R19 and R22 to \qty{330}{\kilo\ohm}, the range is changed to $\pm$\qty{10}{\ampere} with a resolution of \qty{4.88}{\milli\ampere}. 
+
+\subsection{Modifications PS1-1AA $\to$ BA}
+
+\subsubsection{BMS wakeup from shutdown}
+When the BMS enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the BMS remains in shutdown mode. The TS pin should therefore be connected to a GPIO pin of the microcontroller to allow wakeup from shutdown mode. 
+
+\subsubsection{Relay footprint mirrored}
+The footprint of the relais is mirrored. The footprint must be corrected. 
+
+\subsubsection{Undefined signal CONF\_ISO when microcontroller unprogrammed or in reset}
+The signal CONF\_ISO has no defined state when it is not driven. This can happen, when the microcontroller is unprogrammed or held in reset. This can lead to the relais K2 and K3 to flatter when the device is powered from the output plugs. 
+A pull-down resistor to GND should be placed on the signal CONF\_ISO. 
+
+\subsubsection{Voltage drop on UI supply}
+The voltage drop of the supplies on the user interface is too large. 
+
+R188 and R189 should be replaced with 0R/0603. 
+
+\subsubsection{Insufficient memory}
+The flash memory of the microcontroller is barely sufficient. It should be considered to replace the microcontroller with a similar type that includes more flash memory. The STM32G474 series seems to be suitable. 
+
+\subsubsection{High voltage detection always active when battery powered}
+The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. 
+The clamping circuit must be modified to clamp to a lower voltage than the supply voltage. 
+
+\subsubsection{Inrush current at startup}
+The inrush current at startup is \qty{26}{\ampere}. This triggers the BMS, which disables the device. 
+
+A temporary workaround is to keep the startup button pushed until the BMS resets. The BMS switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. 
+
+\todo[inline]{Solution for inrush current problem}
+
+\subsubsection{Display readability in bright sunlight}
+The display is barely readable when the device is used in bright sunlight. To be readable in direct sunlight a brightness of at least \qty{600}{\candela\per\square\meter} is required. A suitable replacement would be the type NHD-2.4-240320AF from Newhaven Display. 
+
+\subsubsection{Low resolution for battery current measurement}
+The resolution of the battery current measurement is \qty{16}{\milli\ampere} with a range of $\pm$\qty{33}{\ampere}. A current range of $\pm$\qty{10}{\ampere} is sufficient. By increasing R19 and R22 to \qty{330}{\kilo\ohm}, the range is changed to $\pm$\qty{10}{\ampere} with a resolution of \qty{4.88}{\milli\ampere}. 
+
+\subsection{Modifications PS1-2AA $\to$ AB}
+
+\subsubsection{\acs{I2C} signals swapped}
+The \ac{I2C} signals SCL nad SDA are swapped on the header in comparison to the main PCB PS1-1. They need to be cross-connected using wires. 
+
+\subsection{Modifications PS1-2AA $\to$ BA}
 
 \subsubsection{LED polarity marking}
 The LEDs have no polarity markings. This was caused by the insufficient spacing between the polarity marker and the cathode pad, which resulted in the automatic removal of the marker during silkscreen cleanup. The marker should be restored and moved away from the pad. 
+
+\subsubsection{Labels for plugs poorly readable}
+The labels of the plugs is partly located under the step of the enclosure lid and threefore poorly readable. The labels should be moved. 
+
+\subsubsection{\acs{I2C} signals swapped}
+The \ac{I2C} signals SCL nad SDA are swapped on the header in comparison to the main PCB PS1-1. They need to be swapped back. 
+
+\subsection{Modifications on PS1-3 AA $\to$ AB}
+
+\subsubsection{TAG-Connect assembly side}
+The TAG-Connect header is labelled as being assembled on the bottom side. The header should be assembled on the top side. 
+
+\subsubsection{Insufficient spacing between TAG-Connect header and BOOT header}
+The spacing between TAG-Connect header and BOOT header is insufficient. A 2-pin header should be used for the BOOT header. The header is placed on +3V3 and BOOT pins. This should be sufficient, as there is a pull-down resistor on the BOOT signal on the mainboard. 
+
+\subsection{Modifications on PS1-3 AA $\to$ BA}
+
+\subsubsection{Incorrect connector type for STLINK-V3-MINIE}
+The connector for the STLINK-V3-MINIE has a pitch of \qty{2.54}{\milli\meter}. The spacing should be \qty{1.27}{\milli\meter}. The connecter need to be replaced. 
+
+\subsubsection{Insufficient spacing between TAG-Connect header and BOOT header}
+The spacing between TAG-Connect header and BOOT header is insufficient. The BOOT header should be moved. 
+

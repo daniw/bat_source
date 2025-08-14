@@ -1,0 +1,21 @@
+\begin{formtable}
+ \formTitle{On/Off Controller}
+ \formNoteV{Apply \qty{18}{\V} to the output plugs, activate BMS}{GND}
+ \formHeader
+ \formMeasure{Voltage on VBAT}              {\qtyrange{11.5}{12.5}{\volt}}
+ \formMeasure{Voltage on VIN}               {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Push ON button briefly (alternatively short pins 3 and 20 on UI connector J6)}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{11.5}{12.5}{\volt}}
+ \formMeasure{Voltage on V\_IN}             {\qtyrange{0.54}{0.60}{\volt}}
+ \formNoteV{Set ON\_REQ low}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Push ESC button briefly (alternatively short pins 4 and 20 on UI connector J6)}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{11.5}{12.5}{\volt}}
+ \formNoteV{Push ESC button for a duration of \qty{10}{\second} (alternatively short pins 4 and 20 on UI connector J6)}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{0}{1}{\volt}}
+ \formNoteV{Push ESC button until device turns off (alternatively short pins 4 and 20 on UI connector J6), measure time}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{0}{1}{\volt}}
+ \formMeasure{Time until turn-off}          {\qtyrange{8}{12}{\second}}
+ \formNoteV{Push OUT button briefly (alternatively short pins 5 and 20 on UI connector J6)}{GND}
+ \formMeasure{Voltage on VIN}               {\qtyrange{11.5}{12.5}{\volt}}
+\end{formtable}

@@ -1,0 +1,10 @@
+\begin{formtable}
+ \formTitle{Crowbar}
+ \formNoteV{Apply \qty{18}{\volt} to output plugs, set current limit to \qty{0.2}{\ampere}, apply \qty{12.8}{\volt} between BAT+ and BAT-, activate BMS, push OK button}{GND}
+ \formHeader
+ \formMeasure{Voltage on CROWBAR\_LATCH} {\qtyrange{3.0}{3.4}{\volt}}
+ \formMeasure{Slowly increase voltage on output plugs until crowbar trips, observe voltage immediately before tripping} {\qtyrange{90}{95}{\volt}}
+ \formMeasure{Voltage on CROWBAR\_LATCH} {\qtyrange{0}{0.5}{\volt}}
+ \formNoteV{Disconnect power supply from output plugs, apply \qty{3}{\volt} to OUT\_5V, set current limit to \qty{0.2}{\ampere}}{GND}
+ \formMeasure{Slowly increase voltage until crowbar trips, observe voltage immediately before tripping} {\qtyrange{4.5}{5.5}{\volt}}
+\end{formtable}

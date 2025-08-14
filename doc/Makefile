@@ -1,6 +1,6 @@
 .PHONY: all build vim count clean
 
-all: build count
+all: build count copy
 
 build: 
 	mkdir -p obj
@@ -42,6 +42,8 @@ count:
 	@echo
 	@echo Counting words in abstract:
 	@wc src/abstract_de.tex src/abstract_en.tex | grep abstract
+copy: 
+	cp obj/bat_source.pdf obj/bat_source_cp.pdf
 
 clean:
 	rm -f obj/*.aux
