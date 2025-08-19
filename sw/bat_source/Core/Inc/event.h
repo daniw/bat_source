@@ -24,6 +24,8 @@ typedef enum
 	EVENT_IIC_ERROR,        //!< EVENT_I2C_ERROR
 	EVENT_EEPROM_READ,      //!< EVENT_EEPROM_READ
 	EVENT_EEPROM_TIMEOUT,	//!< EVENT_EEPROM_TIMEOUT
+	EVENT_SM_STEP,          //!< EVENT_SM_STEP
+	EVENT_BMS_TIMER,        //!< EVENT_BMS_TIMER
 	EVENT_EVENT             //!< EVENT_EVENT
 } EVENTS;
 
@@ -33,14 +35,15 @@ typedef enum
 typedef struct
 {
 	EVENTS event;
-	void* data;
+	void(* callback)(void*);
+	void* argument;
 } EVENT_STRUCT;
 
 int event_Init(void);
 void event_TimerStart(void);
 void event_TimerStop(void);
 uint32_t event_Timer(EVENTS e);
-void event_Add(EVENTS e, void* data);
+void event_Add(EVENTS e, void* callback, void* argument);
 EVENT_STRUCT event_Get(void);
 void event_Take(EVENTS e);
 void event_Give(void);

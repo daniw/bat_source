@@ -34,6 +34,8 @@ void dac_init(void) {
 	}
 	HAL_DAC_Start(&hdacRef, DAC_CHANNEL_1);
 
+	  dac_setValueRef(2048);
+
 	/*************** TIM15 *****************/
 
 	  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
@@ -92,6 +94,7 @@ void dac_init(void) {
 	  }
 	  HAL_TIM_Base_Start_IT(&htim1ARef);
 	  HAL_TIM_PWM_Start(&htim1ARef, TIM_CHANNEL_1);
+	  dac_setValue1ARef(2048);
 	  HAL_TIM_MspPostInit(&htim1ARef);
 
 }

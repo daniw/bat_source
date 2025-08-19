@@ -6,6 +6,7 @@
  */
 
 #include "driver_pca9554.h"
+#include "i2c.h"
 
 
 /**
@@ -30,7 +31,7 @@ void pca9554_set_direction(PCA9554_handle* hpca9554, uint8_t direction)
 {
 	hpca9554->config = direction;
     uint8_t buffer[2] = {PCA9554_CONFIG, hpca9554->config};
-    i2c_Write(hpca9554->address, buffer, sizeof(buffer), (void*)0);
+    i2c_WriteBlocking(hpca9554->address, buffer, sizeof(buffer));
 }
 /**
  * Set output for all pins at once
@@ -41,7 +42,7 @@ void pca9554_set_output(PCA9554_handle* hpca9554, uint8_t value)
 {
 	hpca9554->output = value;
     uint8_t buffer[2] = {PCA9554_OUTPUT, hpca9554->output};
-    i2c_Write(hpca9554->address, buffer, sizeof(buffer), (void*)0);
+    i2c_WriteBlocking(hpca9554->address, buffer, sizeof(buffer));
 }
 
 
@@ -70,7 +71,7 @@ void pca9554_set_pin_direction(PCA9554_handle* hpca9554, uint8_t pin, uint8_t di
         hpca9554->config &= ~(1 << pin);
     }
     uint8_t buffer[2] = {PCA9554_CONFIG, hpca9554->config};
-    i2c_Write(hpca9554->address, buffer, sizeof(buffer), (void*)0);
+    i2c_WriteBlocking(hpca9554->address, buffer, sizeof(buffer));
 }
 
 /**
@@ -86,7 +87,7 @@ void pca9554_set_pin_output(PCA9554_handle* hpca9554, uint8_t pin, uint8_t value
     	hpca9554->output &= ~(1 << pin);
     }
     uint8_t buffer[2] = {PCA9554_OUTPUT, hpca9554->output};
-    i2c_Write(hpca9554->address, buffer, sizeof(buffer), (void*)0);
+    i2c_WriteBlocking(hpca9554->address, buffer, sizeof(buffer));
 }
 
 

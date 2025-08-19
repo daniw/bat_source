@@ -43,10 +43,20 @@ void aux_io_ctrl_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ADC_DRDY_Pin BTN_OUT_Pin I2C_ALERT_Pin */
-  GPIO_InitStruct.Pin = ADC_DRDY_Pin|BTN_OUT_Pin|I2C_ALERT_Pin;
+  GPIO_InitStruct.Pin = BTN_OUT_Pin|I2C_ALERT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ADC_DRDY_Pin */
+  GPIO_InitStruct.Pin = ADC_DRDY_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ADC_DRDY_GPIO_Port, &GPIO_InitStruct);
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 3, 0);
+  //HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 
   /*Configure GPIO pins : I_OUT_GAIN_Pin CONF_CURR_Pin CONF_ISO_Pin */
   GPIO_InitStruct.Pin = I_OUT_GAIN_Pin|CONF_CURR_Pin|CONF_ISO_Pin|ON_REQ_Pin
@@ -57,10 +67,10 @@ void aux_io_ctrl_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SHUNT_ISO_Pin ADC_SYNC_RESET_Pin I_1A_DIS_Pin */
-  GPIO_InitStruct.Pin = SHUNT_ISO_Pin|ADC_SYNC_RESET_Pin|I_1A_DIS_Pin;
+  GPIO_InitStruct.Pin = SHUNT_ISO_Pin|ADC_SYNC_RESET_Pin|I_1A_DIS_Pin|SPI_NSS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : CTRL_EN_Pin */
@@ -69,6 +79,11 @@ void aux_io_ctrl_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CTRL_EN_GPIO_Port, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(ADC_SYNC_RESET_GPIO_Port, ADC_SYNC_RESET_Pin, GPIO_PIN_SET);
+
+  HAL_GPIO_WritePin(SPI_NSS_GPIO_Port, SPI_NSS_Pin, GPIO_PIN_SET);
+
 }
 
 void aux_io_ctrl_PCA9554_Init(void)
@@ -151,3 +166,6 @@ void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value)
 			return;
 	}
 }
+
+
+

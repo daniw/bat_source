@@ -197,11 +197,11 @@ typedef enum
  */
 typedef enum  
 {
+    SSD1309_FONT_08 = 0x08,        /**< font  8 */
     SSD1309_FONT_12 = 0x0C,        /**< font 12 */
     SSD1309_FONT_16 = 0x10,        /**< font 16 */
-#if USE_2412_FONT
     SSD1309_FONT_24 = 0x18,        /**< font 24 */
-#endif
+
 } ssd1309_font_t;
 
 /**
@@ -226,6 +226,7 @@ typedef struct ssd1309_handle_s
     uint8_t inited;                                                                     /**< inited flag */
     uint8_t iic_addr;                                                                   /**< iic address */
     uint8_t iic_spi;                                                                    /**< iic spi type */
+    uint8_t command_data;
     uint8_t gram[128][8];                                                               /**< gram buffer */
 } ssd1309_handle_t;
 

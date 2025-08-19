@@ -167,7 +167,7 @@ static uint8_t a_ssd1309_write_byte(ssd1309_handle_t *handle, uint8_t data, uint
  *            - 1 write failed
  * @note      none
  */
-static uint8_t a_ssd1309_multiple_write_byte(ssd1309_handle_t *handle, uint8_t *data, uint8_t len, uint8_t cmd)
+static uint8_t a_ssd1309_multiple_write_byte(ssd1309_handle_t *handle, uint8_t *data, uint16_t len, uint8_t cmd)
 {    
     uint8_t res;
     
@@ -273,7 +273,11 @@ static uint8_t a_ssd1309_gram_show_char(ssd1309_handle_t *handle, uint8_t x, uin
     chr = chr - ' ';                                                                /* get index */
     for (t = 0; t < csize; t++)                                                     /* write size */
     {   
-        if (size == 12)                                                             /* if size 12 */
+        if (size == 8)                                                             /* if size 08 */
+        {
+            temp = gsc_ssd1309_ascii_0804[chr][t];                                  /* get ascii 0804 */
+        }
+        else if (size == 12)                                                        /* if size 12 */
         {
             temp = gsc_ssd1309_ascii_1206[chr][t];                                  /* get ascii 1206 */
         }
@@ -281,7 +285,7 @@ static uint8_t a_ssd1309_gram_show_char(ssd1309_handle_t *handle, uint8_t x, uin
         {
             temp = gsc_ssd1309_ascii_1608[chr][t];                                  /* get ascii 1608 */
         }
-#if USE_2412_FONT
+#ifdef USE_2412_FONT
         else if(size == 24)                                                         /* if size 24 */
         {
             temp = gsc_ssd1309_ascii_2412[chr][t];                                  /* get ascii 2412 */
@@ -336,7 +340,6 @@ uint8_t ssd1309_clear(ssd1309_handle_t *handle)
 {
     uint8_t i;
     uint8_t n;
-    
     if (handle == NULL)                                                                               /* check handle */
     {
         return 2;                                                                                     /* return error */
@@ -345,38 +348,13 @@ uint8_t ssd1309_clear(ssd1309_handle_t *handle)
     {
         return 3;                                                                                     /* return error */
     }
-    
-    for (i = 0; i < 8; i++)                                                                           /* write 8 page */
-    {  
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_PAGE_ADDR + i, SSD1309_CMD) != 0)                /* set page */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_LOWER_COLUMN_START_ADDRESS, SSD1309_CMD) != 0)   /* set lower column 0 */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_HIGHER_COLUMN_START_ADDRESS, SSD1309_CMD) != 0)  /* set higher column 0 */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        for (n = 0; n < 128; n++)                                                                     /* write 128 */
-        {
-            handle->gram[n][i] = 0x00;                                                                /* set black */
-            if (a_ssd1309_write_byte(handle, handle->gram[n][i], SSD1309_DATA) != 0)                  /* write data */
+    memset(handle->gram, 0,1024);
+    if(a_ssd1309_multiple_write_byte(handle,  (uint8_t*)&handle->command_data, 1024, SSD1309_DATA)!=0)
             {
                 handle->debug_print("ssd1309: write byte failed.\n");                                 /* write byte failed */
                 
                 return 1;                                                                             /* return error */
             }
-        }
-    }
     
     return 0;                                                                                         /* success return 0 */
 }
@@ -405,36 +383,12 @@ uint8_t ssd1309_gram_update(ssd1309_handle_t *handle)
         return 3;                                                                                     /* return error */
     }
     
-    for (i = 0; i < 8; i++)                                                                           /* write 8 page */
-    {  
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_PAGE_ADDR + i, SSD1309_CMD) != 0)                /* set page */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_LOWER_COLUMN_START_ADDRESS, SSD1309_CMD) != 0)   /* set lower column 0 */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        if (a_ssd1309_write_byte(handle, SSD1309_CMD_HIGHER_COLUMN_START_ADDRESS, SSD1309_CMD) != 0)  /* set higher column 0 */
-        {
-            handle->debug_print("ssd1309: write byte failed.\n");                                     /* write byte failed */
-            
-            return 1;                                                                                 /* return error */
-        }
-        for (n = 0; n < 128; n++)                                                                     /* write 128 */
-        {
-            if (a_ssd1309_write_byte(handle, handle->gram[n][i], SSD1309_DATA) != 0)                  /* write data */
+    if(a_ssd1309_multiple_write_byte(handle,  (uint8_t*)&handle->command_data, 1024, SSD1309_DATA)!=0)
             {
                 handle->debug_print("ssd1309: write byte failed.\n");                                 /* write byte failed */
                 
                 return 1;                                                                             /* return error */
             }
-        }
-    }
     
     return 0;                                                                                         /* success return 0 */
 }
@@ -1012,7 +966,7 @@ uint8_t ssd1309_init(ssd1309_handle_t *handle)
         return 6;                                                                   /* return error */
     }
     handle->inited = 1;                                                             /* flag inited */
-    
+    handle->command_data = 0x40;
     return 0;                                                                       /* success return 0 */
 }
 

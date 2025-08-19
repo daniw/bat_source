@@ -74,11 +74,14 @@ uint8_t ssd1309_interface_iic_write(uint8_t addr, uint8_t reg, uint8_t *buf,
 	uint8_t buffer[len + 1];
 	buffer[0] = reg;
 	memcpy(&buffer[1], buf, len);
+	// Write Command
 	if (buffer[0] == 0x00) {
-		i2c_Write(addr, buffer, len + 1, (void*) 0);
+		i2c_WriteBlocking(addr, buffer, len+1);
+		//i2c_Write(addr, buffer, len + 1, (void*) 0, 0);
 		return 0;
-	} else
-		return i2c_WriteBlocking(addr, buffer, len + 1);
+	} else{
+		i2c_Write(addr, buf, len + 1, (void*) 0, 0);
+	return 0;}
 }
 
 /**

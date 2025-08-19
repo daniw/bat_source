@@ -39,6 +39,16 @@ extern "C" {
 #include "driver_pca9554.h"
 #include "aux_io_ctrl.h"
 #include "dac.h"
+#include "bq76905.h"
+#include "bq76905_config.h"
+#include "adc.h"
+#include "ADS131M04.h"
+#include "pwm.h"
+#include "ctrl_main.h"
+#include "timer.h"
+#include "statemachine.h"
+#include "display.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -96,10 +106,13 @@ void Error_Handler(void);
 #define TEMP_SEC_GPIO_Port GPIOB
 #define ADC_DRDY_Pin GPIO_PIN_10
 #define ADC_DRDY_GPIO_Port GPIOB
+#define ADC_DRDY_EXTI_IRQn EXTI15_10_IRQn
 #define I_ISO_Pin GPIO_PIN_12
 #define I_ISO_GPIO_Port GPIOB
 #define V_TERM_Pin GPIO_PIN_13
 #define V_TERM_GPIO_Port GPIOB
+#define I_1A_REF_Pin GPIO_PIN_14
+#define I_1A_REF_GPIO_Port GPIOB
 #define TEMP_TRAFO_Pin GPIO_PIN_15
 #define TEMP_TRAFO_GPIO_Port GPIOB
 #define I_OUT_GAIN_Pin GPIO_PIN_6
@@ -116,6 +129,8 @@ void Error_Handler(void);
 #define ADC_SYNC_RESET_GPIO_Port GPIOA
 #define I_1A_DIS_Pin GPIO_PIN_12
 #define I_1A_DIS_GPIO_Port GPIOA
+#define SPI_NSS_Pin GPIO_PIN_15
+#define SPI_NSS_GPIO_Port GPIOA
 #define ON_REQ_Pin GPIO_PIN_10
 #define ON_REQ_GPIO_Port GPIOC
 #define UI_PRESENT_Pin GPIO_PIN_11

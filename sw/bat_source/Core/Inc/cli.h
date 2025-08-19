@@ -19,6 +19,9 @@
 #include "event.h"
 #include "error.h"
 #include "aux_io_ctrl.h"
+#include "bq76905.h"
+#include "adc.h"
+#include "ADS131M04.h"
 
 #define LINE_BUF_SIZE 128
 #define MAX_NUM_ARGS 8
