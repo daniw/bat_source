@@ -220,6 +220,17 @@ A temporary workaround is to keep the startup button pushed until the BMS resets
 \subsubsection{Low resolution for battery current measurement}
 The resolution of the battery current measurement is \qty{16}{\milli\ampere} with a range of $\pm$\qty{33}{\ampere}. A current range of $\pm$\qty{10}{\ampere} is sufficient. By increasing R19 and R22 to \qty{330}{\kilo\ohm}, the range is changed to $\pm$\qty{10}{\ampere} with a resolution of \qty{4.88}{\milli\ampere}. 
 
+\subsection{Modifications PS1-1AB $\to$ AC}
+
+\subsubsection{Converter not working}
+The parasitic inductance is too large for proper operation of the flyback converter. To allow a demonstration of the \qty{60}{\volt} output, the converter is modified to a boost topology. The primary windings (PS1-102) the high-voltage winding (PS1-124) are removed from the transformer. The relais K1 to K3 are removed and bridged with the \qty{0}{\ohm} resistors R65 and R78. T\_S2 is connected to VIN with a wire. A diode STPS40150CG-TR is soldered from T\_S0 (anode) to R78 (cathode). 
+
+\subsubsection{Zero-crossing detection not needed for demonstration device}
+The zero-crossing detection is not needed for the demonstration device and can therefore be disabled. Remove R69 and R79. 
+
+\subsubsection{Charging not possible with boost converter}
+As the boost converter is non-synchronous and therefore unidirectional, the device can not be charged thtough the output terminals. The sense terminals are not used for the demonstration devices and can be adapted for battery charging. Connect MEAS- to GND using a wire. Also connect MEAS+ to VIn through a diode. (anode MEAS+, cathode VIN)
+
 \subsection{Modifications PS1-1AA $\to$ BA}
 
 \subsubsection{BMS wakeup from shutdown}
