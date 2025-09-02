@@ -1,0 +1,268 @@
+\section{Modification history}
+
+\subsection{Modifications PS1-1AA $\to$ AB}
+
+\begin{ModTable}
+
+\ModItemDone
+{\acs{BMS} wakeup from shutdown}
+{When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
+{The TS pin should therefore be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{\acs{BMS} wakeup from shutdown}
+{When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
+{The TS pin should be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{Relay footprint mirrored}
+{The footprint of the relais is mirrored. }
+{The pins of the relay must be bent and extended to fit the footprint. This correction increases the height of the PCB stack by about \qty{2}{\milli\meter}, due to which the enclosure cannot be completely closed. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{Undefined signal CONF\_ISO when microcontroller not programmed or in reset}
+{The signal CONF\_ISO has no defined state when it is not driven. This can happen, when the microcontroller is not programmed or held in reset. This can lead to the relays K2 and K3 to flatter when the device is powered from the output plugs. }
+{A pull-down resistor to GND should be manually placed between gate and source of Q13. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{Voltage drop on UI supply}
+{The voltage drop of the supplies on the user interface is too large. }
+{R188 and R189 should be replaced with 0R/0603. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{High voltage detection always active when battery powered}
+{The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. }
+{Pin 2 (cathode) of D11 and D14 are lifted and connected to the respective pad using a \qty{100}{\kilo\ohm} resistor. A \qty{2.2}{\volt} Zener diode is placed between pin 2 (cathode) and pin 1 (anode) of each diode D11 and D14. }
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{Inrush current at startup}
+{The inrush current at startup is \qty{26}{\ampere}. This triggers the \ac{BMS}, which disables the device. }
+{A temporary workaround is to keep the startup button pushed until the \ac{BMS} resets. The \ac{BMS} switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. \todo[inline]{Solution for inrush current problem}}
+{daniw}
+{2025-07-02}
+
+\ModItemDone
+{Low resolution for battery current measurement}
+{The resolution of the battery current measurement is \qty{16}{\milli\ampere} with a range of $\pm$\qty{33}{\ampere}. A current range of $\pm$\qty{10}{\ampere} is sufficient. }
+{By increasing R19 and R22 to \qty{330}{\kilo\ohm}, the range is changed to $\pm$\qty{10}{\ampere} with a resolution of \qty{4.88}{\milli\ampere}. }
+{daniw}
+{2025-07-02}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications PS1-1AB $\to$ AC}
+
+\begin{ModTable}
+
+\ModItemOpen
+{Converter not working}
+{The parasitic inductance is too large for proper operation of the flyback converter. To allow a demonstration of the \qty{60}{\volt} output, the converter is modified to a boost topology. }
+{The primary windings (PS1-102) the high-voltage winding (PS1-124) are removed from the transformer. The relais K1 to K3 are removed and bridged with the \qty{0}{\ohm} resistors R65 and R78. T\_S2 is connected to VIN with a wire. A diode STPS40150CG-TR is soldered from T\_S0 (anode) to R78 (cathode). }
+{}
+{}
+
+\ModItemOpen
+{Zero-crossing detection not needed for demonstration device}
+{The zero-crossing detection is not needed for the demonstration device and can therefore be disabled. }
+{Remove R69 and R79. }
+{}
+{}
+
+\ModItemOpen
+{Charging not possible with boost converter}
+{As the boost converter is non-synchronous and therefore unidirectional, the device can not be charged thtough the output terminals. The sense terminals are not used for the demonstration devices and can be adapted for battery charging. }
+{Connect MEAS- to GND using a wire. Also connect MEAS+ to VIn through a diode. (anode MEAS+, cathode VIN)}
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications PS1-1AA $\to$ BA}
+
+\begin{ModTable}
+
+\ModItemOpen
+{\acs{BMS} wakeup from shutdown}
+{When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
+{The TS pin should be connected to a GPIO pin of the microcontroller to allow wakeup from shutdown mode. }
+{}
+{}
+
+\ModItemOpen
+{Relay footprint mirrored}
+{The footprint of the relais is mirrored. }
+{The footprint must be corrected. }
+{}
+{}
+
+\ModItemOpen
+{Undefined signal CONF\_ISO when microcontroller not programmed or in reset}
+{The signal CONF\_ISO has no defined state when it is not driven. This can happen, when the microcontroller is not programmed or held in reset. This can lead to the relays K2 and K3 to flatter when the device is powered from the output plugs. }
+{A pull-down resistor to GND should be placed on the signal CONF\_ISO. }
+{}
+{}
+
+\ModItemOpen
+{Voltage drop on UI supply}
+{The voltage drop of the supplies on the user interface is too large. }
+{R188 and R189 should be replaced with 0R/0603. }
+{}
+{}
+
+\ModItemOpen
+{Insufficient memory}
+{The flash memory of the microcontroller is barely sufficient. }
+{It should be considered to replace the microcontroller with a similar type that includes more flash memory. The STM32G474 series seems to be suitable. }
+{}
+{}
+
+\ModItemOpen
+{High voltage detection always active when battery powered}
+{The high voltage detection is always active when the device is battery-powered. This is independent of the voltage across the output plugs. It is caused by leakage current from the PRIM\_ZERO pin to the V\_OUT signal through the microcontroller. }
+{The clamping circuit must be modified to clamp to a lower voltage than the supply voltage. }
+{}
+{}
+
+\ModItemOpen
+{Inrush current at startup}
+{The inrush current at startup is \qty{26}{\ampere}. This triggers the \ac{BMS}, which disables the device. }
+{A temporary workaround is to keep the startup button pushed until the \ac{BMS} resets. The \ac{BMS} switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. \todo[inline]{Solution for inrush current problem}}
+{}
+{}
+
+\ModItemOpen
+{Display readability in bright sunlight}
+{The display is barely readable when the device is used in bright sunlight. }
+{To be readable in direct sunlight a brightness of at least \qty{600}{\candela\per\square\meter} is required. A suitable replacement would be the type NHD-2.4-240320AF from Newhaven Display. }
+{}
+{}
+
+\ModItemOpen
+{Low resolution for battery current measurement}
+{The resolution of the battery current measurement is \qty{16}{\milli\ampere} with a range of $\pm$\qty{33}{\ampere}. A current range of $\pm$\qty{10}{\ampere} is sufficient. }
+{By increasing R19 and R22 to \qty{330}{\kilo\ohm}, the range is changed to $\pm$\qty{10}{\ampere} with a resolution of \qty{4.88}{\milli\ampere}. }
+{}
+{}
+
+\ModItemOpen
+{Clearance around battery terminals}
+{The pull-up resistors for the I2C bus are very close to the battery terminals. This can lead to a short circuit and damage of components during assembly. }
+{A clearance of a few millimeters around the battery terminals should be implemented. }
+{}
+{}
+
+\ModItemOpen
+{\acs{UI} connector misplacement}
+{During assembly of the lid, the \ac{UI} connector can be misplaced, which can lead to short circuits and damage of components. }
+{The \ac{UI} connector should be replaced with a type that includes a mechanical guide. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications PS1-2AA $\to$ AB}
+
+\begin{ModTable}
+
+\ModItemDone
+{\acs{I2C} signals swapped}
+{The \ac{I2C} signals SCL nad SDA are swapped on the header in comparison to the main PCB PS1-1. }
+{The \ac{I2C} signals need to be cross-connected using wires. }
+{daniw}
+{2025-07-05}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications PS1-2AA $\to$ BA}
+
+\begin{ModTable}
+
+\ModItemOpen
+{LED polarity marking}
+{The LEDs have no polarity markings. This was caused by the insufficient spacing between the polarity marker and the cathode pad, which resulted in the automatic removal of the marker during silkscreen cleanup. }
+{The marker should be restored and moved away from the pad. }
+{}
+{}
+
+\ModItemOpen
+{Labels for plugs poorly readable}
+{The labels of the plugs is partly located under the step of the enclosure lid and therefore poorly readable. }
+{The labels should be moved. }
+{}
+{}
+
+\ModItemOpen
+{\acs{I2C} signals swapped}
+{The \ac{I2C} signals SCL and SDA are swapped on the header in comparison to the main PCB PS1-1. }
+{The \ac{I2C} signals need to be swapped back. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications on PS1-3 AA $\to$ AB}
+
+\begin{ModTable}
+
+\ModItemOpen
+{TAG-Connect assembly side}
+{The TAG-Connect header is labelled as being assembled on the bottom side. }
+{The header should be assembled on the top side. }
+{}
+{}
+
+\ModItemOpen
+{Insufficient spacing between TAG-Connect header and BOOT header}
+{The spacing between TAG-Connect header and BOOT header is insufficient. }
+{A 2-pin header should be used for the BOOT header. The header is placed on +3V3 and BOOT pins. This should be sufficient, as there is a pull-down resistor on the BOOT signal on the mainboard. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsection{Modifications on PS1-3 AA $\to$ BA}
+
+\begin{ModTable}
+
+\ModItemOpen
+{Incorrect connector type for STLINK-V3-MINIE}
+{The connector for the STLINK-V3-MINIE has a pitch of \qty{2.54}{\milli\meter}. The spacing should be \qty{1.27}{\milli\meter}. }
+{The connector need to be replaced. }
+{}
+{}
+
+\ModItemOpen
+{Insufficient spacing between TAG-Connect header and BOOT header}
+{The spacing between TAG-Connect header and BOOT header is insufficient. }
+{The BOOT header should be moved. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
