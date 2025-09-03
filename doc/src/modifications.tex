@@ -68,26 +68,26 @@
 
 \begin{ModTable}
 
-\ModItemOpen
+\ModItemDone
 {Converter not working}
 {The parasitic inductance is too large for proper operation of the flyback converter. To allow a demonstration of the \qty{60}{\volt} output, the converter is modified to a boost topology. }
 {The primary windings (PS1-102) the high-voltage winding (PS1-124) are removed from the transformer. The relais K1 to K3 are removed and bridged with the \qty{0}{\ohm} resistors R65 and R78. T\_S2 is connected to VIN with a wire. A diode STPS40150CG-TR is soldered from T\_S0 (anode) to R78 (cathode). }
-{}
-{}
+{daniw}
+{2025-09-03}
 
-\ModItemOpen
+\ModItemDone
 {Zero-crossing detection not needed for demonstration device}
 {The zero-crossing detection is not needed for the demonstration device and can therefore be disabled. }
 {Remove R69 and R79. }
-{}
-{}
+{daniw}
+{2025-09-03}
 
-\ModItemOpen
+\ModItemDone
 {Charging not possible with boost converter}
 {As the boost converter is non-synchronous and therefore unidirectional, the device can not be charged thtough the output terminals. The sense terminals are not used for the demonstration devices and can be adapted for battery charging. }
 {Connect MEAS- to GND using a wire. Also connect MEAS+ to VIn through a diode. (anode MEAS+, cathode VIN)}
-{}
-{}
+{daniw}
+{2025-09-03}
 
 \end{ModTable}
 
