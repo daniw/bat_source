@@ -49,7 +49,7 @@ PrefsVaultGUID=
 PrefsRevisionGUID=
 
 [Document1]
-DocumentPath=PS1-1AB.OutJob
+DocumentPath=PS1-1AC.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -117,7 +117,7 @@ GenerateClassCluster=0
 DocumentUniqueId=ERUPQRWG
 
 [Document5]
-DocumentPath=PS1-1AB.BomDoc
+DocumentPath=PS1-1AC.BomDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -134,7 +134,7 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document6]
-DocumentPath=PS1-1AB.Annotation
+DocumentPath=PS1-1AC.Annotation
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -407,29 +407,36 @@ DocumentUniqueId=
 
 [ProjectVariant1]
 UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
-Description=PS1-1AB
+Description=PS1-1
 AllowFabrication=1
 ParameterCount=1
-VariationCount=19
+VariationCount=26
 Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart=
 Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart=
 Variation3=Designator=R175|UniqueId=\ODRUASON\ODOGMDIK|Kind=1|AlternatePart=
 Variation4=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
-Variation5=Designator=R65|UniqueId=\DMUNOPTP\CEHTVTVQ|Kind=1|AlternatePart=
-Variation6=Designator=R127|UniqueId=\JMGMUPPD\EBRHPUBU|Kind=1|AlternatePart=
-Variation7=Designator=C49|UniqueId=\JMGMUPPD\DHQRRQSI|Kind=1|AlternatePart=
-Variation8=Designator=R135|UniqueId=\JMGMUPPD\XIIZDYKS|Kind=1|AlternatePart=
-Variation9=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
-Variation10=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
-Variation11=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
-Variation12=Designator=R78|UniqueId=\DMUNOPTP\DOFWCXAR|Kind=1|AlternatePart=
-Variation13=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
-Variation14=Designator=C26|UniqueId=\DMUNOPTP\ULUYIMIT|Kind=1|AlternatePart=
-Variation15=Designator=R67|UniqueId=\DMUNOPTP\CMFARAOQ|Kind=1|AlternatePart=
-Variation16=Designator=R80|UniqueId=\DMUNOPTP\FVHDHBDK|Kind=1|AlternatePart=
-Variation17=Designator=R77|UniqueId=\DMUNOPTP\KMWNAEEM|Kind=1|AlternatePart=
-Variation18=Designator=R70|UniqueId=\DMUNOPTP\JZWKYZEA|Kind=1|AlternatePart=
-Variation19=Designator=C27|UniqueId=\DMUNOPTP\JBKGDOUX|Kind=1|AlternatePart=
+Variation5=Designator=R127|UniqueId=\JMGMUPPD\EBRHPUBU|Kind=1|AlternatePart=
+Variation6=Designator=C49|UniqueId=\JMGMUPPD\DHQRRQSI|Kind=1|AlternatePart=
+Variation7=Designator=R135|UniqueId=\JMGMUPPD\XIIZDYKS|Kind=1|AlternatePart=
+Variation8=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
+Variation9=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
+Variation10=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
+Variation11=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
+Variation12=Designator=C26|UniqueId=\DMUNOPTP\ULUYIMIT|Kind=1|AlternatePart=
+Variation13=Designator=R67|UniqueId=\DMUNOPTP\CMFARAOQ|Kind=1|AlternatePart=
+Variation14=Designator=R80|UniqueId=\DMUNOPTP\FVHDHBDK|Kind=1|AlternatePart=
+Variation15=Designator=R77|UniqueId=\DMUNOPTP\KMWNAEEM|Kind=1|AlternatePart=
+Variation16=Designator=R70|UniqueId=\DMUNOPTP\JZWKYZEA|Kind=1|AlternatePart=
+Variation17=Designator=C27|UniqueId=\DMUNOPTP\JBKGDOUX|Kind=1|AlternatePart=
+Variation18=Designator=K1|UniqueId=\DMUNOPTP\BRDMSVVS|Kind=1|AlternatePart=
+Variation19=Designator=K2|UniqueId=\DMUNOPTP\ZREAHIAS|Kind=1|AlternatePart=
+Variation20=Designator=K3|UniqueId=\DMUNOPTP\QETYWNRO|Kind=1|AlternatePart=
+Variation21=Designator=L1|UniqueId=\DMUNOPTP\TFWJESPH|Kind=1|AlternatePart=
+Variation22=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
+Variation23=Designator=L3|UniqueId=\DMUNOPTP\LNRJBBYK|Kind=1|AlternatePart=
+Variation24=Designator=L4|UniqueId=\DMUNOPTP\QQAWVNQZ|Kind=1|AlternatePart=
+Variation25=Designator=R69|UniqueId=\DMUNOPTP\CCQUSXHK|Kind=1|AlternatePart=
+Variation26=Designator=R79|UniqueId=\DMUNOPTP\MWJCCAFZ|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -438,10 +445,10 @@ Value=PS1-1
 
 [ProjectVariant2]
 UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
-Description=PS1-10AB
+Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=106
+VariationCount=109
 Variation1=Designator=R35|UniqueId=\JNFQLLFC\DPYFCQFU|Kind=1|AlternatePart=
 Variation2=Designator=C16|UniqueId=\DMUNOPTP\PZGXFRDE|Kind=1|AlternatePart=
 Variation3=Designator=C15|UniqueId=\DMUNOPTP\RIKXCRHF|Kind=1|AlternatePart=
@@ -580,6 +587,9 @@ Variation103=Designator=R80|UniqueId=\DMUNOPTP\FVHDHBDK|Kind=1|AlternatePart=
 Variation104=Designator=R77|UniqueId=\DMUNOPTP\KMWNAEEM|Kind=1|AlternatePart=
 Variation105=Designator=R70|UniqueId=\DMUNOPTP\JZWKYZEA|Kind=1|AlternatePart=
 Variation106=Designator=C27|UniqueId=\DMUNOPTP\JBKGDOUX|Kind=1|AlternatePart=
+Variation107=Designator=K1|UniqueId=\DMUNOPTP\BRDMSVVS|Kind=1|AlternatePart=
+Variation108=Designator=R69|UniqueId=\DMUNOPTP\CCQUSXHK|Kind=1|AlternatePart=
+Variation109=Designator=R79|UniqueId=\DMUNOPTP\MWJCCAFZ|Kind=1|AlternatePart=
 ParamVariationCount=16
 
 [Parameter3_1]
@@ -591,35 +601,35 @@ DocumentPath=Manufacturing\Design Rule Check - PS1-1A-BASIS.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project_URL
-Value=https://github.com/daniw/bat_source
-
-[Parameter3]
-Name=Project
-Value=Battery Source
-
-[Parameter4]
-Name=PCB_NAME
-Value=PS1-1
-
-[Parameter5]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter6]
-Name=Index_Sub
-Value=B
-
-[Parameter7]
 Name=Index_Main
 Value=A
 
+[Parameter3]
+Name=Index_Sub
+Value=C
+
+[Parameter4]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter5]
+Name=PCB_NAME
+Value=PS1-1
+
+[Parameter6]
+Name=Project
+Value=Battery Source
+
+[Parameter7]
+Name=Project_URL
+Value=https://github.com/daniw/bat_source
+
 [Parameter8]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]

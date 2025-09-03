@@ -15,10 +15,10 @@ LifeCycleDefinitionGUID=
 RevisionNamingSchemeGUID=
 
 [OutputGroup1]
-Name=PS1-1AB.OutJob
+Name=PS1-1AC.OutJob
 Description=
 TargetOutputMedium=41 - PCB Assembly
-VariantName=PS1-1AB
+VariantName=PS1-1
 VariantScope=1
 CurrentConfigurationName=
 TargetPrinter=Virtual Printer
