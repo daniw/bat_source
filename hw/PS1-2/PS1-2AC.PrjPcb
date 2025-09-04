@@ -43,14 +43,13 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=PS1-2AB
 
 [Preferences]
 PrefsVaultGUID=
 PrefsRevisionGUID=
 
 [Document1]
-DocumentPath=PS1-2AB.OutJob
+DocumentPath=PS1-2AC.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -135,7 +134,7 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document6]
-DocumentPath=PS1-2AB.Annotation
+DocumentPath=PS1-2AC.Annotation
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -221,7 +220,7 @@ DocumentUniqueId=
 
 [ProjectVariant1]
 UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
-Description=PS1-2AB
+Description=PS1-2
 AllowFabrication=1
 ParameterCount=1
 VariationCount=3
@@ -260,7 +259,7 @@ Value=daniw
 
 [Parameter6]
 Name=Index_Sub
-Value=B
+Value=C
 
 [Parameter7]
 Name=Index_Main

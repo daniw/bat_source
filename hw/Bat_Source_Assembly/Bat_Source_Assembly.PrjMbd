@@ -67,12 +67,12 @@ DocumentUniqueId=
 VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
-ProjectName=PS1-1AB.PrjPcb
+ProjectName=PS1-1AC.PrjPcb
 VaultURL=
 VaultName=
 
 [Document2]
-DocumentPath=..\PS1-2\PS1-2AB.PrjPcb
+DocumentPath=..\PS1-2\PS1-2AC.PrjPcb
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
