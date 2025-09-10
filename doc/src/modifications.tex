@@ -97,12 +97,12 @@
 
 \begin{ModTable}
 
-\ModItemOpen
+\ModItemDone
 {\acs{BMS} wakeup from shutdown}
 {When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
 {The TS pin should be connected to a GPIO pin of the microcontroller to allow wakeup from shutdown mode. }
-{}
-{}
+{daniw}
+{2025-09-10}
 
 \ModItemOpen
 {Relay footprint mirrored}
