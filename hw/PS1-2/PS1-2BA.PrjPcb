@@ -237,6 +237,10 @@ Value=PS1-2
 DocumentPath=Manufacturing\Design Rule Check - PS1-2A-BASIS.html
 DItemRevisionGUID=
 
+[GeneratedDocument2]
+DocumentPath=Manufacturing\Design Rule Check - PS1-2B-BASIS.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Author
 Value=ahorat / daniw

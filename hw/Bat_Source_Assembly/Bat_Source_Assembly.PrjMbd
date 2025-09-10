@@ -72,7 +72,7 @@ VaultURL=
 VaultName=
 
 [Document2]
-DocumentPath=..\PS1-2\PS1-2AC.PrjPcb
+DocumentPath=..\PS1-2\PS1-2BA.PrjPcb
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -90,7 +90,7 @@ DocumentUniqueId=
 VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
-ProjectName=PS1-2AB.PrjPcb
+ProjectName=PS1-2AC.PrjPcb
 VaultURL=
 VaultName=
 
