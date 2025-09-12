@@ -34,13 +34,16 @@
 % Eigene definierte Farben
     \definecolor{gray}      {gray}  {0.749}
     \definecolor{lgray}     {gray}  {0.85}
-    \definecolor{red}       {rgb}   {1  ,  0  , 0}
-    \definecolor{green}     {rgb}   {0  ,  1  , 0}
-    \definecolor{blue}      {rgb}   {0  ,  0  , 1}
-    \definecolor{darkgreen} {rgb}   {0  , 0.6 , 0}
-    \definecolor{deepblue}  {rgb}   {0  , 0   , 0.5}
-    \definecolor{deepred}   {rgb}   {0.6, 0   , 0}
-    \definecolor{orange}    {rgb}   {1  , 0.5 , 0}
+    \definecolor{red}       {rgb}   {1.0 , 0.0 , 0.0}
+    \definecolor{green}     {rgb}   {0.0 , 1.0 , 0.0}
+    \definecolor{blue}      {rgb}   {0.0 , 0.0 , 1.0}
+    \definecolor{lred}      {rgb}   {1.0 , 0.7 , 0.7}
+    \definecolor{lgreen}    {rgb}   {0.6 , 1.0 , 0.6}
+    \definecolor{lblue}     {rgb}   {0.7 , 0.7 , 1.0}
+    \definecolor{darkgreen} {rgb}   {0.0 , 0.6 , 0.0}
+    \definecolor{deepblue}  {rgb}   {0.0 , 0.0 , 0.5}
+    \definecolor{deepred}   {rgb}   {0.6 , 0.0 , 0.0}
+    \definecolor{orange}    {rgb}   {1.0 , 0.5 , 0.0}
 
 % Tabellen
     \usepackage{longtable}      % Seitenübergreifende Tabellen
@@ -66,7 +69,7 @@
 \newcommand{\ReqWidthOneThree}{\ReqWidthOne+\ReqWidthTwo+\ReqWidthThree}
 
 \newcounter{ReqCounter}
-\newcommand{\ReqHeader}{\rowcolor{gray} \textbf{No} & \textbf{Requirement} & \textbf{Min} & \textbf{Max} \\}
+\newcommand{\ReqHeader}{\rowcolor{gray} \textbf{No} & \textbf{Requirement} & \textbf{Min} & \textbf{Max} \\ \endhead}
 \newcommand{\ReqItem}[2]{\ReqLabel{#1} & #2 & & \\}
 \newcommand{\ReqItemMM}[4]{\ReqLabel{#1} & #2 & #3 & #4 \\}
 
@@ -75,6 +78,21 @@
 \newcommand{\ReqLabel}[1]{\textbf{\ReqPrefix\refstepcounter{ReqCounter}\arabic{ReqCounter}\label{#1}}}
 
 \newenvironment{ReqTable}{\begin{zebralongtable}{ p{\ReqWidthOne}p{\ReqWidthTwo}p{\ReqWidthThree}p{\ReqWidthFour}p{\ReqWidthFive} }}{\end{zebralongtable}}
+
+% Modification table
+\newcommand{\ModWidthIssue}{0.38\textwidth}
+\newcommand{\ModWidthModification}{0.30\textwidth}
+\newcommand{\ModWidthCompBy}{0.11\textwidth}
+\newcommand{\ModWidthCompDate}{0.11\textwidth}
+
+\newcounter{ModCounter}
+
+\newcommand{\ModHeader}{\hline \rowcolor{gray} \textbf{Issue} & \textbf{Modification} & \multicolumn{2}{l|}{\textbf{Completed}} \\ \rowcolor{gray} & & \textbf{By} & \textbf{Date} \\ \hline \endhead}
+\newcommand{\ModItem}[5]{                      \textbf{#1} \newline #2 & #3 & #4 & #5 \\ \hline}
+\newcommand{\ModItemOpen}[5]{\rowcolor{lred}   \textbf{#1} \newline #2 & #3 & #4 & #5 \\ \hline}
+\newcommand{\ModItemDone}[5]{\rowcolor{lgreen} \textbf{#1} \newline #2 & #3 & #4 & #5 \\ \hline}
+
+\newenvironment{ModTable}{\begin{longtable}{ |p{\ModWidthIssue}|p{\ModWidthModification}|p{\ModWidthCompBy}|p{\ModWidthCompDate}| } \ModHeader}{\end{longtable}}
 
 % Standards table
 \newcommand{\StdNameWidth}{3.0cm}
@@ -157,9 +175,9 @@
         %\usetikztiminglibrary{advnodes}
     \usepackage{placeins}       % For \FloatBarrier
     \newcommand{\schscale}{0.8}   % Scale for Schematics
-    \newcommand{\schfilemain}{appendix/PS1-1AA_Schematic_2025-05-21.PDF}    % Schematics file main PCB
-    \newcommand{\schfileui}{appendix/PS1-2AA_Schematic_2025-05-21.PDF}      % Schematics file user interface
-    \newcommand{\schfileprog}{appendix/PS1-3AA_Schematic_2025-05-21.PDF}    % Schematics file programming adapter
+    \newcommand{\schfilemain}{appendix/PS1-1AA_Schematic_2025-06-30.PDF}    % Schematics file main PCB
+    \newcommand{\schfileui}{appendix/PS1-2AA_Schematic_2025-06-30.PDF}      % Schematics file user interface
+    \newcommand{\schfileprog}{appendix/PS1-3AA_Schematic_2025-06-30.PDF}    % Schematics file programming adapter
     % Dotted box
     \usepackage{dashbox}
     \newcommand\dashedph[1][H]{\setlength{\fboxsep}{0pt}\setlength{\dashlength}{2.2pt}\setlength{\dashdash}{1.1pt} \dbox{\phantom{#1}}}
