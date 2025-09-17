@@ -49,7 +49,7 @@
 \ModItemDone
 {Inrush current at startup}
 {The inrush current at startup is \qty{26}{\ampere}. This triggers the \ac{BMS}, which disables the device. }
-{A temporary workaround is to keep the startup button pushed until the \ac{BMS} resets. The \ac{BMS} switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. \todo[inline]{Solution for inrush current problem}}
+{A temporary workaround is to keep the startup button pushed until the \ac{BMS} resets. The \ac{BMS} switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. }
 {daniw}
 {2025-07-02}
 
@@ -104,12 +104,12 @@
 {daniw}
 {2025-09-10}
 
-\ModItemOpen
+\ModItemDone
 {Relay footprint mirrored}
 {The footprint of the relais is mirrored. }
 {The footprint must be corrected. }
-{}
-{}
+{daniw}
+{2025-09-12}
 
 \ModItemDone
 {Undefined signal CONF\_ISO when microcontroller not programmed or in reset}
@@ -153,12 +153,12 @@
 {daniw}
 {2025-09-11}
 
-\ModItemOpen
+\ModItemDone
 {Clearance around battery terminals}
 {The pull-up resistors for the I2C bus are very close to the battery terminals. This can lead to a short circuit and damage of components during assembly. }
 {A clearance of a few millimeters around the battery terminals should be implemented. }
-{}
-{}
+{daniw}
+{2025-09-12}
 
 \ModItemOpen
 {\acs{UI} connector misplacement}
@@ -166,6 +166,13 @@
 {The \ac{UI} connector should be replaced with a type that includes a mechanical guide. }
 {}
 {}
+
+\ModItemDone
+{Converter topology}
+{Due to the excessive stray inductance, the flyback with switchable output range does not work as intended. The stray inductance causes overvoltage on the primary and secondary \ac{MOSFET}}
+{The converter topology should be changed. A 4-switch buck-boost should work for the lower voltage ranges. A triple-output flyback similar to \url{https://www.analog.com/media/en/reference-design-documentation/design-notes/DN1047.pdf} could be used for the high voltage range. }
+{daniw}
+{2025-09-17}
 
 \end{ModTable}
 
