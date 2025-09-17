@@ -10,6 +10,7 @@
 /*******************************************************************************/
 
 #include "cli.h"
+#include "ctrl_main.h"
 
 #ifdef CLI_ENABLED
 
@@ -24,6 +25,8 @@ extern BQ76905_handle bms;
 extern ADC_MEAS_DATA adc_data;
 extern HRTIM_HandleTypeDef hhrtim1;
 extern ADS131M04_handle ext_adc;
+extern ctrl_main_t ctrl_main_handle;
+extern I2C_HandleTypeDef *i2c_handle;
 
 // Function declarations
 void cmd_help(void);
@@ -36,6 +39,8 @@ void cmd_setDAC(void);
 void cmd_printBMS(void);
 void cmd_printADC(void);
 void cmd_pulse(void);
+void cmd_setRef(void);
+void cmd_test_i2c(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -48,7 +53,9 @@ void (*cmd_func[])(void) = {
 	cmd_setDAC,
 	cmd_printBMS,
 	cmd_printADC,
-	cmd_pulse
+	cmd_pulse,
+	cmd_setRef,
+	cmd_test_i2c
 };
 
 // List of command names
@@ -62,7 +69,9 @@ const char *cmd_str[] = {
 		"setDAC",
 		"pBMS",
 		"pADC",
-		"pulse"
+		"pulse",
+		"setRef",
+		"test_i2c"
 };
 
 int num_commands = sizeof(cmd_str) / sizeof(char*);
@@ -254,12 +263,22 @@ void cmd_setDAC(void) {
 		dac_setValue1ARef(value);
 }
 
+void cmd_setRef(void){
+		uint8_t value;
+		if (number_of_args != 2)
+			return;
+
+		char *end;
+		ctrl_main_handle.poti_reference = strtol(arg_locs[1], &end, 10);
+
+}
+
 
 void cmd_printBMS(void){
-	  printf("SafetyRegisters.safetyAlertA         = 0x%04X\n", bms.SafetyRegisters.safetyAlertA);
-	  printf("SafetyRegisters.safetyStatusA        = 0x%04X\n", bms.SafetyRegisters.safetyStatusA);
-	  printf("SafetyRegisters.safetyAlertB         = 0x%04X\n", bms.SafetyRegisters.safetyAlertB);
-	  printf("SafetyRegisters.safetyStatusB        = 0x%04X\n", bms.SafetyRegisters.safetyStatusB);
+	  printf("SafetyRegisters.safetyAlertA         = 0x%02X\n", bms.SafetyRegisters.safetyAlertA);
+	  printf("SafetyRegisters.safetyStatusA        = 0x%02X\n", bms.SafetyRegisters.safetyStatusA);
+	  printf("SafetyRegisters.safetyAlertB         = 0x%02X\n", bms.SafetyRegisters.safetyAlertB);
+	  printf("SafetyRegisters.safetyStatusB        = 0x%02X\n", bms.SafetyRegisters.safetyStatusB);
 	  printf("\n");
 	  printf("CellVoltageRegisters.BatteryStatus   = 0x%04X\n", bms.CellVoltageRegisters.BatteryStatus);
 	  for (int i = 0; i < 5; ++i) {
@@ -333,6 +352,26 @@ void cmd_pulse(){
 	//HAL_Delay(1);
 
 }
+
+void cmd_test_i2c(void){
+	uint64_t fw_version;
+	uint8_t buffer[2] = {0x68,2};
+	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 2), i2c_handle->ErrorCode);
+	buffer[0] = 0x12;
+	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
+	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
+		buffer[0] = 0;
+	buffer[1] = 0;
+	i2c_ReadBlocking(bms.address, buffer, 2);
+	printf("Test Read 0x%x\r\n", *((uint16_t*)&buffer));
+
+	printf("Read HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
+	BQ76905_GetFWVersion(&bms, &fw_version);
+	printf("Read FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) fw_version>>32);
+	printf("Read Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
+
+}
+
 #endif
 
 /****************************** Redirect Std Out to UART **************************/

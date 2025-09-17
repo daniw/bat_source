@@ -344,7 +344,7 @@ void BQ76905_configure(BQ76905_handle* handle) {
     {
     	value = 0;
     	BQ76905_ReadRamRegister(handle, config_list[line].address, (uint8_t*)&value, config_list[line].len);
-    	printf("Write Register %X  Value: %X Read: %X\n", config_list[line].address,  config_list[line].value, value);
+    	printf("BQ76905.c: Write Register %X  Value: %X Read: %X\n", config_list[line].address,  config_list[line].value, value);
     }
 
     BQ76905_WriteRamRegister(handle,BQ76905_SUBCOMMAND_FET_ENABLE, 0, 0);

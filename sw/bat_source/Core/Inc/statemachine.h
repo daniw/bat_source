@@ -22,13 +22,22 @@ typedef enum
 	  STATEMACHINE_MODE_ISOMETER,
 	  STATEMACHINE_MODE_VOLTMETER,
 	  STATEMACHINE_MODE_SETTINGS,
+	  STATEMACHINE_MODE_SHUTDOWN,
 	  STATEMACHINE_MODE_RESERVED
 } statemachine_modes_t;
+
+typedef enum
+{
+	  STATEMACHINE_SETTINGS_MODE_MENU = 0,
+	  STATEMACHINE_SETTINGS_MODE_BMS,
+	  STATEMACHINE_SETTINGS_MODE_LENGTH
+} statemachine_settings_modes_t;
 
 typedef struct{
 	statemachine_modes_t current_mode;
 	uint8_t output_on;
 	uint8_t current_menu_index;
+	statemachine_settings_modes_t settings_mode;
 
 }statemachine_t;
 

@@ -80,7 +80,7 @@ uint8_t ssd1309_interface_iic_write(uint8_t addr, uint8_t reg, uint8_t *buf,
 		//i2c_Write(addr, buffer, len + 1, (void*) 0, 0);
 		return 0;
 	} else{
-		i2c_Write(addr, buf, len + 1, (void*) 0, 0);
+		i2c_Write(addr, buf, len + 1, (void*) 0, 0,0);
 	return 0;}
 }
 

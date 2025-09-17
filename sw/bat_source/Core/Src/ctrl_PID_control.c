@@ -11,28 +11,26 @@
 /**
  * Initialises Control structure
  */
-void ctrl_PID_controller_init(PID_controller_t *contr, float kp, float ki, float kd, float norm_in, float norm_out, float sat_high,
-		float sat_low) {
+void ctrl_PID_controller_init(PID_controller_t *contr, float kp, float ki,
+		float kd, float sat_high, float sat_low) {
 	contr->ref = 0;
-	contr->err = 0;
-	contr->deriv = 0;
 
 	contr->P_gain = kp;
 	contr->I_gain = ki;
+#ifndef NO_D_PART
 	contr->D_gain = kd;
 	contr->D_filt = 0;
 	contr->D_sigma = 1;
-
+	contr->D_action = 0;
+	contr->prev_ref = 0;
+	contr->err = 0;
+	contr->deriv = 0;
+#endif
 	contr->P_action = 0;
 	contr->I_action = 0;
-	contr->D_action = 0;
 	contr->action = 0;
 
-	contr->prev_ref = 0;
 	contr->prev_I_action = 0;
-
-	contr->norm_in = norm_in;
-	contr->norm_out = norm_out;
 
 	contr->sat_limit_high = sat_high;
 	contr->sat_limit_low = sat_low;
@@ -44,14 +42,14 @@ void ctrl_PID_controller_init(PID_controller_t *contr, float kp, float ki, float
  * @param data_in_PI position used for PI part
  * @param data_in_D Speed used for calculating the D Part
  */
-void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_PI, float data_in_D) {
+void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_P,
+		float data_in_I, float data_in_D) {
+#ifndef NO_D_PART
 	double derrivative_integrator;
 	float d_factor1;
 	float d_factor2;
 	float sign = 0;
-
-	contr->err = (contr->ref - data_in_PI) * contr->norm_in;
-
+	contr->err = (contr->ref - data_in_P) ;
 #ifdef FORWARD_EULER
 	contr->D_action = (contr->err * contr->D_gain - contr->deriv ) * contr->D_filt;
 	contr->deriv += contr->D_action / HW_CFG_POS_CTRL_FREQ;
@@ -64,13 +62,20 @@ void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_PI, floa
 	contr->D_action = d_factor2 * (derrivative_integrator-contr->deriv);
 	contr->deriv = derrivative_integrator;
 #endif
-	contr->P_action = contr->P_gain * contr->err;
+	contr->prev_ref = contr->ref;
+#endif
+	contr->P_action = contr->P_gain * (contr->ref - data_in_P);
+
 	if (contr->sat_flag == 0) {
-		contr->I_action = (double) (contr->I_gain * contr->err) + contr->prev_I_action;
+		contr->I_action = (double) (contr->I_gain * (contr->ref - data_in_I))
+				+ contr->prev_I_action;
 	}
 
-	contr->action = contr->P_action + contr->I_action + contr->D_action;
-	contr->action = contr->action * contr->norm_out;
+	contr->action = contr->P_action + contr->I_action;
+
+#ifndef NO_D_PART
+	contr->action += contr->D_action;
+#endif
 
 	if (contr->action > contr->sat_limit_high) {
 		contr->action = contr->sat_limit_high;
@@ -81,7 +86,7 @@ void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_PI, floa
 	} else {
 		contr->sat_flag = 0;
 	}
+
 	contr->prev_I_action = contr->I_action;
-	contr->prev_ref = contr->ref;
 	contr->I_action_out = contr->I_action;
 }

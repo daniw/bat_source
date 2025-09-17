@@ -39,6 +39,7 @@ typedef struct
 	uint8_t* buf;
 	void* callback;
 	void* argument;
+	void* error_callback;
 } I2C_STRUCT;
 
 
@@ -95,7 +96,7 @@ void i2c_Get(void)
  * @param wait can be set to one, if the add should be blocking.
  */
 void i2c_Add(I2C_METHODE methode, uint8_t address, uint32_t numbytes,
-		uint8_t *buf, void* callback, void* argument, uint8_t wait) {
+		uint8_t *buf, void* callback, void* argument, void* error_callback, uint8_t wait) {
 	if (queue_Full(i2c_queue, I2C_QUEUE_SIZE)) {
 		//if (wait) {
 			while (queue_Full(i2c_queue, I2C_QUEUE_SIZE))
@@ -113,6 +114,7 @@ void i2c_Add(I2C_METHODE methode, uint8_t address, uint32_t numbytes,
 	queue_Set(i2c_queue).buf = buf;
 	queue_Set(i2c_queue).callback = callback;
 	queue_Set(i2c_queue).argument = argument;
+	queue_Set(i2c_queue).error_callback = error_callback;
 	queue_Push(i2c_queue, I2C_QUEUE_SIZE);
 
 	if (i2c_work == WORK_I2C_IDLE) {
@@ -141,7 +143,7 @@ void HAL_I2C_MasterTxCpltCallback (I2C_HandleTypeDef * hi2c){
 }
 
 void HAL_I2C_ErrorCallback (I2C_HandleTypeDef * hi2c){
-	event_Add(EVENT_IIC_ERROR, queue_Get(i2c_queue).callback, queue_Get(i2c_queue).argument);
+	event_Add(EVENT_IIC_ERROR, queue_Get(i2c_queue).error_callback, queue_Get(i2c_queue).argument);
 	queue_Pop(i2c_queue, I2C_QUEUE_SIZE);
 	i2c_Get();
 }
@@ -157,7 +159,7 @@ int i2c_Init(void)
 	i2c_work = WORK_I2C_IDLE;
 	i2c_exclusiveAccess = 0;
 	  i2c_handle->Instance = I2C1;
-	  i2c_handle->Init.Timing = 0x0010020A;	//0x00201D2B
+	  i2c_handle->Init.Timing = 0x00201D2B;	//0x00201D2B//0x0010020A
 	  i2c_handle->Init.OwnAddress1 = 0;
 	  i2c_handle->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
 	  i2c_handle->Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -205,9 +207,9 @@ void i2c_Start(void)
  * @param numbytes buf pointer to the data.
  * @param ret ret pointer that is returned to the callback to identify the caller.
  */
-void i2c_Read(uint8_t address, uint8_t* buf, uint32_t numbytes, void* callback, void* argument)
+void i2c_Read(uint8_t address, uint8_t* buf, uint32_t numbytes, void* callback, void* argument, void* error_callback)
 {
-	i2c_Add(I2CM_READ, address, numbytes, buf, callback, argument, 0);
+	i2c_Add(I2CM_READ, address, numbytes, buf, callback, argument, error_callback, 0);
 }
 
 /**
@@ -217,9 +219,9 @@ void i2c_Read(uint8_t address, uint8_t* buf, uint32_t numbytes, void* callback, 
  * @param numbytes buf pointer to the data.
  * @param ret ret pointer that is returned to the callback to identify the caller.
  */
-void i2c_Write(uint8_t address, uint8_t* buf, uint32_t numbytes, void* callback, void* argument)
+void i2c_Write(uint8_t address, uint8_t* buf, uint32_t numbytes, void* callback, void* argument, void* error_callback)
 {
-	i2c_Add(I2CM_WRITE, address, numbytes, buf, callback, argument, 0);
+	i2c_Add(I2CM_WRITE, address, numbytes, buf, callback, argument, error_callback, 0);
 }
 
 /**

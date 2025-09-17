@@ -60,6 +60,7 @@
 #define BQ76905_SUBCOMMAND_SLEEP_ENABLE     0x0099
 #define BQ76905_SUBCOMMAND_SLEEP_DISABLE    0x009A
 
+#define BQ76905_SUBCOMMAND_DEVICE_NUMBER    0x0001
 #define BQ76905_SUBCOMMAND_FW_VERSION       0x0002
 #define BQ76905_SUBCOMMAND_HW_VERSION       0x0003
 #define BQ76905_SUBCOMMAND_PASSQ            0x0004
@@ -178,6 +179,8 @@ typedef struct{
     void BQ76905_SleepDisable(BQ76905_handle* handle);
 
     void BQ76905_GetFWVersion(BQ76905_handle* handle, uint8_t* out);
+
+    uint16_t BQ76905_GetDeviceNumber(BQ76905_handle* handle);
 
     uint16_t BQ76905_GetHWVersion(BQ76905_handle* handle);
 
