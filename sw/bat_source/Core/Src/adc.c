@@ -18,7 +18,6 @@ TIM_HandleTypeDef htim1;
 static void adc_Init1(void);
 static void adc_Init2(void);
 void adc_init_encoder(void);
-void adc_start(void);
 
 
 void adc_init(int32_t* ext_adc_data)
@@ -30,7 +29,7 @@ void adc_init(int32_t* ext_adc_data)
 
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 	HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
-	adc_start();
+
 }
 
 
@@ -153,11 +152,11 @@ static void adc_Init1(void)
     Error_Handler();
   }
 
-  adc_data.v_in_offset   = 0;
-  adc_data.v_out_offset  = 2132;
-  adc_data.v_term_offset = 0;
-  adc_data.v_hv_offset   = 0;
-  adc_data.i_bat_offset  = 0;
+  adc_data.v_in_offset   = ADC_VIN_OFFSET_MV  ;
+  adc_data.v_out_offset  = ADC_VOUT_OFFSET_MV ;
+  adc_data.v_term_offset = ADC_VTERM_OFFSET_MV;
+  adc_data.v_hv_offset   = ADC_VHV_OFFSET_MV  ;
+  adc_data.i_bat_offset  = ADC_IBAT_OFFSET_MA ;
 
 
 }
@@ -276,15 +275,17 @@ void adc_convert_data(void){
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	adc_data.v_in_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+
+	//adc_data.v_in_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
 	adc_data.i_bat_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
 	adc_data.v_out_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_3);
-	adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
-	adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
-	adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
-	adc_data.v_term_ext_mv = adc_data.ext_adc_data[0]* ADC_EXT_VTERM_GAIN_MV;
-	adc_data.i_out_ext_mA  = adc_data.ext_adc_data[3]* ADC_EXT_IOUT_GAIN_mA;
-	ctrl_main_ctrl_voltage(adc_data.v_out_mV);
+	//adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  ) * ADC_VIN_GAIN_MV;
+	adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset ) * ADC_IBAT_GAIN_MA;
+	adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset ) * ADC_VOUT_GAIN_MV;
+	adc_data.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
+	//adc_data.v_term_ext_mv_filt = 0.9f*adc_data.v_term_ext_mv_filt + 0.1f*adc_data.v_term_ext_mv;
+	adc_data.i_out_ext_mA  = adc_data.ext_adc_data[3] * ADC_EXT_IOUT_GAIN_mA;
+	ctrl_main_ctrl_60v(adc_encoder_read(), adc_data.v_out_mV, adc_data.v_term_ext_mv, adc_data.i_bat_mA);
 }
 
 

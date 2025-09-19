@@ -12,9 +12,10 @@
 
 typedef struct{
 	uint16_t poti_reference;
+	float ramp;
 
 } ctrl_main_t;
 
 void ctrl_main_init(void);
-void ctrl_main_ctrl_voltage(uint16_t voltage_meas);
+void ctrl_main_ctrl_60v(uint16_t reference, uint16_t voltage_meas, uint16_t voltage_meas_accurate, float current_meas);
 #endif /* INC_CTRL_MAIN_H_ */

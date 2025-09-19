@@ -108,10 +108,11 @@ int main(void) {
 
 	/* Initialize all configured peripherals */
 	aux_io_ctrl_GPIO_Init();
-
 	aux_io_ctrl_manual_set_io(AUX_IO_ON_REQ, 1);
 	aux_io_ctrl_manual_set_io(AUX_IO_I_1A_DIS, 1);
+
 	MX_DMA_Init();
+
 	adc_init(ext_adc.channelData);
 	MX_COMP4_Init();
 	MX_COMP6_Init();
@@ -120,21 +121,29 @@ int main(void) {
 	timer_init();
 
 	aux_io_ctrl_PCA9554_Init();
-	aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0);
+	aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x55);
 
+	display_init();
 	MX_SPI1_Init();
 	MX_TIM3_Init();
 	MX_USART1_UART_Init();
-	/* USER CODE BEGIN 2 */
+
 	cli_init(&huart1);
 	pwm_init(PWM_150KHZTOP);
-	HAL_Delay(1000);
+	aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0xAA);
 	BQ76905_init(&bms, BQ76905_I2C_ADDRESS);
 	ADS131M04_init(&ext_adc, &hspi1, SPI_NSS_GPIO_Port, SPI_NSS_Pin);
+	aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x55);
+
 	ctrl_main_init();
-	display_init();
+
 	statemachine_init();
+
+	// Start Everything
 	timer_start();
+	adc_start();
+
+	aux_io_ctrl_manual_set_io(AUX_IO_EXPANDER, 0x00);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -151,6 +160,9 @@ int main(void) {
 			if (current_event.callback != 0)
 				current_event.callback(current_event.argument);
 			break;
+		case EVENT_IIC_ERROR:
+			if (current_event.callback != 0)
+				current_event.callback(current_event.argument);
 		case EVENT_SM_STEP:
 			//BQ76905_readAllValuesAsync(&bms);
 			statemachine_step();
@@ -161,7 +173,7 @@ int main(void) {
 			break;
 		}
 
-		ctrl_main_handle.poti_reference = adc_encoder_read();
+
 
 	}
 }

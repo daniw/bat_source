@@ -36,6 +36,8 @@
      */
     void BQ76905_onI2CComplete(BQ76905_handle* handle);
 
+    void BQ76905_onI2CError(BQ76905_handle* handle);
+
 
     /**
      * Defined in bq76905_config.h
@@ -55,11 +57,13 @@ void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	i2c_ReadBlocking(handle->address, (uint8_t*) &handle->CellVoltageRegisters,
 			sizeof(handle->CellVoltageRegisters));
 
-	//if(handle->CellVoltageRegisters.BatteryStatus & 0x80 == 0){
+	if((handle->CellVoltageRegisters.BatteryStatus & 0x80) || (handle->CellVoltageRegisters.BatteryStatus == 0x0)){
+		BQ76905_resetDevice(handle);
 		BQ76905_configure(handle);
-	//}else{
-	//	printf("Skipped BMS reconfiguration: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
-	//}
+	}else{
+		printf("Skipped BMS reconfiguration: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
+	}
+	BQ76905_RecoverProtection(handle, 0xFF);
 	timer_add(1000,  TIMER_TYPE_TICK, EVENT_BMS_TIMER, 0);
 }
 
@@ -95,13 +99,15 @@ void BQ76905_readAllValues(BQ76905_handle* handle) {
 }
 
 // Initiates asynchronous read of all cell voltages
-void BQ76905_readAllValuesAsync(BQ76905_handle* handle) {
-	if(handle->asyncState == IDLE){
-	handle->asyncState = READ_SAFETY;
-	handle->command_tx = BQ76905_COMMAND_ALERT_A;
-	i2c_Write(handle->address, &handle->command_tx, 1, 0, 0);
-	i2c_Read(handle->address, (uint8_t*)&handle->SafetyRegisters, sizeof(handle->SafetyRegisters),&BQ76905_onI2CComplete, handle);
-}
+void BQ76905_readAllValuesAsync(BQ76905_handle *handle) {
+	if (handle->asyncState == IDLE) {
+		handle->asyncState = READ_SAFETY;
+		handle->command_tx = BQ76905_COMMAND_ALERT_A;
+		i2c_Write(handle->address, &handle->command_tx, 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->SafetyRegisters,
+				sizeof(handle->SafetyRegisters), &BQ76905_onI2CComplete,
+				handle, &BQ76905_onI2CError);
+	}
 }
 
 
@@ -146,13 +152,19 @@ inline void BQ76905_SleepDisable(BQ76905_handle* handle){
 	BQ76905_WriteRamRegister(handle,BQ76905_SUBCOMMAND_SLEEP_DISABLE, 0, 0);
 }
 
+inline uint16_t BQ76905_GetDeviceNumber(BQ76905_handle* handle){
+	uint16_t buffer;
+	BQ76905_ReadRamRegister(handle, BQ76905_SUBCOMMAND_DEVICE_NUMBER, (uint8_t*)&buffer, 2);
+	return buffer;
+}
+
 inline void BQ76905_GetFWVersion(BQ76905_handle* handle, uint8_t* out){
 	BQ76905_ReadRamRegister(handle, BQ76905_SUBCOMMAND_FW_VERSION, out, 6);
 
 }
 
 inline uint16_t BQ76905_GetHWVersion(BQ76905_handle* handle){
-	uint16_t buffer;
+	uint16_t buffer = 0;
 	BQ76905_ReadRamRegister(handle, BQ76905_SUBCOMMAND_HW_VERSION, (uint8_t*)&buffer, 2);
 	return buffer;
 }
@@ -248,35 +260,39 @@ void writeCommand(BQ76905_handle* handle, uint8_t command, uint16_t data, uint8_
 }
 
 
+void BQ76905_onI2CError(BQ76905_handle* handle){
+	handle->asyncState = IDLE;
+}
+
 // This function should be called by the I2C system when a read completes
 void BQ76905_onI2CComplete(BQ76905_handle* handle) {
 	switch (handle->asyncState) {
 	case READ_SAFETY:
 		handle->asyncState = READ_CELLVOLTAGE;
 		handle->command_tx = BQ76905_COMMAND_BAT_STATUS;
-		i2c_Write(handle->address, &handle->command_tx, 1, 0, 0);
-		i2c_Read(handle->address, (uint8_t*) &handle->CellVoltageRegisters, sizeof(handle->CellVoltageRegisters),&BQ76905_onI2CComplete, handle);
+		i2c_Write(handle->address, &handle->command_tx, 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->CellVoltageRegisters, sizeof(handle->CellVoltageRegisters),&BQ76905_onI2CComplete, handle, &BQ76905_onI2CError);
 		break;
 
 	case READ_CELLVOLTAGE:
 		handle->asyncState = READ_VOLTAGE;
 		handle->command_tx = BQ76905_COMMAND_VREG18;
-		i2c_Write(handle->address, &handle->command_tx, 1, 0, 0);
-		i2c_Read(handle->address, (uint8_t*) &handle->VoltageRegisters, sizeof(handle->VoltageRegisters),&BQ76905_onI2CComplete, handle);
+		i2c_Write(handle->address, &handle->command_tx, 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->VoltageRegisters, sizeof(handle->VoltageRegisters),&BQ76905_onI2CComplete, handle, &BQ76905_onI2CError);
 		break;
 
 	case READ_VOLTAGE:
 		handle->asyncState = READ_CURRENT;
 		handle->command_tx = BQ76905_COMMAND_CURRENT_RAW;
-		i2c_Write(handle->address, &handle->command_tx, 1, 0, 0);
-		i2c_Read(handle->address, (uint8_t*) &handle->CurrentRegisters, sizeof(handle->CurrentRegisters),&BQ76905_onI2CComplete, handle);
+		i2c_Write(handle->address, &handle->command_tx, 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->CurrentRegisters, sizeof(handle->CurrentRegisters),&BQ76905_onI2CComplete, handle, &BQ76905_onI2CError);
 		break;
 
 	case READ_CURRENT:
 		handle->asyncState = READ_ALARM;
 		handle->command_tx = BQ76905_COMMAND_ALARM_STATUS;
-		i2c_Write(handle->address, &handle->command_tx, 1, 0, 0);
-		i2c_Read(handle->address, (uint8_t*) &handle->SystemCtrl, sizeof(handle->SystemCtrl),&BQ76905_onI2CComplete, handle);
+		i2c_Write(handle->address, &handle->command_tx, 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->SystemCtrl, sizeof(handle->SystemCtrl),&BQ76905_onI2CComplete, handle, &BQ76905_onI2CError);
 		break;
 
 	case READ_ALARM:
@@ -285,9 +301,9 @@ void BQ76905_onI2CComplete(BQ76905_handle* handle) {
 		handle->command_tx2[1] = BQ76905_SUBCOMMAND_PASSQ & 0Xff;
 		handle->command_tx2[2] = BQ76905_SUBCOMMAND_PASSQ >> 8;
 		handle->command_tx2[3] = BQ76905_TRANSFER_BUFFER_LOW;
-		i2c_Write(handle->address, handle->command_tx2, 3, 0, 0);
-		i2c_Write(handle->address, &handle->command_tx2[3], 1, 0, 0);
-		i2c_Read(handle->address, (uint8_t*) &handle->Accumulator, sizeof(handle->Accumulator),&BQ76905_onI2CComplete, handle);
+		i2c_Write(handle->address, handle->command_tx2, 3, 0,handle, &BQ76905_onI2CError);
+		i2c_Write(handle->address, &handle->command_tx2[3], 1, 0,handle, &BQ76905_onI2CError);
+		i2c_Read(handle->address, (uint8_t*) &handle->Accumulator, sizeof(handle->Accumulator),&BQ76905_onI2CComplete, handle, &BQ76905_onI2CError);
 		break;
 
 	case READ_PASSQ:

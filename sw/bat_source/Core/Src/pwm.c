@@ -32,8 +32,8 @@ void pwm_init(uint16_t pwm_top) {
 	if (HAL_HRTIM_Init(&pwm_unit_1.hrtim1) != HAL_OK) {
 		Error_Handler();
 	}
-	if (HAL_HRTIM_DLLCalibrationStart(&pwm_unit_1.hrtim1, HRTIM_CALIBRATIONRATE_14)
-			!= HAL_OK) {
+	if (HAL_HRTIM_DLLCalibrationStart(&pwm_unit_1.hrtim1,
+			HRTIM_CALIBRATIONRATE_14) != HAL_OK) {
 		Error_Handler();
 	}
 	if (HAL_HRTIM_PollForDLLCalibration(&pwm_unit_1.hrtim1, 10) != HAL_OK) {
@@ -46,7 +46,7 @@ void pwm_init(uint16_t pwm_top) {
 		Error_Handler();
 	}
 	pTimeBaseCfg.Period = pwm_unit_1.pwm_top;
-	pTimeBaseCfg.RepetitionCounter = 15 - 1;
+	pTimeBaseCfg.RepetitionCounter = 5 - 1;
 	pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL16;
 	pTimeBaseCfg.Mode = HRTIM_MODE_CONTINUOUS; // HRTIM_MODE_CONTINUOUS;HRTIM_MODE_SINGLESHOT
 	if (HAL_HRTIM_TimeBaseConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_MASTER,
@@ -66,8 +66,8 @@ void pwm_init(uint16_t pwm_top) {
 	pTimerCfg.UpdateGating = HRTIM_UPDATEGATING_INDEPENDENT;
 	pTimerCfg.BurstMode = HRTIM_TIMERBURSTMODE_MAINTAINCLOCK;
 	pTimerCfg.RepetitionUpdate = HRTIM_UPDATEONREPETITION_DISABLED;
-	if (HAL_HRTIM_WaveformTimerConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_MASTER,
-			&pTimerCfg) != HAL_OK) {
+	if (HAL_HRTIM_WaveformTimerConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_MASTER, &pTimerCfg) != HAL_OK) {
 		Error_Handler();
 	}
 	pTimeBaseCfg.Mode = HRTIM_MODE_CONTINUOUS;
@@ -82,23 +82,25 @@ void pwm_init(uint16_t pwm_top) {
 	pTimerCfg.FaultLock = HRTIM_TIMFAULTLOCK_READWRITE;
 	pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_DISABLED;
 	pTimerCfg.DelayedProtectionMode =
-			HRTIM_TIMER_A_B_C_DELAYEDPROTECTION_DISABLED;
+	HRTIM_TIMER_A_B_C_DELAYEDPROTECTION_DISABLED;
 	pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_NONE;
 	pTimerCfg.ResetTrigger = HRTIM_TIMRESETTRIGGER_NONE;
 	pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_DISABLED;
-	if (HAL_HRTIM_WaveformTimerConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
-			&pTimerCfg) != HAL_OK) {
+	if (HAL_HRTIM_WaveformTimerConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_TIMER_B, &pTimerCfg) != HAL_OK) {
 		Error_Handler();
 	}
 	pCompareCfg.CompareValue = 1000;
-	if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
+	if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_TIMER_B,
 			HRTIM_COMPAREUNIT_2, &pCompareCfg) != HAL_OK) {
 		Error_Handler();
 	}
 	pCompareCfg.AutoDelayedMode = HRTIM_AUTODELAYEDMODE_REGULAR;
 	pCompareCfg.AutoDelayedTimeout = 0x0000;
 
-	if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
+	if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_TIMER_B,
 			HRTIM_COMPAREUNIT_1, &pCompareCfg) != HAL_OK) {
 		Error_Handler();
 	}
@@ -111,13 +113,15 @@ void pwm_init(uint16_t pwm_top) {
 	pOutputCfg.FaultLevel = HRTIM_OUTPUTFAULTLEVEL_NONE;
 	pOutputCfg.ChopperModeEnable = HRTIM_OUTPUTCHOPPERMODE_DISABLED;
 	pOutputCfg.BurstModeEntryDelayed = HRTIM_OUTPUTBURSTMODEENTRY_REGULAR;
-	if (HAL_HRTIM_WaveformOutputConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
+	if (HAL_HRTIM_WaveformOutputConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_TIMER_B,
 			HRTIM_OUTPUT_TB2, &pOutputCfg) != HAL_OK) {
 		Error_Handler();
 	}
 	pOutputCfg.SetSource = HRTIM_OUTPUTSET_NONE;
 	pOutputCfg.ResetSource = HRTIM_OUTPUTRESET_TIMCMP2;
-	if (HAL_HRTIM_WaveformOutputConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
+	if (HAL_HRTIM_WaveformOutputConfig(&pwm_unit_1.hrtim1,
+			HRTIM_TIMERINDEX_TIMER_B,
 			HRTIM_OUTPUT_TB1, &pOutputCfg) != HAL_OK) {
 		Error_Handler();
 	}
@@ -128,28 +132,34 @@ void pwm_init(uint16_t pwm_top) {
 }
 void pwm_setduty_prim(float value) {
 	HRTIM_CompareCfgTypeDef pCompareCfg = { 0 };
-	if (value >0.8f)
+
+	if (value > 0.8f)
 		value = 0.8f;
 	else if (value < 0)
 		value = 0;
+
 	pCompareCfg.CompareValue = (uint16_t) (value * pwm_unit_1.pwm_top);
-	if(pCompareCfg.CompareValue <48 )
+
+	if (pCompareCfg.CompareValue < 48)
 		pCompareCfg.CompareValue = 48;
-	if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1, HRTIM_TIMERINDEX_TIMER_B,
-			HRTIM_COMPAREUNIT_1, &pCompareCfg) != HAL_OK) {
-		Error_Handler();
+
+	if (pwm_unit_1.hrtim1.State == HAL_HRTIM_STATE_READY) {
+		if (HAL_HRTIM_WaveformCompareConfig(&pwm_unit_1.hrtim1,
+				HRTIM_TIMERINDEX_TIMER_B,
+				HRTIM_COMPAREUNIT_1, &pCompareCfg) != HAL_OK) {
+		}
 	}
 
 }
-void pwm_enable(void){
+void pwm_enable(void) {
 	//HAL_HRTIM_WaveformCountStop(&pwm_unit_1.hrtim1, HRTIM_TIMERID_TIMER_B);
 	//HAL_HRTIM_WaveformCountStart(&pwm_unit_1.hrtim1, HRTIM_TIMERID_TIMER_B); // Start the counter of the Timer A operating in waveform mode
-	HAL_HRTIM_WaveformOutputStart(&pwm_unit_1.hrtim1, HRTIM_OUTPUT_TB2);  // Enable the generation of the waveform signal on the designated output
+	HAL_HRTIM_WaveformOutputStart(&pwm_unit_1.hrtim1, HRTIM_OUTPUT_TB2); // Enable the generation of the waveform signal on the designated output
 	//HRTIM1_COMMON->CR2 |= (0x0F << 8); // Use for single pulse
 
 }
 
-void pwm_disable(void){
-	  HAL_HRTIM_WaveformOutputStop(&pwm_unit_1.hrtim1, HRTIM_OUTPUT_TB2);  // Enable the generation of the waveform signal on the designated output
+void pwm_disable(void) {
+	HAL_HRTIM_WaveformOutputStop(&pwm_unit_1.hrtim1, HRTIM_OUTPUT_TB2); // Enable the generation of the waveform signal on the designated output
 
 }
