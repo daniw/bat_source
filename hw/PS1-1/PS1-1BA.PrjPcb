@@ -355,6 +355,23 @@ GenerateClassCluster=0
 DocumentUniqueId=ZYTQMSDL
 
 [Document19]
+DocumentPath=SCH\Power_Analog.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=LSOSTANQ
+
+[Document20]
 DocumentPath=SCH\Mechanics.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -371,7 +388,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XJUXYKQJ
 
-[Document20]
+[Document21]
 DocumentPath=SCH\Controller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -388,7 +405,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document21]
+[Document22]
 DocumentPath=SCH\Converter.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -405,7 +422,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document22]
+[Document23]
 DocumentPath=SCH\Battery_BMS.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -422,7 +439,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document23]
+[Document24]
 DocumentPath=SCH\Measurement.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -439,7 +456,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document24]
+[Document25]
 DocumentPath=SCH\User_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -456,7 +473,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document25]
+[Document26]
 DocumentPath=SCH\Converter_HV.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -473,7 +490,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document26]
+[Document27]
 DocumentPath=SCH\On_Off.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
