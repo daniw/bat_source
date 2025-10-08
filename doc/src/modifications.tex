@@ -189,6 +189,13 @@
 {2025-10-06}
 
 \ModItemDone
+{Unreliable overvoltage latch without reset}
+{The latch of the overvoltage protection circuit is unreliable and cannot be reset by the microcontroller. }
+{Adjust the upper resistor of the reference voltage divider to \qty{6.8}{\kilo\ohm} and the feedback resistor to \qty{2}{\kilo\ohm}. Add \ac{MOSFET} pulldown to startup reset circuit to allow latch reset by the microcontroller. }
+{daniw}
+{2025-10-06}
+
+\ModItemDone
 {Insufficient fuse rating}
 {the voltage rating of the fuse is \qty{500}{\volt}, which is insufficient for connecting it to a tractive system with a voltage of \qty{600}{\volt}. }
 {The fuse should be replaced with a type that has a voltage rating of at least \qty{600}{\volt}DC. As the maximum tractive system voltage might be increased in a few years, a rating of \qty{1000}{\volt}DC should be considered. }
