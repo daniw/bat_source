@@ -139,9 +139,7 @@ UniqueId=0F787FF4-9AEE-4ED4-935E-21C1EFA1CC44
 Description=PS1-100AA
 AllowFabrication=1
 ParameterCount=1
-VariationCount=2
-Variation1=Designator=J1|UniqueId=\FYXDIGZJ|Kind=1|AlternatePart=
-Variation2=Designator=J2|UniqueId=\RCWGLGSA|Kind=1|AlternatePart=
+VariationCount=0
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -149,35 +147,35 @@ Name=PCB_Title
 Value=PS1-100
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project_URL
-Value=https://github.com/daniw/bat_source
-
-[Parameter3]
-Name=Project
-Value=Battery Source - Trafo Connector
-
-[Parameter4]
-Name=PCB_NAME
-Value=PS1-100
-
-[Parameter5]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter6]
-Name=Index_Sub
-Value=A
-
-[Parameter7]
 Name=Index_Main
 Value=A
 
+[Parameter3]
+Name=Index_Sub
+Value=A
+
+[Parameter4]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter5]
+Name=PCB_NAME
+Value=PS1-100
+
+[Parameter6]
+Name=Project
+Value=Battery Source - Trafo Connector
+
+[Parameter7]
+Name=Project_URL
+Value=https://github.com/daniw/bat_source
+
 [Parameter8]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]
