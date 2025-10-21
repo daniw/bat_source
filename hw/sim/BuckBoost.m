@@ -22,7 +22,7 @@ Iin_max = 9;
 
 fsw = 300e3;
 
-kind = 0.2; %20-40% of the output current
+kind = 0.4; %20-40% of the output current
 eta = 0.8;
 
 Vout_ripcoef = 0.01
