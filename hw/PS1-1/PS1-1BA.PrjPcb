@@ -344,7 +344,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=14
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -378,7 +378,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=15
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -550,7 +550,7 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=31
+VariationCount=30
 Variation1=Designator=R136|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
 Variation2=Designator=R141|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
 Variation3=Designator=R137|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=2|AlternatePart=0R/1206|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib/R$|AltLibLink_SymbolReference=|AltLibLink_DesignItemID=0R/1206|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=daniw_altium_lib.DbLib|AltLibLink_UseDBTableName=True|AltLibLink_DatabaseTableName=R$|AltLibLink_VaultGUID=|AltLibLink_ItemGUID=|AltLibLink_RevisionGUID=|AltLibLink_Footprint=R1206-0.80-WW|AltLibLink_IsSameFootprint=True
@@ -601,19 +601,18 @@ Variation15=Designator=R179|UniqueId=\ODRUASON\JVFJBSFY|Kind=1|AlternatePart=
 Variation16=Designator=R180|UniqueId=\ODRUASON\BJNRLEQX|Kind=1|AlternatePart=
 Variation17=Designator=R181|UniqueId=\ODRUASON\HCYZZLHW|Kind=1|AlternatePart=
 Variation18=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
-Variation19=Designator=U6|UniqueId=\DMUNOPTP\CQZMDIGA|Kind=1|AlternatePart=
-Variation20=Designator=R183|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
-Variation21=Designator=R199|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
-Variation22=Designator=R184|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
-Variation23=Designator=R185|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
-Variation24=Designator=J3|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
-Variation25=Designator=J2|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
-Variation26=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
-Variation27=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
-Variation28=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
-Variation29=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
-Variation30=Designator=L3|UniqueId=\DMUNOPTP\LNRJBBYK|Kind=1|AlternatePart=
-Variation31=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
+Variation19=Designator=R183|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
+Variation20=Designator=R199|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
+Variation21=Designator=R184|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
+Variation22=Designator=R185|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
+Variation23=Designator=J3|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
+Variation24=Designator=J2|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
+Variation25=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
+Variation26=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
+Variation27=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
+Variation28=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
+Variation29=Designator=L3|UniqueId=\DMUNOPTP\LNRJBBYK|Kind=1|AlternatePart=
+Variation30=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
 ParamVariationCount=16
 
 [Parameter3_1]
@@ -798,8 +797,8 @@ OutputDefault1=0
 [OutputGroup3]
 Name=Documentation Outputs
 Description=
-TargetPrinter=Virtual Printer
-PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
+TargetPrinter=\\SCHSPR02\SCHPAB3_ENTWICKLUNG
+PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=0
 OutputType1=Composite
 OutputName1=Composite Drawing
 OutputDocumentPath1=
@@ -853,7 +852,9 @@ OutputName9=Schematic Prints
 OutputDocumentPath9=
 OutputVariantName9=
 OutputDefault9=0
-PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=0.71|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=0|PaperKind=A4|PaperIndex=9
+Configuration9_Name1=OutputConfigurationParameter1
+Configuration9_Item1=Record=SchPrintView|ShowNoERC=True|ShowParamSet=True|ShowProbe=True|ShowBlanket=True|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=False|ExpandPort=False|ExpandSheetNum=False|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\SCH\On_Off.SchDoc
 OutputType10=SimView Print
 OutputName10=SimView Prints
 OutputDocumentPath10=
