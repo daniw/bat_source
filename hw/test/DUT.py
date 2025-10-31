@@ -83,7 +83,7 @@ class DUT:
             found = adc_lines[index].find(value)
         if found < 0:
             print(f"Error: Value {value} not found in ADC data")
-            return [0, 0, ""]
+            return [0, 0, "none"]
         else:
             adc_line = adc_lines[index]
             adc_values = adc_line.split(": ")
