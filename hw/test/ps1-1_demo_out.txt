@@ -1,0 +1,18 @@
+pADC
+ADC Measurements:
+  v_in         (ADC1_IN1)  : 0 	: 0 mV
+  v_hv         (ADC1_IN2)  : 39 	: 0 mV
+  i_bat        (ADC1_IN3)  : 1996 	: 30920 mA
+  v_out        (ADC1_IN4)  : 391 	: 2096 mV
+  v_term       (ADC1_IN13) : 2 	: 0 mV
+  temp_int     (ADC1_INT)  : 640 	: 0 °C
+  i_out        (ADC2_IN5)  : 1743 	: 0 mA
+  temp_prim    (ADC2_IN8)  : 10 	: 0 °C
+  temp_current (ADC2_IN11) : 5 	: 0 °C
+  temp_sec     (ADC2_IN12) : 10 	: 0 °C
+  i_iso        (ADC2_IN13) : 1251 	: 0 mA
+  temp_trafo   (ADC2_IN15) : 1596 	: 0 °C
+  Ext V_Term : 24 : 3 mV
+  Ext V_Sns  : 2641001 : 1888909 mV
+  Ext I_Iso  : -20 : 0 mA
+  Ext I_Out  : 10493 : -19 mA
