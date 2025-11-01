@@ -14,11 +14,12 @@ SIMULATION  = False
 DEBUG       = True
 DEBUG_HALT  = 1 # 0: ignore all halts, 1: only halt when parameter "halt" is True, 2: halt on every debug() statement
 DEBUG_DELAY = 0
-MEAS_STAT   = True
+#MEAS_STAT   = True
 
 TEST_ALL        = False
-TEST_VOLTAGE    = True
-TEST_CURRENT    = True
+TEST_VOLTAGE    = False
+TEST_CURRENT    = False
+TEST_SENS       = True
 
 ###################
 # Test parameters #
@@ -37,6 +38,13 @@ AMP_MAX = 10
 AMP_STEP = 0.5
 AMP_VOLTAGE = 1.5
 AMP_REPEAT = 100
+
+# Voltage
+SENS_MIN = 0
+SENS_MAX = 6
+SENS_STEP = 1
+SENS_CURRENT = 0.1
+SENS_REPEAT = 100
 
 ##################################################
 # Measurement equipment connection configuration #
@@ -142,7 +150,7 @@ def main():
             # File export
             f = open(f"{report_path}{rep_name}_volt.csv", "w")
             print(f"Writing to: {report_path}{rep_name}_volt.csv")
-            f.write(f"Time,Voltage DMM,Voltage DUT raw,Voltage DUT,Unit DUT\n")
+            f.write(f"Time, Voltage Setpoint,Voltage DMM,Voltage DUT raw,Voltage DUT,Unit DUT\n")
             voltage_on(equipment = equipment, volt = 0)
             volt_setpoint = VOLT_MIN
             while volt_setpoint <= VOLT_MAX:
@@ -152,8 +160,8 @@ def main():
                     voltage_set(equipment = equipment, volt = volt_setpoint)
                     volt_dmm = dmm.meas_volt_dc()
                     [volt_dut_raw, volt_dut, volt_dut_unit] = dut.get_Ext_V_Term_raw_unit()
-                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')},{volt_dmm},{volt_dut_raw},{volt_dut},{volt_dut_unit}\n")
-                    #debug(f"Measurement: VOLTAGE: {volt_dmm}, {volt_dut_raw}, {volt_dut}, {volt_dut_unit}")
+                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')},{volt_setpoint},{volt_dmm},{volt_dut_raw},{volt_dut},{volt_dut_unit}\n")
+                    #debug(f"Measurement: VOLTAGE: {volt_setpoint}, {volt_dmm}, {volt_dut_raw}, {volt_dut}, {volt_dut_unit}")
                 volt_setpoint += VOLT_STEP
             voltage_off(equipment = equipment)
             f.close()
@@ -174,20 +182,53 @@ def main():
                 report_path = f"{report_path}/"
             # File export
             f = open(f"{report_path}{rep_name}_amp.csv", "w")
-            f.write(f"Time,Voltage DMM,Voltage DUT raw,Voltage DUT,Unit DUT\n")
+            f.write(f"Time,Current Setpoint,Current DMM,Current DUT raw,Current DUT,Unit DUT\n")
             amp_on(equipment = equipment, amp = 0)
             amp_setpoint = AMP_MIN
             while amp_setpoint <= AMP_MAX:
-                print(f"current: {volt_setpoint}A")
+                print(f"current: {amp_setpoint}A")
                 dmm.set_range(amp_setpoint, "ADC", "medium")
                 for loopcount in range(0, VOLT_REPEAT):
                     amp_set(equipment = equipment, amp = amp_setpoint)
                     amp_dmm = dmm.meas_amp_dc()
                     [amp_dut_raw, amp_dut, amp_dut_unit] = dut.get_Ext_I_Out_raw_unit()
-                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')},{amp_dmm},{amp_dut_raw},{amp_dut},{amp_dut_unit}\n")
-                    #debug(f"Measurement: CURRENT: {amp_dmm}, {amp_dut_raw}, {amp_dut}, {amp_dut_unit}")
+                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')},{amp_setpoint},{amp_dmm},{amp_dut_raw},{amp_dut},{amp_dut_unit}\n")
+                    #debug(f"Measurement: CURRENT: {amp_setpoint}, {amp_dmm}, {amp_dut_raw}, {amp_dut}, {amp_dut_unit}")
                 amp_setpoint += AMP_STEP
             amp_off(equipment = equipment)
+            f.close()
+
+        #################################
+        # Test voltage sens measurement #
+        #################################
+        if TEST_ALL == False and TEST_SENS:
+            if report_path != "":
+                path_split = report_path.split("/")
+                path_separator = ""
+                path_check = ""
+                for path_idx in range(len(path_split)):
+                    path_check = f"{path_check}{path_separator}{path_split[path_idx]}"
+                    path_separator = "/"
+                    if not os.path.isdir(path_check):
+                        os.mkdir(path_check)
+                report_path = f"{report_path}/"
+            # File export
+            f = open(f"{report_path}{rep_name}_sens.csv", "w")
+            print(f"Writing to: {report_path}{rep_name}_sens.csv")
+            f.write(f"Time,Sens Setpoint,Voltage DMM,Sens DUT raw,Sens DUT,Sens Unit DUT\n")
+            voltage_on(equipment = equipment, volt = 0)
+            sens_setpoint = SENS_MIN
+            while sens_setpoint <= SENS_MAX:
+                print(f"Sens: {sens_setpoint}V")
+                dmm.set_range(sens_setpoint, "VDC", "medium")
+                for loopcount in range(0, SENS_REPEAT):
+                    voltage_set(equipment = equipment, volt = sens_setpoint)
+                    sens_dmm = dmm.meas_volt_dc()
+                    [sens_dut_raw, sens_dut, sens_dut_unit] = dut.get_Ext_V_Sns_raw_unit()
+                    f.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')},{sens_setpoint},{sens_dmm},{sens_dut_raw},{sens_dut},{sens_dut_unit}\n")
+                    #debug(f"Measurement: SENS: {sens_setpoint}, {sens_dmm}, {sens_dut_raw}, {sens_dut}, {sens_dut_unit}")
+                sens_setpoint += SENS_STEP
+            voltage_off(equipment = equipment)
             f.close()
 
 
