@@ -327,8 +327,8 @@ void cmd_printADC() {
     printf("  temp_trafo   (ADC2_IN15) : %u \t: %u °C\n",adc_data.temp_trafo_raw, adc_data.temp_trafo_deg);
 
     printf("  Ext V_Term : %i : %i mV\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
-    printf("  Ext V_Sns  : %i : %i mV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
-    printf("  Ext I_Iso  : %i : %i mA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
+    printf("  Ext V_Sns  : %i : %i uV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
+    printf("  Ext I_Iso  : %i : %i uA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
     printf("  Ext I_Out  : %i : %i mA\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
 //}
 }
