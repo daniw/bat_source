@@ -4,6 +4,19 @@ import time
 class DUT:
     """ Class to communicate with the device under test """
 
+    def write_read(self, command, delay = -1):
+        if self.simulation == False:
+            for ch in command:
+                self.ser.write(ch.encode())
+                time.sleep(self.DELAY_CHAR)
+            self.ser.write(b'\n')
+            if delay >= 0:
+                time.sleep(delay)
+            else:
+                time.sleep(self.DELAY_WRITE_READ)
+            response = self.ser.read_all().decode()
+        return response
+
     # Read data from ADC
     def read_ADC(self):
         if self.simulation == False:
@@ -493,6 +506,32 @@ class DUT:
         if adc_read == True:
             self.read_ADC()
         return [self.Ext_I_Out_raw, self.Ext_I_Out, self.Ext_I_Out_unit]
+
+    # Initialize current controller
+    def init_current_controller(self, current = 0):
+        self.write_read(f"setDAC 1 0")   # Set current => 0A
+        self.write_read(f"setGPIO 3 0")  # Shunt Iso
+        self.write_read(f"setGPIO 5 0")  # 1A disable
+        if current > 0:
+            self.set_current_controller(current)
+
+    # Set current controller set value
+    def set_current_controller(self, current = 0):
+        if current >= 0 and current <= 1:
+            dac_val = int(current * 1241)
+        elif current > 1:
+            dac_val = int(1 * 1241)
+        else:
+            dac_val = 0
+            print(f"Warining, invalid current selected")
+        self.write_read(f"setDAC 1 {dac_val}")       # Set current => 0A
+
+    # Deinitialize current controller
+    def deinit_current_controller(self):
+        self.write_read(f"setDAC 1 0")       # Set current => 0A
+        self.write_read(f"setGPIO 3 0")      # Shunt Iso
+        self.write_read(f"setGPIO 5 1")      # 1A disable
+        self.write_read(f"setDAC 1 1024")    # Set current => 1A
 
     # Get serialport of the DUT
     def get_serialport(self):
