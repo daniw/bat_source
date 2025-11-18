@@ -533,6 +533,16 @@ class DUT:
         self.write_read(f"setGPIO 5 1")      # 1A disable
         self.write_read(f"setDAC 1 1024")    # Set current => 1A
 
+    # Initialize iso current measurement
+    def init_iso_current(self):
+        self.write_read(f"setGPIO 3 1")  # Shunt Iso
+        self.write_read(f"setGPIO 5 0")  # 1A disable
+
+    # Deinitialize iso current measurement
+    def deinit_iso_current(self):
+        self.write_read(f"setGPIO 3 0")      # Shunt Iso
+        self.write_read(f"setGPIO 5 1")      # 1A disable
+
     # Get serialport of the DUT
     def get_serialport(self):
         return self.serialport
