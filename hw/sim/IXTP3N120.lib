@@ -1,0 +1,30 @@
+* PSpice Model Editor - Version 9.2.1
+
+*$
+*DEVICE=IXTP3N120,NMOS
+
+* IXTP3N120 NMOS model
+* updated using Model Editor release 9.2.1 on 03/13/04 at 11:13
+* The Model Editor is a PSpice product hem.
+.MODEL IXTP3N120 NMOS
++ LEVEL=3
++ L=2.0000E-6
++ W=3.9000
++ KP=1.0336E-6
++ RS=10.000E-3
++ RD=4.4019
++ VTO=4.2036
++ RDS=96.000E6
++ TOX=2.0000E-6
++ CGSO=341.38E-12
++ CGDO=8.9791E-12
++ CBD=1.7596E-9
++ MJ=.85605
++ PB=.3905
++ RG=10.000E-3
++ IS=60.436E-9
++ N=1.7204
++ RB=1.0000E-9
++ GAMMA=0
++ KAPPA=0
+*$
