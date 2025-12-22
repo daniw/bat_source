@@ -162,3 +162,7 @@ hw/sim/sboma34d
 # Python
 __pycache__
 
+
+# Simulation Data
+*.mat
+
