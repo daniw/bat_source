@@ -240,6 +240,8 @@ VaultGUID=
 ManagedProjectGUID=
 RevisionGUID=
 ProjectName=PS1-100AA.PrjPcb
+VaultURL=
+VaultName=
 
 [OutputGroup1]
 Name=Netlist Outputs

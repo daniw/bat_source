@@ -209,6 +209,13 @@
 {daniw}
 {2025-10-16}
 
+\ModItemOpen
+{Incorrect gain of the V\_Sens measurement channel. }
+{The gain of the V\_Sens \ac{ADC} channel is too low by a factor of 6. This is caused by the voltage divider being loaded by the input impedance of the \ac{ADC} which is \qty{300}{\kilo\ohm}. }
+{An amplifier should be added between the voltage divider and the \ac{ADC}. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier

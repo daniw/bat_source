@@ -43,6 +43,7 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
+CurrentVariant=PS1-1
 
 [Preferences]
 PrefsVaultGUID=
@@ -219,7 +220,24 @@ GenerateClassCluster=0
 DocumentUniqueId=PJCKBPKR
 
 [Document11]
-DocumentPath=SCH\OV_Prot.SchDoc
+DocumentPath=SCH\Iso_Current_Limit.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=18
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=MILQTRGE
+
+[Document12]
+DocumentPath=SCH\Protection.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -234,23 +252,6 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=OFVRDIVG
-
-[Document12]
-DocumentPath=SCH\Current_Controller.SchDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=13
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=ABHLRTSF
 
 [Document13]
 DocumentPath=SCH\Output_Terminals.SchDoc
@@ -270,6 +271,23 @@ GenerateClassCluster=0
 DocumentUniqueId=UHPRQMJJ
 
 [Document14]
+DocumentPath=SCH\Current_Controller.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=13
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=ABHLRTSF
+
+[Document15]
 DocumentPath=SCH\Measurement.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -286,7 +304,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=IQTFAQGZ
 
-[Document15]
+[Document16]
 DocumentPath=SCH\User_Interface.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -303,8 +321,8 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=BTGTTHFG
 
-[Document16]
-DocumentPath=SCH\Controller.SchDoc
+[Document17]
+DocumentPath=SCH\Microcontroller.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -320,7 +338,24 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VSOXUDWY
 
-[Document17]
+[Document18]
+DocumentPath=SCH\Peripherals.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=17
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=JOFNSDZR
+
+[Document19]
 DocumentPath=SCH\Power_VCC.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -337,7 +372,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=SBAFOLVI
 
-[Document18]
+[Document20]
 DocumentPath=SCH\Power_15V.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -354,7 +389,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YVXPVHVS
 
-[Document19]
+[Document21]
 DocumentPath=SCH\Power_3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -371,7 +406,24 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ZYTQMSDL
 
-[Document20]
+[Document22]
+DocumentPath=SCH\Power_5V.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=16
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=HKTIDDQU
+
+[Document23]
 DocumentPath=SCH\Power_Analog.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -388,7 +440,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=LSOSTANQ
 
-[Document21]
+[Document24]
 DocumentPath=SCH\Mechanics.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -405,7 +457,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XJUXYKQJ
 
-[Document22]
+[Document25]
 DocumentPath=SCH\Controller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -422,7 +474,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document23]
+[Document26]
 DocumentPath=SCH\Converter.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -439,7 +491,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document24]
+[Document27]
 DocumentPath=SCH\Battery_BMS.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -456,7 +508,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document25]
+[Document28]
 DocumentPath=SCH\Measurement.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -473,7 +525,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document26]
+[Document29]
 DocumentPath=SCH\User_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -490,7 +542,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document27]
+[Document30]
 DocumentPath=SCH\Converter_HV.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -507,8 +559,59 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document28]
+[Document31]
 DocumentPath=SCH\On_Off.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document32]
+DocumentPath=SCH\Periphery.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document33]
+DocumentPath=SCH\Microcontroller.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document34]
+DocumentPath=SCH\Peripherals.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -529,16 +632,10 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-1
 AllowFabrication=1
 ParameterCount=1
-VariationCount=9
-Variation1=Designator=R175|UniqueId=\ODRUASON\ODOGMDIK|Kind=1|AlternatePart=
-Variation2=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
-Variation3=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
-Variation4=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
-Variation5=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
-Variation6=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
-Variation7=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
-Variation8=Designator=L3|UniqueId=\DMUNOPTP\LNRJBBYK|Kind=1|AlternatePart=
-Variation9=Designator=L4|UniqueId=\DMUNOPTP\QQAWVNQZ|Kind=1|AlternatePart=
+VariationCount=3
+Variation1=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
+Variation2=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
+Variation3=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -550,7 +647,7 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=30
+VariationCount=16
 Variation1=Designator=R136|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
 Variation2=Designator=R141|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
 Variation3=Designator=R137|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=2|AlternatePart=0R/1206|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib/R$|AltLibLink_SymbolReference=|AltLibLink_DesignItemID=0R/1206|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=daniw_altium_lib.DbLib|AltLibLink_UseDBTableName=True|AltLibLink_DatabaseTableName=R$|AltLibLink_VaultGUID=|AltLibLink_ItemGUID=|AltLibLink_RevisionGUID=|AltLibLink_Footprint=R1206-0.80-WW|AltLibLink_IsSameFootprint=True
@@ -589,30 +686,16 @@ ParamDesignator16=R137
 Variation4=Designator=C52|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
 Variation5=Designator=U12|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart=
 Variation6=Designator=D31|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart=
-Variation7=Designator=U13|UniqueId=\ODRUASON\IOQCGSWM|Kind=1|AlternatePart=
-Variation8=Designator=R174|UniqueId=\ODRUASON\YMZMCXRO|Kind=1|AlternatePart=
-Variation9=Designator=R173|UniqueId=\ODRUASON\QFAIOYJR|Kind=1|AlternatePart=
-Variation10=Designator=D32|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart=
-Variation11=Designator=Q26|UniqueId=\ODRUASON\MINCTPQP|Kind=1|AlternatePart=
-Variation12=Designator=U15|UniqueId=\ODRUASON\THZUZQCJ|Kind=1|AlternatePart=
-Variation13=Designator=R182|UniqueId=\ODRUASON\UGHMEZQQ|Kind=1|AlternatePart=
-Variation14=Designator=R177|UniqueId=\ODRUASON\TKZDSQYT|Kind=1|AlternatePart=
-Variation15=Designator=R179|UniqueId=\ODRUASON\JVFJBSFY|Kind=1|AlternatePart=
-Variation16=Designator=R180|UniqueId=\ODRUASON\BJNRLEQX|Kind=1|AlternatePart=
-Variation17=Designator=R181|UniqueId=\ODRUASON\HCYZZLHW|Kind=1|AlternatePart=
-Variation18=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
-Variation19=Designator=R183|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
-Variation20=Designator=R199|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
-Variation21=Designator=R184|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
-Variation22=Designator=R185|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
-Variation23=Designator=J3|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
-Variation24=Designator=J2|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
-Variation25=Designator=C23|UniqueId=\DMUNOPTP\ZTFESWRR|Kind=1|AlternatePart=
-Variation26=Designator=C25|UniqueId=\DMUNOPTP\AIVACKOR|Kind=1|AlternatePart=
-Variation27=Designator=C24|UniqueId=\DMUNOPTP\BZUTZBPQ|Kind=1|AlternatePart=
-Variation28=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
-Variation29=Designator=L3|UniqueId=\DMUNOPTP\LNRJBBYK|Kind=1|AlternatePart=
-Variation30=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
+Variation7=Designator=D32|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart=
+Variation8=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
+Variation9=Designator=R183|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
+Variation10=Designator=R199|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
+Variation11=Designator=R184|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
+Variation12=Designator=R185|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
+Variation13=Designator=J3|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
+Variation14=Designator=J2|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
+Variation15=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
+Variation16=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
 ParamVariationCount=16
 
 [Parameter3_1]
@@ -1033,6 +1116,11 @@ OutputDocumentPath9=
 OutputVariantName9=[No Variations]
 OutputDefault9=0
 PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+OutputType10=BOM_ReportManufacturing
+OutputName10=Manufacturing Data
+OutputDocumentPath10=
+OutputVariantName10=[No Variations]
+OutputDefault10=0
 
 [OutputGroup7]
 Name=Other Outputs
@@ -1327,6 +1415,8 @@ Type156=1
 Type157=1
 Type158=1
 Type159=1
+Type160=1
+Type161=1
 
 [Difference Levels]
 Type1=1
@@ -1416,6 +1506,7 @@ Type84=1
 Type85=1
 Type86=1
 Type87=1
+Type88=1
 
 [Electrical Rules Check]
 Type1=1
@@ -1581,6 +1672,8 @@ Type160=0
 Type161=0
 Type162=1
 Type163=1
+Type164=1
+Type165=2
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
@@ -1828,9 +1921,9 @@ UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=Integrated.SchLib
-ComponentDesignItemID0=TPS55340 QFN
-ComponentSymbolReference0=TPS55340 QFN
+ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/T$
+ComponentDesignItemID0=3N120
+ComponentSymbolReference0=MOSFET_P_G1_D3_S2
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -1852,8 +1945,31 @@ ParameterName1=Component Kind
 ParameterUpdate1=1
 ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=Library Reference
+ParameterName3=HelpURL
 ParameterUpdate3=1
+ParameterName4=JLC Type
+ParameterUpdate4=1
+ParameterName5=Library Reference
+ParameterUpdate5=1
+ParameterName6=Manufacturer
+ParameterUpdate6=1
+ParameterName7=Manufacturer 3
+ParameterUpdate7=1
+ParameterName8=Manufacturer Part Number 3
+ParameterUpdate8=1
+ParameterName9=Package
+ParameterUpdate9=1
+ParameterName10=Part Number
+ParameterUpdate10=1
+ParameterName11=Supplier 3
+ParameterUpdate11=1
+ParameterName12=Supplier Part Number 3
+ParameterUpdate12=1
+ModelTypeGroup0=PCBLIB
+ModelTypeUpdate0=1
+ModelType0=PCBLIB
+ModelName0=TO228P990X229-3
+ModelUpdate0=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
