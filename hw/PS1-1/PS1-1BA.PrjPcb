@@ -632,10 +632,9 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-1
 AllowFabrication=1
 ParameterCount=1
-VariationCount=3
-Variation1=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
+VariationCount=2
+Variation1=Designator=C79|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
 Variation2=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
-Variation3=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -647,55 +646,54 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=16
-Variation1=Designator=R136|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
-Variation2=Designator=R141|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
-Variation3=Designator=R137|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=2|AlternatePart=0R/1206|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib/R$|AltLibLink_SymbolReference=|AltLibLink_DesignItemID=0R/1206|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=daniw_altium_lib.DbLib|AltLibLink_UseDBTableName=True|AltLibLink_DatabaseTableName=R$|AltLibLink_VaultGUID=|AltLibLink_ItemGUID=|AltLibLink_RevisionGUID=|AltLibLink_Footprint=R1206-0.80-WW|AltLibLink_IsSameFootprint=True
+VariationCount=15
+Variation1=Designator=R69|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
+Variation2=Designator=R71|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
+Variation3=Designator=R70|UniqueId=\JMGMUPPD\KMYLCHXK|Kind=2|AlternatePart=0R/1206|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Daten\Daniel\ele\daniw_altium_lib\daniw_altium_lib.DbLib/R$|AltLibLink_SymbolReference=|AltLibLink_DesignItemID=0R/1206|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=daniw_altium_lib.DbLib|AltLibLink_UseDBTableName=True|AltLibLink_DatabaseTableName=R$|AltLibLink_VaultGUID=|AltLibLink_ItemGUID=|AltLibLink_RevisionGUID=|AltLibLink_Footprint=R1206-0.80-WW|AltLibLink_IsSameFootprint=True
 ParamVariation1=ParameterName=Comment|VariantValue=0R/1206
-ParamDesignator1=R137
+ParamDesignator1=R70
 ParamVariation2=ParameterName=Absolute Value|VariantValue=0
-ParamDesignator2=R137
+ParamDesignator2=R70
 ParamVariation3=ParameterName=Component Kind|VariantValue=Standard
-ParamDesignator3=R137
+ParamDesignator3=R70
 ParamVariation4=ParameterName=Database Table Name|VariantValue=R$
-ParamDesignator4=R137
+ParamDesignator4=R70
 ParamVariation5=ParameterName=Description|VariantValue=RES SM 1206 0R
-ParamDesignator5=R137
+ParamDesignator5=R70
 ParamVariation6=ParameterName=Footprint|VariantValue=R1206-0.80-WW
-ParamDesignator6=R137
+ParamDesignator6=R70
 ParamVariation7=ParameterName=Ibis Model|VariantValue=
-ParamDesignator7=R137
+ParamDesignator7=R70
 ParamVariation8=ParameterName=Library Reference|VariantValue=0R/1206
-ParamDesignator8=R137
+ParamDesignator8=R70
 ParamVariation9=ParameterName=Manufacturer|VariantValue=GENERIC
-ParamDesignator9=R137
+ParamDesignator9=R70
 ParamVariation10=ParameterName=Package|VariantValue=1206
-ParamDesignator10=R137
+ParamDesignator10=R70
 ParamVariation11=ParameterName=Part Number|VariantValue=0R/1206
-ParamDesignator11=R137
+ParamDesignator11=R70
 ParamVariation12=ParameterName=PCB3D|VariantValue=
-ParamDesignator12=R137
+ParamDesignator12=R70
 ParamVariation13=ParameterName=Pin Info|VariantValue=
-ParamDesignator13=R137
+ParamDesignator13=R70
 ParamVariation14=ParameterName=Signal Integrity|VariantValue=
-ParamDesignator14=R137
+ParamDesignator14=R70
 ParamVariation15=ParameterName=Simulation|VariantValue=
-ParamDesignator15=R137
+ParamDesignator15=R70
 ParamVariation16=ParameterName=Value|VariantValue=0R
-ParamDesignator16=R137
-Variation4=Designator=C52|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
-Variation5=Designator=U12|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart=
-Variation6=Designator=D31|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart=
-Variation7=Designator=D32|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart=
-Variation8=Designator=C95|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
-Variation9=Designator=R183|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
-Variation10=Designator=R199|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
-Variation11=Designator=R184|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
-Variation12=Designator=R185|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
-Variation13=Designator=J3|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
-Variation14=Designator=J2|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
-Variation15=Designator=L2|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
-Variation16=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
+ParamDesignator16=R70
+Variation4=Designator=C39|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
+Variation5=Designator=U9|UniqueId=\ODRUASON\YOYFKHCA|Kind=1|AlternatePart=
+Variation6=Designator=D14|UniqueId=\ODRUASON\FQZYAMJX|Kind=1|AlternatePart=
+Variation7=Designator=D15|UniqueId=\ODRUASON\ECTBIEZW|Kind=1|AlternatePart=
+Variation8=Designator=C79|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
+Variation9=Designator=R108|UniqueId=\FYQSFHEG\JQRZJSJD|Kind=1|AlternatePart=
+Variation10=Designator=R124|UniqueId=\FYQSFHEG\MRTEENBI|Kind=1|AlternatePart=
+Variation11=Designator=R109|UniqueId=\FYQSFHEG\GCCOWYZI|Kind=1|AlternatePart=
+Variation12=Designator=R110|UniqueId=\FYQSFHEG\IDOBOBMC|Kind=1|AlternatePart=
+Variation13=Designator=J4|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
+Variation14=Designator=J3|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
+Variation15=Designator=J1|UniqueId=\OPVNZNGZ\OWBGXUKW|Kind=1|AlternatePart=
 ParamVariationCount=16
 
 [Parameter3_1]
@@ -1921,9 +1919,9 @@ UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/T$
-ComponentDesignItemID0=3N120
-ComponentSymbolReference0=MOSFET_P_G1_D3_S2
+ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID0=10UH/MDA1365
+ComponentSymbolReference0=L
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -1939,36 +1937,40 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
-ParameterName0=Comment
+ParameterName0=Absolute Value
 ParameterUpdate0=1
-ParameterName1=Component Kind
+ParameterName1=Comment
 ParameterUpdate1=1
-ParameterName2=Description
+ParameterName2=Component Kind
 ParameterUpdate2=1
-ParameterName3=HelpURL
+ParameterName3=Description
 ParameterUpdate3=1
-ParameterName4=JLC Type
+ParameterName4=HelpURL
 ParameterUpdate4=1
-ParameterName5=Library Reference
+ParameterName5=JLC Type
 ParameterUpdate5=1
-ParameterName6=Manufacturer
+ParameterName6=Library Reference
 ParameterUpdate6=1
-ParameterName7=Manufacturer 3
+ParameterName7=Manufacturer
 ParameterUpdate7=1
-ParameterName8=Manufacturer Part Number 3
+ParameterName8=Manufacturer 3
 ParameterUpdate8=1
-ParameterName9=Package
+ParameterName9=Manufacturer Part Number 3
 ParameterUpdate9=1
-ParameterName10=Part Number
+ParameterName10=Package
 ParameterUpdate10=1
-ParameterName11=Supplier 3
+ParameterName11=Part Number
 ParameterUpdate11=1
-ParameterName12=Supplier Part Number 3
+ParameterName12=Supplier 3
 ParameterUpdate12=1
+ParameterName13=Supplier Part Number 3
+ParameterUpdate13=1
+ParameterName14=Value
+ParameterUpdate14=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=TO228P990X229-3
+ModelName0=INDM140X128X65
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
