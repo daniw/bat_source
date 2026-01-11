@@ -43,7 +43,6 @@ CrossRefPorts=2
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=PS1-1
 
 [Preferences]
 PrefsVaultGUID=
@@ -213,7 +212,7 @@ AnnotateOrder=11
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -230,14 +229,14 @@ AnnotateOrder=18
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=MILQTRGE
 
 [Document12]
-DocumentPath=SCH\Protection.SchDoc
+DocumentPath=SCH\Overvoltage_Protection.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -247,13 +246,30 @@ AnnotateOrder=12
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=OFVRDIVG
 
 [Document13]
+DocumentPath=SCH\Overcurrent_Protection.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=19
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=CSTQTBIE
+
+[Document14]
 DocumentPath=SCH\Output_Terminals.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -270,7 +286,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=UHPRQMJJ
 
-[Document14]
+[Document15]
 DocumentPath=SCH\Current_Controller.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -281,13 +297,13 @@ AnnotateOrder=13
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ABHLRTSF
 
-[Document15]
+[Document16]
 DocumentPath=SCH\Measurement.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -304,7 +320,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=IQTFAQGZ
 
-[Document16]
+[Document17]
 DocumentPath=SCH\User_Interface.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -321,7 +337,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=BTGTTHFG
 
-[Document17]
+[Document18]
 DocumentPath=SCH\Microcontroller.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -338,7 +354,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VSOXUDWY
 
-[Document18]
+[Document19]
 DocumentPath=SCH\Peripherals.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -349,13 +365,13 @@ AnnotateOrder=17
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=JOFNSDZR
 
-[Document19]
+[Document20]
 DocumentPath=SCH\Power_VCC.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -372,7 +388,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=SBAFOLVI
 
-[Document20]
+[Document21]
 DocumentPath=SCH\Power_15V.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -383,13 +399,13 @@ AnnotateOrder=14
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YVXPVHVS
 
-[Document21]
+[Document22]
 DocumentPath=SCH\Power_3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -406,7 +422,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ZYTQMSDL
 
-[Document22]
+[Document23]
 DocumentPath=SCH\Power_5V.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -417,13 +433,13 @@ AnnotateOrder=16
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HKTIDDQU
 
-[Document23]
+[Document24]
 DocumentPath=SCH\Power_Analog.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -434,13 +450,13 @@ AnnotateOrder=15
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=LSOSTANQ
 
-[Document24]
+[Document25]
 DocumentPath=SCH\Mechanics.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -457,7 +473,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XJUXYKQJ
 
-[Document25]
+[Document26]
 DocumentPath=SCH\Controller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -474,7 +490,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document26]
+[Document27]
 DocumentPath=SCH\Converter.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -491,7 +507,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document27]
+[Document28]
 DocumentPath=SCH\Battery_BMS.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -508,7 +524,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document28]
+[Document29]
 DocumentPath=SCH\Measurement.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -525,7 +541,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document29]
+[Document30]
 DocumentPath=SCH\User_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -542,7 +558,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document30]
+[Document31]
 DocumentPath=SCH\Converter_HV.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -559,7 +575,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document31]
+[Document32]
 DocumentPath=SCH\On_Off.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -576,7 +592,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document32]
+[Document33]
 DocumentPath=SCH\Periphery.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -593,7 +609,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document33]
+[Document34]
 DocumentPath=SCH\Microcontroller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -610,7 +626,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document34]
+[Document35]
 DocumentPath=SCH\Peripherals.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -709,35 +725,35 @@ DocumentPath=Manufacturing\Design Rule Check - PS1-1B-BASIS.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Index_Main
-Value=B
-
-[Parameter3]
-Name=Index_Sub
-Value=A
-
-[Parameter4]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter5]
-Name=PCB_NAME
-Value=PS1-1
-
-[Parameter6]
-Name=Project
-Value=Battery Source
-
-[Parameter7]
 Name=Project_URL
 Value=https://github.com/daniw/bat_source
 
+[Parameter3]
+Name=Project
+Value=Battery Source
+
+[Parameter4]
+Name=PCB_NAME
+Value=PS1-1
+
+[Parameter5]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter6]
+Name=Index_Sub
+Value=A
+
+[Parameter7]
+Name=Index_Main
+Value=B
+
 [Parameter8]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Configuration1]
@@ -1428,7 +1444,7 @@ Type8=1
 Type9=1
 Type10=1
 Type11=1
-Type12=1
+Type12=0
 Type13=1
 Type14=1
 Type15=1

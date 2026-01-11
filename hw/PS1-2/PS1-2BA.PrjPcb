@@ -382,7 +382,7 @@ AnnotateOrder=13
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
+ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
@@ -412,35 +412,35 @@ DocumentPath=Manufacturing\Design Rule Check - PS1-2B-BASIS.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Index_Main
-Value=B
-
-[Parameter3]
-Name=Index_Sub
-Value=A
-
-[Parameter4]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter5]
-Name=PCB_NAME
-Value=PS1-2
-
-[Parameter6]
-Name=Project
-Value=Battery Source - User Interface
-
-[Parameter7]
 Name=Project_URL
 Value=https://github.com/daniw/bat_source
 
+[Parameter3]
+Name=Project
+Value=Battery Source - User Interface
+
+[Parameter4]
+Name=PCB_NAME
+Value=PS1-2
+
+[Parameter5]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter6]
+Name=Index_Sub
+Value=A
+
+[Parameter7]
+Name=Index_Main
+Value=B
+
 [Parameter8]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Configuration1]
@@ -1619,6 +1619,12 @@ SelectedOnly=1
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
+ComponentLibIdentifierKind0=Library Name And Type
+ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/L$
+ComponentDesignItemID0=1:1.05/1.92MH/PPTI-1006
+ComponentSymbolReference0=TR_P_1-2_2-3_S_5-4_6-5
+ComponentUpdate0=1
+ComponentIsDeviceSheet0=0
 FullReplace=0
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1632,6 +1638,43 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
+ParameterName0=Comment
+ParameterUpdate0=1
+ParameterName1=Component Kind
+ParameterUpdate1=1
+ParameterName2=Description
+ParameterUpdate2=1
+ParameterName3=HelpURL
+ParameterUpdate3=1
+ParameterName4=Library Reference
+ParameterUpdate4=1
+ParameterName5=Manufacturer
+ParameterUpdate5=1
+ParameterName6=Manufacturer 1
+ParameterUpdate6=1
+ParameterName7=Manufacturer 2
+ParameterUpdate7=1
+ParameterName8=Manufacturer Part Number 1
+ParameterUpdate8=1
+ParameterName9=Manufacturer Part Number 2
+ParameterUpdate9=1
+ParameterName10=Package
+ParameterUpdate10=1
+ParameterName11=Part Number
+ParameterUpdate11=1
+ParameterName12=Supplier 1
+ParameterUpdate12=1
+ParameterName13=Supplier 2
+ParameterUpdate13=1
+ParameterName14=Supplier Part Number 1
+ParameterUpdate14=1
+ParameterName15=Supplier Part Number 2
+ParameterUpdate15=1
+ModelTypeGroup0=PCBLIB
+ModelTypeUpdate0=1
+ModelType0=PCBLIB
+ModelName0=TR_WE_PPTI_1006-467
+ModelUpdate0=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
