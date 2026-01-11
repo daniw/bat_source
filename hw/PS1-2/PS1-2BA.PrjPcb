@@ -371,6 +371,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ZYTQMSDM
 
+[Document20]
+DocumentPath=SCH\Power_Iso.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=13
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=EMJIEUZI
+
 [ProjectVariant1]
 UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-2
@@ -395,35 +412,35 @@ DocumentPath=Manufacturing\Design Rule Check - PS1-2B-BASIS.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Schema_Designer
+Name=Author
 Value=ahorat / daniw
 
 [Parameter2]
-Name=Project_URL
-Value=https://github.com/daniw/bat_source
-
-[Parameter3]
-Name=Project
-Value=Battery Source - User Interface
-
-[Parameter4]
-Name=PCB_NAME
-Value=PS1-2
-
-[Parameter5]
-Name=Layout_Designer
-Value=daniw
-
-[Parameter6]
-Name=Index_Sub
-Value=A
-
-[Parameter7]
 Name=Index_Main
 Value=B
 
+[Parameter3]
+Name=Index_Sub
+Value=A
+
+[Parameter4]
+Name=Layout_Designer
+Value=daniw
+
+[Parameter5]
+Name=PCB_NAME
+Value=PS1-2
+
+[Parameter6]
+Name=Project
+Value=Battery Source - User Interface
+
+[Parameter7]
+Name=Project_URL
+Value=https://github.com/daniw/bat_source
+
 [Parameter8]
-Name=Author
+Name=Schema_Designer
 Value=ahorat / daniw
 
 [Configuration1]
