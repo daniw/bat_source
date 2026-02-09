@@ -394,12 +394,16 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-2
 AllowFabrication=1
 ParameterCount=1
-VariationCount=5
+VariationCount=9
 Variation1=Designator=J3|UniqueId=\FYQSFHEG\DGYHNIKQ|Kind=1|AlternatePart=
 Variation2=Designator=J1|UniqueId=\FYQSFHEG\RFNNACZG|Kind=1|AlternatePart=
 Variation3=Designator=J2|UniqueId=\FYQSFHEG\VZTGLBSK|Kind=1|AlternatePart=
 Variation4=Designator=L4|UniqueId=\LCLQAJQA\XTOVUEKO|Kind=1|AlternatePart=
 Variation5=Designator=R27|UniqueId=\YNOGKKSU\OBJYIAKK|Kind=1|AlternatePart=
+Variation6=Designator=Q8|UniqueId=\LCLQAJQA\YPEJZZAT|Kind=1|AlternatePart=
+Variation7=Designator=R29|UniqueId=\YNOGKKSU\ETAXNSEF|Kind=1|AlternatePart=
+Variation8=Designator=R34|UniqueId=\YNOGKKSU\VFJIGOTU|Kind=1|AlternatePart=
+Variation9=Designator=R33|UniqueId=\YNOGKKSU\SFFUOWIU|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
