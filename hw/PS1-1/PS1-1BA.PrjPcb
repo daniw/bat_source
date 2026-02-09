@@ -649,13 +649,19 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-1
 AllowFabrication=1
 ParameterCount=1
-VariationCount=6
+VariationCount=12
 Variation1=Designator=C124|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
 Variation2=Designator=R97|UniqueId=\JMGMUPPD\FOGGVTMU|Kind=1|AlternatePart=
 Variation3=Designator=Y2|UniqueId=\KUKTWLSW\BEGLCQZF|Kind=1|AlternatePart=
 Variation4=Designator=C131|UniqueId=\EXYNENQO\KAGKOABM|Kind=1|AlternatePart=
 Variation5=Designator=C82|UniqueId=\KUKTWLSW\ZTEISACH|Kind=1|AlternatePart=
 Variation6=Designator=C83|UniqueId=\KUKTWLSW\OORWLQJY|Kind=1|AlternatePart=
+Variation7=Designator=L1|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
+Variation8=Designator=R206|UniqueId=\WETRPCDH\GLCIABMI|Kind=1|AlternatePart=
+Variation9=Designator=R207|UniqueId=\WETRPCDH\WOAPGENC|Kind=1|AlternatePart=
+Variation10=Designator=C114|UniqueId=\NADDTKDW\RLCKGLWB|Kind=1|AlternatePart=
+Variation11=Designator=R41|UniqueId=\DMUNOPTP\QDNCJLVT|Kind=1|AlternatePart=
+Variation12=Designator=R281|UniqueId=\DMUNOPTP\EDBNBSZO|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -667,7 +673,7 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=134
+VariationCount=140
 Variation1=Designator=R111|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
 Variation2=Designator=R113|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
 Variation3=Designator=C54|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
@@ -888,6 +894,12 @@ Variation131=Designator=Y2|UniqueId=\KUKTWLSW\BEGLCQZF|Kind=1|AlternatePart=
 Variation132=Designator=C131|UniqueId=\EXYNENQO\KAGKOABM|Kind=1|AlternatePart=
 Variation133=Designator=C82|UniqueId=\KUKTWLSW\ZTEISACH|Kind=1|AlternatePart=
 Variation134=Designator=C83|UniqueId=\KUKTWLSW\OORWLQJY|Kind=1|AlternatePart=
+Variation135=Designator=L1|UniqueId=\DMUNOPTP\FLXBFQAT|Kind=1|AlternatePart=
+Variation136=Designator=R206|UniqueId=\WETRPCDH\GLCIABMI|Kind=1|AlternatePart=
+Variation137=Designator=R207|UniqueId=\WETRPCDH\WOAPGENC|Kind=1|AlternatePart=
+Variation138=Designator=C114|UniqueId=\NADDTKDW\RLCKGLWB|Kind=1|AlternatePart=
+Variation139=Designator=R41|UniqueId=\DMUNOPTP\QDNCJLVT|Kind=1|AlternatePart=
+Variation140=Designator=R281|UniqueId=\DMUNOPTP\EDBNBSZO|Kind=1|AlternatePart=
 ParamVariationCount=43
 
 [Parameter3_1]
