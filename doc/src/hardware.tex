@@ -158,6 +158,27 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 
 \FloatBarrier
 
+\subsection{\acs{I2C} address list}
+All devices on the \ac{I2C} bus are listed in \autoref{tab:i2c_list} to avoid address conflicts. 
+\begin{table}[h!]
+    \begin{zebratabular}{lllllll}
+        \rowcolor{gray}
+        Function                & PCB             & Designator    & Device    & \multicolumn{2}{c}{Address}   & Supply voltage \\
+        \rowcolor{gray}
+                                &                 &               &           & binary    & hex               &                \\
+        BMS                     &  Mainboard      & U1            & BQ76905   & 0b0001000 & 0x08              & +3V3\_STBY \\
+        EEPROM                  &  Mainboard      & U25           & ZD24C02B  & 0b1010000 & 0x50              & +3V3 \\
+        HW ID                   &  Mainboard      & U26           & TCA9554   & 0b0100000 & 0x20              & +3V3 \\
+        LED driver              &  User interface & U7            & LP5817    & 0b0101101 & 0x2D              & VLED (UI) \\
+        Ambient light sensor    &  User interface & U8            & OPT3004   & 0b1000100 & 0x44              & +3V3 (UI) \\
+        Backlight driver        &  User interface & U9            & LP5816    & 0b0101100 & 0x2C              & VLED (UI) \\
+    \end{zebratabular}
+    \caption{\acs{I2C} address overview}
+    \label{tab:i2c_list}
+\end{table}
+
+\FloatBarrier
+
 \subsection{User interface}
 \label{sec_ui}
 A display shows the current operating mode and measurement values to the user. Initially an \ac{OLED} display was evaluated. During testing it was discovered, that the brightness of the display was insufficient for use in direct sunlight. 

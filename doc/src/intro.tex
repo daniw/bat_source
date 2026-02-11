@@ -1,6 +1,35 @@
 \section{Introduction}
 \todo[inline]{Introduction to the project, reasoning behind, $\ldots$}
 
+\subsection{Definitions}
+
+\subsubsection{Units}
+\ac{SI} units are used in this document. 
+
+\FloatBarrier
+
+\subsubsection{\acs{I2C} address}
+The adress of \ac{I2C} devices consists of 7 bit. On the bus, the R/W bit is appended after the \ac{LSB} of the address, which shifts the address to the left by one bit. This is shown in \autoref{fig:intro_i2c_address}. 
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikztimingtable}[
+        % For labelled L, see:
+        % https://tex.stackexchange.com/questions/37254/tikz-timing-text-labels-in-symbols-other-than-d-and-time-axis-discontinuities
+        timing/metachar={{K}[2]{#1l !{++(0,+.5\yunit)} N[rectangle,scale=.6]{#2} !{++(0,-.5\yunit)} #1l}},
+        timing/metachar={{J}[2]{#1h !{++(0,-.5\yunit)} N[rectangle,scale=.6]{#2} !{++(0,+.5\yunit)} #1h}},
+        ]
+        SDA & 2H4K{Start}4D{A6}4D{A5}4D{A4}4D{A3}4D{A2}4D{A1}4D{A0}4D{R/W}4K{Stop}2H \\
+        SCL & 5H9{2L2H}3H \\
+    \end{tikztimingtable}
+    \caption{\acs{I2C} address}
+    \label{fig:intro_i2c_address}
+\end{figure}
+
+In this documentation each \ac{I2C} address is represented without the R/W bit and right-aligned (\ac{LSB}-aligned). 
+
+\FloatBarrier
+
 \subsection{Directory structure}
 \dirtree{%
 .1 bat\_source/\DTcomment{Project root}.
