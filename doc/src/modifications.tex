@@ -1,6 +1,8 @@
 \section{Modification history}
 
-\subsection{Modifications PS1-1AA $\to$ AB}
+\subsection{PS1-1 - Mainboard}
+
+\subsubsection{Modifications PS1-1AA $\to$ AB}
 
 \begin{ModTable}
 
@@ -64,7 +66,7 @@
 
 \FloatBarrier
 
-\subsection{Modifications PS1-1AB $\to$ AC}
+\subsubsection{Modifications PS1-1AB $\to$ AC}
 
 \begin{ModTable}
 
@@ -93,7 +95,7 @@
 
 \FloatBarrier
 
-\subsection{Modifications PS1-1AA $\to$ BA}
+\subsubsection{Modifications PS1-1AA $\to$ BA}
 
 \begin{ModTable}
 
@@ -125,12 +127,12 @@
 {daniw}
 {2025-09-10}
 
-\ModItemOpen
+\ModItemDone
 {Insufficient memory}
 {The flash memory of the microcontroller is barely sufficient. As the \ac{OLED} display is replaced with a color LCD, additional memory is needed. }
 {It should be considered to replace the microcontroller with a similar type that includes more flash memory. The STM32G474 series seems to be suitable. An external \ac{QSPI} flash memory should be connected to the microcontroller. }
-{}
-{}
+{daniw}
+{2025-12-19}
 
 \ModItemDone
 {High voltage detection always active when battery powered}
@@ -139,12 +141,12 @@
 {daniw}
 {2025-09-11}
 
-\ModItemOpen
+\ModItemDone
 {Inrush current at startup}
 {The inrush current at startup is \qty{26}{\ampere}. This triggers the \ac{BMS}, which disables the device. }
-{A temporary workaround is to keep the startup button pushed until the \ac{BMS} resets. The \ac{BMS} switches the \acp{MOSFET} much slower which leads to a lower inrush current of approximately \qty{0.7}{\ampere}. \todo[inline]{Solution for inrush current problem}}
-{}
-{}
+{A precharge circuit should be added to the on/off controller to limit the inrush current. }
+{daniw}
+{2025-12-19}
 
 \ModItemDone
 {Low resolution for battery current measurement}
@@ -174,12 +176,12 @@
 {daniw}
 {2025-09-17}
 
-\ModItemOpen
+\ModItemDone
 {Noise on \acs{ADC} measurements}
 {The power supply for the \ac{ADC} contains noise. This is caused by the high peak supply current of the display, as well as the converter. This is especially critical, as the reference voltage for the internal \ac{ADC} is derived from the analog supply voltage. }
 {A separate supply voltage for the analog circuitry should be implemented using a linear regulator. }
-{}
-{}
+{daniw}
+{2025-12-19}
 
 \ModItemDone
 {High voltage detection sensitive to current from GPIO}
@@ -209,18 +211,27 @@
 {daniw}
 {2025-10-16}
 
-\ModItemOpen
+\ModItemDone
 {Incorrect gain of the V\_Sens measurement channel. }
 {The gain of the V\_Sens \ac{ADC} channel is too low by a factor of 6. This is caused by the voltage divider being loaded by the input impedance of the \ac{ADC} which is \qty{300}{\kilo\ohm}. }
 {An amplifier should be added between the voltage divider and the \ac{ADC}. }
-{}
-{}
+{daniw}
+{2025-12-19}
+
+\ModItemDone
+{Voltage dependence of isolation current limit}
+{The isolation measurement current limit using resistors is proportional to the voltage drop across it. }
+{A controlled current limiter should be implemented for the isolation measurement. }
+{daniw}
+{2025-12-19}
 
 \end{ModTable}
 
 \FloatBarrier
 
-\subsection{Modifications PS1-2AA $\to$ AB}
+\subsection{PS1-2 - User interface}
+
+\subsubsection{Modifications PS1-2AA $\to$ AB}
 
 \begin{ModTable}
 
@@ -235,7 +246,7 @@
 
 \FloatBarrier
 
-\subsection{Modifications PS1-2AB $\to$ AC}
+\subsubsection{Modifications PS1-2AB $\to$ AC}
 
 \begin{ModTable}
 
@@ -250,7 +261,7 @@
 
 \FloatBarrier
 
-\subsection{Modifications PS1-2AA $\to$ BA}
+\subsubsection{Modifications PS1-2AA $\to$ BA}
 
 \begin{ModTable}
 
@@ -275,18 +286,20 @@
 {daniw}
 {2025-09-09}
 
-\ModItemOpen
+\ModItemDone
 {Display readability in bright sunlight}
 {The display is barely readable when the device is used in bright sunlight. }
 {To be readable in direct sunlight a brightness of at least \qty{600}{\candela\per\square\meter} is required. A suitable replacement would be the type NHD-2.4-240320AF from Newhaven Display. In a dark environment the display will likely be too bright. It is recommended to use an ambient light sensor to adjust the brightness of the display to the environment. }
-{}
-{}
+{daniw}
+{2025-12-19}
 
 \end{ModTable}
 
 \FloatBarrier
 
-\subsection{Modifications on PS1-3 AA $\to$ AB}
+\subsection{PS1-3 - Programming adapter}
+
+\subsubsection{Modifications on PS1-3 AA $\to$ AB}
 
 \begin{ModTable}
 
@@ -308,7 +321,7 @@
 
 \FloatBarrier
 
-\subsection{Modifications on PS1-3 AA $\to$ BA}
+\subsubsection{Modifications on PS1-3 AA $\to$ BA}
 
 \begin{ModTable}
 
