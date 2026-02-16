@@ -6,14 +6,14 @@ close all;
 % 1.5M, 1.62M, 2.0M, 3.3M, 5.6M, 10M
 
 % HV detector
-R_H_DET =  [9.1e6,  10e6, 5.6e6,   10e6, 5.6e6, 3.3e6, 3.3e6];
-num_R_H_DET =  [4,     6,     6,      4,     5,     8,     5];
-R_L_DET =  [1.3e6, 2.0e6, 1.0e6,  1.5e6, 1.0e6, 910e3, 560e3];
+R_H_DET =  [9.1e6,  10e6, 5.6e6,   10e6, 5.6e6, 5.6e6, 3.3e6, 3.3e6];
+num_R_H_DET =  [4,     6,     6,      4,     5,     5,     8,     5];
+R_L_DET =  [1.3e6, 2.0e6, 1.0e6,  1.5e6, 1.0e6, 1.0e6, 910e3, 560e3];
 
 % Measurement
-R_H_MEAS = [1.8e6, 1.5e6, 1.5e6, 1.62e6, 2.0e6, 2.0e6, 3.3e6];
-num_R_H_MEAS = [4,     4,     5,      4,     4,     4,     4];
-R_L_MEAS = [7.5e3, 6.2e3, 7.5e3,  6.8e3, 8.2e3, 8.2e3,  13e3];
+R_H_MEAS = [1.8e6, 1.5e6, 1.5e6, 1.62e6, 2.0e6, 2.0e6, 2.0e6, 3.3e6];
+num_R_H_MEAS = [4,     4,     5,      4,     4,     4,     4,     4];
+R_L_MEAS = [7.5e3, 6.2e3, 7.5e3,  6.8e3, 8.2e3, 8.0e3, 8.2e3,  13e3];
 
 % Input resistance
 R_IN_DET = R_H_DET .* num_R_H_DET + R_L_DET;
