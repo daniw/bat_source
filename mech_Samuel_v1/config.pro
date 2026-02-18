@@ -1,0 +1,17 @@
+﻿drawing_setup_file $PRO_DIRECTORY\text\prodetail.dtl
+format_setup_file $PRO_DIRECTORY\text\prodetail.dtl
+pro_unit_length unit_mm
+pro_unit_mass unit_kilogram
+template_designasm $PRO_DIRECTORY\templates\mmks_asm_design_abs.asm
+template_new_ecadasm $PRO_DIRECTORY\templates\mmks_ecad_asm_abs.asm
+template_drawing $PRO_DIRECTORY\templates\c_drawing.drw
+template_sheetmetalpart $PRO_DIRECTORY\templates\mmns_part_sheetmetal_abs.prt
+template_solidpart $PRO_DIRECTORY\templates\solid_part_mmks_abs.prt
+template_boardpart $PRO_DIRECTORY\templates\mmks_ecad_board_abs.prt
+todays_date_note_format %Mmm-%dd-%yy
+tolerance_standard ansi
+weld_ui_standard ansi
+search_path_file $CREO_COMMON_FILES\ifx\parts\prolibrary\search.pro
+pro_unit_sys mks
+search_path_file D:\GIT_Projekte\bat_source\mech_Samuel\search.pro
+save_file_iterations no
