@@ -91,6 +91,73 @@ flowchart TD
 
 ````
 
+## Anpassungen im CAD-Modell
+
+* Hauptplatine wird mit vier metrischen Schrauben befestigt.
+
+* In das Gehäuse müssen vier Hülsen mit Gewinde eingeschmolzen werden.
+
+* Welche Schrauben können sinnvoll genutzt werden? Bei Bedarf müssen die Röhren-Füße verlängert und die Zellhalter niedriger werden, damit kürzere Schrauben verwendet werden können.
+
+* 3D-Modell DIN M3x25 und Einschmelzgewinde suche, runterladen und einbauen.
+
+https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
+
+* Vier Schrauben raussuchen für die Verbindung zwischen Deckel und Gehäuse
+* Dichtung zwischen Deckel und Gehäuse auf die Innenseite der Schrauben verlegen. Schrauben-Rohr viel weiter nach außen, direkt in die Ecke. Dasselbe gilt für den Deckel der Sicherung.
+
+* Deckel der Sicherung so machen, dass man damit die Sicherung reindrücken kann. Zwischen Deckel und Sicherung ein Band machen, mit dem man mit dem Deckel die Sicherung rausziehen kann.
+
+* Deckel für die Sicherung muss viel größer werden. Nachbauen, drucken und testen.
+
+* Rundung unten außen machen, dass man die PS besser greifen kann. Es sollten mindestens 10mm Radius sein, mehr wäre besser. Was macht die Wandstärke damit? Welche Rundung geht dann noch innen? Wie passt das mit den Zellenhaltern?
+
+* Schrauben zwischen Hauptplatine und Gehäuse: M3x40, https://www.bossard.com/ch-de/eshop/schrauben-mit-innenantrieb/zylinderschrauben-mit-innensechskant-mit-schaft/p/4/
+
+* Andere Schraube, M3x25: https://www.bossard.com/ch-de/eshop/schrauben-mit-innenantrieb/zylinderschrauben-mit-innensechskant-ohne-schaft/p/272/
+
+* Oberkante vom Encoder definiert die Innenseite vom Deckel. Die Taster definieren die Außenkante vom Deckel und liegen auf dem Deckel auf.
+
+* UI-Platine am Deckel muss von innen an den Deckel geschraubt werden. Aufgrund der geringeren Kräfte sind hier Kunststoff-Schrauben ausreichend.
+
+* Auszugkraft der Stiftleiste: 0.6 N = 60 gramm pro Pin. Gesamtkraft: 24x0.6N = 14.4N = 1.440 kg.
+
+* Auf die LED der UI-Platine einen Lichtleiter machen. Einfacher Zylinder mit Halbkugel oben drüber. Dazu dann vier Bohrungen in den Deckel machen. Müssen dann eingeklabt werden. Die Lichtleiter haben keinen direkten Kontakt zu den LED.
+
+* Dichtring mit 12mm-Innendurchmesser unter die Bananen-Stecker machen, damit die gedichtet sind.
+
+* Stecker: Spannscheibe und Ringmutter mit ins Modell reinnehmen.
+
+* Gehäuse soll aus ABS gedruckt werden. Grobe Abschätzung der Kosten machen. Basierend auf bambu-Filament. https://eu.store.bambulab.com/de/products/abs-filament
+
+* Ungefähre Abmessungen für die Verschraubung des Deckels: 166x77,5 und 4.5x7.5
+
+## Dichtung Abmessungen
+
+* Radius Ecken 3mm
+
+* Breite 1.5mm
+
+* Dichtung liegt mittig. Abstand zur Innenkante 0.75mm
+
+## Dichtunge Abmessungen IMD-Tester
+
+* Box hat Nase, die die Dichtung im Deckel drückt. Kante hat Breite von 1.5mm. Ende sauber auf der Innenseite vom Gehäuse. Kante ist 1.5mm hoch.
+
+* Dichtung liegt im Deckel. Fuge für die Dichtung ist 2.5mm breite. Dichtung selbst ist auch 2-2.5mm breit.
+
+## Weiteres Vorgehen in der Konstruktion:
+
+* Gehäuse nochmal neu machen. Wichtig: Rundungen unten außen machen zum besseren Anheben.
+
+* Dann die Füße für den Deckel machen und die Dichtung auf die Innenseite der Schrauben legen.
+
+* Zylinder-Röhren-Füße anpassen für Einschmelzgewinde für die Platine.
+
+* Bohrungen in den Zellenhaltern etwas größer machen, dass safe eine M3 durchgeht.
+
+* Bohrungen in die Zellenhalter machen, damit man die Hauptplatine und die Zellenhalter verschrauben kann.
+
 ## Aufbau, Variante 2
 
 
