@@ -137,6 +137,8 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 	* Taster: Durchmesser 12mm; Breite zwischen den beiden Abflachungen: 11.19 (Länge Abflachung: 4.33404)
 	* Poti: Länge: 13.75, Breite 11.70, Durchmesser unten 7, Höhe Zylinder 7, Nase 2x0.8, Abstand Nase 0.1
 
+* Dichtungen am Deckel für die Sicherung: Gerundete Varianten wegmachen. Es bleibt die ganz gerade Variante übrig und wird verwendet. Wandstärke nach innen hin von 0.5mm auf 1mm erhöhen. An der Lid müssen noch für die beiden Schrauben Vertiefungen gemacht werden, wo die Schrauben-Köpfe reinpassen.
+
 ## Dichtung Abmessungen
 
 * Radius Ecken 3mm
@@ -162,6 +164,14 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 * Bohrungen in den Zellenhaltern etwas größer machen, dass safe eine M3 durchgeht.
 
 * Bohrungen in die Zellenhalter machen, damit man die Hauptplatine und die Zellenhalter verschrauben kann.
+
+* Dichtung und Deckel für die Sicherung anpassen. 
+
+* Passende Schrauben suchen und als Modell einbauen.
+
+* Überlegen, wie man ein Spiel in alle drei Raumrichtungen einbauen kann, siehe Diskussion mit Luise. Es dürfen keine Kräfte auf den Viel-Pin-Stecker ausgeübt werden. Und Fertigungstoleranzen müssen ausgeglichen werden können.
+
+* Reste der Dichtungen an der Fuse-Lid aufräumen. Dateien passend umbenennen.
 
 ## Aufbau, Variante 2
 
