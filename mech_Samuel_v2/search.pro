@@ -17,6 +17,8 @@
 !
 !
 
+! Bei den Suchpfad koennte es ausreichend sein, wenn nur der dritte Block da ist mit den Relativ-Pfaden.
+
 D:\GIT_Projekte\e-scruti-box
 D:\GIT_Projekte\bat_source
 D:\GIT_Projekte\bat_source\mech_Samuel_v2
@@ -24,6 +26,19 @@ D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
+
+C:\GIT_Projekte\bat_source
+C:\GIT_Projekte\bat_source\mech_Samuel_v2
+C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine
+C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
+C:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
+C:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
+
+
+\01_Hauptplatine
+\02_UserInterface
+\99_PCB_step_files_leer_geraeumt\Hauptplatine
+\99_PCB_step_files_leer_geraeumt\UserInterface
 
 
 "$CREO_COMMON_FILES\ifx\parts\prolibrary\eng_part_lib\cot_clvs_pin"

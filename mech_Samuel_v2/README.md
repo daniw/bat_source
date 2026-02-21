@@ -132,6 +132,11 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 
 * Ungefähre Abmessungen für die Verschraubung des Deckels: 166x77,5 und 4.5x7.5
 
+* Abmessungen der Taster und vom Poti
+
+	* Taster: Durchmesser 12mm; Breite zwischen den beiden Abflachungen: 11.19 (Länge Abflachung: 4.33404)
+	* Poti: Länge: 13.75, Breite 11.70, Durchmesser unten 7, Höhe Zylinder 7, Nase 2x0.8, Abstand Nase 0.1
+
 ## Dichtung Abmessungen
 
 * Radius Ecken 3mm
