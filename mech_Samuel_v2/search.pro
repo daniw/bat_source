@@ -17,28 +17,27 @@
 !
 !
 
-! Bei den Suchpfad koennte es ausreichend sein, wenn nur der dritte Block da ist mit den Relativ-Pfaden.
+! Two additional search-paths for the e-scruti-box and the bat_source. They are probably not neccessary.
 
 D:\GIT_Projekte\e-scruti-box
 D:\GIT_Projekte\bat_source
-D:\GIT_Projekte\bat_source\mech_Samuel_v2
-D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine
-D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
-D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
-D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
-
-C:\GIT_Projekte\bat_source
-C:\GIT_Projekte\bat_source\mech_Samuel_v2
-C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine
-C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
-C:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
-C:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
 
 
-\01_Hauptplatine
-\02_UserInterface
-\99_PCB_step_files_leer_geraeumt\Hauptplatine
-\99_PCB_step_files_leer_geraeumt\UserInterface
+! Extracted step-files from the PCBs. Usage is normally only the newest one.
+! To avoid conflicts, only the newest ones are added to the search-paths.
+
+! Extrahierte step-Dateien der Platinen, die vom  Die werden vom Modell verwendet. In der Regel immer die aktuelleste.
+
+! Version 1 16.02.2026
+! "D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D STEP_2026-02-16"
+! "D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D STEP_2026-02-16"
+
+Version 2, 20.02.2026
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-02-20"
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D_STEP_2026-02-20"
+
+% D:\GIT_Projekte\bat_source\mech_Samuel_v2\
+
 
 
 "$CREO_COMMON_FILES\ifx\parts\prolibrary\eng_part_lib\cot_clvs_pin"

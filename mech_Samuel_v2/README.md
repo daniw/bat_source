@@ -95,49 +95,89 @@ flowchart TD
 
 * Hauptplatine wird mit vier metrischen Schrauben befestigt.
 
-* In das Gehäuse müssen vier Hülsen mit Gewinde eingeschmolzen werden.
-
 * Welche Schrauben können sinnvoll genutzt werden? Bei Bedarf müssen die Röhren-Füße verlängert und die Zellhalter niedriger werden, damit kürzere Schrauben verwendet werden können.
-
-* 3D-Modell DIN M3x25 und Einschmelzgewinde suche, runterladen und einbauen.
-
-https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
-
-* Vier Schrauben raussuchen für die Verbindung zwischen Deckel und Gehäuse
-* Dichtung zwischen Deckel und Gehäuse auf die Innenseite der Schrauben verlegen. Schrauben-Rohr viel weiter nach außen, direkt in die Ecke. Dasselbe gilt für den Deckel der Sicherung.
 
 * Deckel der Sicherung so machen, dass man damit die Sicherung reindrücken kann. Zwischen Deckel und Sicherung ein Band machen, mit dem man mit dem Deckel die Sicherung rausziehen kann.
 
 * Deckel für die Sicherung muss viel größer werden. Nachbauen, drucken und testen.
 
-* Rundung unten außen machen, dass man die PS besser greifen kann. Es sollten mindestens 10mm Radius sein, mehr wäre besser. Was macht die Wandstärke damit? Welche Rundung geht dann noch innen? Wie passt das mit den Zellenhaltern?
-
 * Schrauben zwischen Hauptplatine und Gehäuse: M3x40, https://www.bossard.com/ch-de/eshop/schrauben-mit-innenantrieb/zylinderschrauben-mit-innensechskant-mit-schaft/p/4/
 
 * Andere Schraube, M3x25: https://www.bossard.com/ch-de/eshop/schrauben-mit-innenantrieb/zylinderschrauben-mit-innensechskant-ohne-schaft/p/272/
-
-* Oberkante vom Encoder definiert die Innenseite vom Deckel. Die Taster definieren die Außenkante vom Deckel und liegen auf dem Deckel auf.
 
 * UI-Platine am Deckel muss von innen an den Deckel geschraubt werden. Aufgrund der geringeren Kräfte sind hier Kunststoff-Schrauben ausreichend.
 
 * Auszugkraft der Stiftleiste: 0.6 N = 60 gramm pro Pin. Gesamtkraft: 24x0.6N = 14.4N = 1.440 kg.
 
-* Auf die LED der UI-Platine einen Lichtleiter machen. Einfacher Zylinder mit Halbkugel oben drüber. Dazu dann vier Bohrungen in den Deckel machen. Müssen dann eingeklabt werden. Die Lichtleiter haben keinen direkten Kontakt zu den LED.
-
-* Dichtring mit 12mm-Innendurchmesser unter die Bananen-Stecker machen, damit die gedichtet sind.
-
 * Stecker: Spannscheibe und Ringmutter mit ins Modell reinnehmen.
 
 * Gehäuse soll aus ABS gedruckt werden. Grobe Abschätzung der Kosten machen. Basierend auf bambu-Filament. https://eu.store.bambulab.com/de/products/abs-filament
 
-* Ungefähre Abmessungen für die Verschraubung des Deckels: 166x77,5 und 4.5x7.5
+* Dichtungen am Deckel für die Sicherung: Gerundete Varianten wegmachen. Es bleibt die ganz gerade Variante übrig und wird verwendet. Wandstärke nach innen hin von 0.5mm auf 1mm erhöhen. An der Lid müssen noch für die beiden Schrauben Vertiefungen gemacht werden, wo die Schrauben-Köpfe reinpassen.
+
+* Alle Dateien umbenennen. Ziel: bessere Struktur der Bauteile, die zum Gehäuse-Teil und die zum Deckel-Teil gehören.
+	* Main-Assembly: 00
+	* Gehäuse: 01
+	* Deckel: 02
+
+* Übersicht allers Dateien und Ordner, die umbenannt werden müssen
+Alter Dateiname                       | Neuer Dateiname                   | Status                                                                       | Baugruppe
+----                                  | ----                              | ----                                                                         | ----
+01_Hauptplatine                       |                                   | noch_nicht_umbenannt                                                         | Baugruppe
+02_UserInterface                      |                                   | noch_nicht_umbenannt                                                         | Baugruppe
+80_step_m3f_files                     |                                   | noch_nicht_umbenannt                                                         | Baugruppe
+99_PCB_step_files_leer_geraeumt       |                                   | noch_nicht_umbenannt                                                         | Baugruppe
+02_pcb_assembly.asm                   | 00_02_pcb_assembly.asm                                  | noch_nicht_umbenannt                                   | Baugruppe
+02b_banana_position_skeleton.prt      | 00_02b_banana_position_skeleton.prt                                  | noch_nicht_umbenannt                      | Baugruppe
+05_cell_holder.prt                    | 01_05_cell_holder.prt                                  | noch_nicht_umbenannt                                    | Baugruppe
+10_main_pcb_assembly.asm              | 00_10_main_pcb_assembly.asm              | noch_nicht_umbenannt                                                  | Baugruppe
+90_battery_holder-holder_cut.prt      | 90_01_battery_holder-holder_cut.prt                                  | noch_nicht_umbenannt                      | Baugruppe
+90_cbox11004-körper.prt               | 90_02_cbox11004-körper.prt                                  | noch_nicht_umbenannt                               | Baugruppe
+90_holder_banana_plugs_drill.prt      | 90_03_holder_banana_plugs_drill.prt                                  | noch_nicht_umbenannt                      | Baugruppe
+00_main_assembly.asm                  | 00_00_main_assembly.asm           | Fertig. In der Assembly sind alle Dateien umbenannt.                         | Baugruppe
+00a_housing_assembly.asm              | 01_00_housing_assembly.asm        | Fertig                                                                       | Baugruppe
+00b_lid_assembly.asm                  | 02_00_lid_assembly.asm            | Fertig. In der Assembly sind bis auf die Platine alle Dateien umbenannt.     | Baugruppe
+00c_housing_lid_assembly.asm          | 00_01_mechanical_assembly.asm     | Fertig. In der Assembly sind alle Dateien umbenannt.                         | Baugruppe
+01_housing.prt                        | 01_01_housing.prt                 | Fertig                                                                       | Baugruppe
+02_lid.prt                            | 02_01_lid.prt                     | Fertig                                                                       | Baugruppe
+02_lid__Window_Deep.prt               | 02_01_lid__Window_Deep.prt        | Fertig                                                                       | Baugruppe
+03_seal.prt                           | 02_03_seal.prt                    | Fertig                                                                       | Baugruppe
+04_fuse_seal.prt                      | 01_04_fuse_seal                   | Fertig                                                                       | Baugruppe
+04_fuse_seal_a.prt                    | 01_04_fuse_seal_a.prt             | Fertig                                                                       | Baugruppe
+04_seal_fuse_b.prt                    | 01_04_fuse_seal_b.prt             | Fertig                                                                       | Baugruppe
+06_fuse_lid.prt                       | 01_06_fuse_lid.prt                | Fertig                                                                       | Baugruppe
+07_m3_einschmelzmutter.prt            | 01_07_m3_einschmelzmutter.prt     | Fertig                                                                       | Baugruppe
+09_lichtleiter.prt                    | 02_09_lichtleiter.prt             | Fertig                                                                       | Baugruppe
+11_display_window.prt                 | 02_11_display_window.prt          | Fertig                                                                       | Baugruppe
+
+
+### Anpassungen im CAD-Modell erledigt
+
+* Auf die LED der UI-Platine einen Lichtleiter machen. Einfacher Zylinder mit Halbkugel oben drüber. Dazu dann vier Bohrungen in den Deckel machen. Müssen dann eingeklabt werden. Die Lichtleiter haben keinen direkten Kontakt zu den LED.
+
+* Dichtring mit 12mm-Innendurchmesser unter die Bananen-Stecker machen, damit die gedichtet sind.
+
 
 * Abmessungen der Taster und vom Poti
 
 	* Taster: Durchmesser 12mm; Breite zwischen den beiden Abflachungen: 11.19 (Länge Abflachung: 4.33404)
 	* Poti: Länge: 13.75, Breite 11.70, Durchmesser unten 7, Höhe Zylinder 7, Nase 2x0.8, Abstand Nase 0.1
 
-* Dichtungen am Deckel für die Sicherung: Gerundete Varianten wegmachen. Es bleibt die ganz gerade Variante übrig und wird verwendet. Wandstärke nach innen hin von 0.5mm auf 1mm erhöhen. An der Lid müssen noch für die beiden Schrauben Vertiefungen gemacht werden, wo die Schrauben-Köpfe reinpassen.
+* Rundung unten außen machen, dass man die PS besser greifen kann. Es sollten mindestens 10mm Radius sein, mehr wäre besser. Was macht die Wandstärke damit? Welche Rundung geht dann noch innen? Wie passt das mit den Zellenhaltern?
+
+* In das Gehäuse müssen vier Hülsen mit Gewinde eingeschmolzen werden.
+
+* 3D-Modell DIN M3x25 und Einschmelzgewinde suche, runterladen und einbauen.
+
+https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
+
+* Vier Schrauben raussuchen für die Verbindung zwischen Deckel und Gehäuse
+
+* Dichtung zwischen Deckel und Gehäuse auf die Innenseite der Schrauben verlegen. Schrauben-Rohr viel weiter nach außen, direkt in die Ecke. Dasselbe gilt für den Deckel der Sicherung.
+
+* Oberkante vom Encoder definiert die Innenseite vom Deckel. Die Taster definieren die Außenkante vom Deckel und liegen auf dem Deckel auf.
+
+
 
 ## Dichtung Abmessungen
 
