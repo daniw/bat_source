@@ -28,15 +28,24 @@ D:\GIT_Projekte\bat_source
 
 ! Extrahierte step-Dateien der Platinen, die vom  Die werden vom Modell verwendet. In der Regel immer die aktuelleste.
 
-! Version 1 16.02.2026
+! Version 1 16.02.2026 - WORKSTATION
 ! "D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D STEP_2026-02-16"
 ! "D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D STEP_2026-02-16"
 
-Version 2, 20.02.2026
+! Version 1 16.02.2026 - LAPTOP
+! "C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D STEP_2026-02-16"
+! "C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D STEP_2026-02-16"
+
+! Version 2, 20.02.2026 - WORKSTATION
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-02-20"
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D_STEP_2026-02-20"
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
 
-% D:\GIT_Projekte\bat_source\mech_Samuel_v2\
+! Version 2, 20.02.2026 - LAPTOP
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-02-20"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D_STEP_2026-02-20"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
+
 
 
 
