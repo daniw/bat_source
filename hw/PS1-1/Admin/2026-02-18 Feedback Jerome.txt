@@ -1,0 +1,12 @@
+LMG2100R044: Cutout unter Bootstrap
+D14 nahe an Zelle
+SW1 Kollision mit Zellenhalter
+Cutout unter SW node von Flyback
+Kühlung current limiter
+
+
+"Protection against spread of fire" (chp 9 von IEC 61010-1)
+Braucht Basic Isolation min vor Sicherung (=5.5mm CAT II 1000V)
+16mm für Reinforced CAT III 1000V
+11mm für Reinforced CAT II 1000V
+(Anhang K)
