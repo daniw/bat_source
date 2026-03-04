@@ -15,9 +15,9 @@ LifeCycleDefinitionGUID=
 RevisionNamingSchemeGUID=
 
 [OutputGroup1]
-Name=PS1-1BA.OutJob
+Name=PS1-2BA.OutJob
 Description=
-TargetOutputMedium=46 - PCB Assembly - 3D PDF
+TargetOutputMedium=41 - PCB Assembly - Schematic
 VariantName=PS1-2
 VariantScope=1
 CurrentConfigurationName=
@@ -46,7 +46,7 @@ OutputName1=Schematic
 OutputCategory1=Documentation
 OutputDocumentPath1=[Project Physical Documents]
 OutputVariantName1=
-OutputEnabled1=0
+OutputEnabled1=1
 OutputEnabled1_OutputMedium1=0
 OutputEnabled1_OutputMedium2=1
 OutputEnabled1_OutputMedium3=0
@@ -394,7 +394,7 @@ OutputName12=PDF3D
 OutputCategory12=Documentation
 OutputDocumentPath12=PS1-2B-BASIS.PcbDoc
 OutputVariantName12=
-OutputEnabled12=1
+OutputEnabled12=0
 OutputEnabled12_OutputMedium1=0
 OutputEnabled12_OutputMedium2=0
 OutputEnabled12_OutputMedium3=0
@@ -468,7 +468,7 @@ Configuration14_Name6=VisibleOrder_Flat
 Configuration14_Item6=Comment=120|Designator=120|Footprint=100|Supplier Part Number 3=100
 
 [PublishSettings]
-OutputFilePath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
+OutputFilePath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\01 - PCB Manufacturing\
 ReleaseManaged1=0
 OutputBasePath1=Manufacturing\
 OutputPathMedia1=01 - PCB Manufacturing
@@ -643,7 +643,7 @@ ShowComponentParameters7=1
 GlobalBookmarks7=0
 PDFACompliance7=Disabled
 PDFVersion7=Default
-OutputFilePath8=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+OutputFilePath8=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\04 - PCB Assembly\
 ReleaseManaged8=0
 OutputBasePath8=Manufacturing\
 OutputPathMedia8=04 - PCB Assembly
@@ -656,7 +656,7 @@ OutputFileNameMulti8==PCB_Title+Index_Main+Index_Sub+'_'+OutputName+'_'+CurrentD
 UseOutputNameForMulti8=0
 OutputFileNameSpecial8=
 OpenOutput8=0
-OutputFilePath9=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\05 - Mechanical\
+OutputFilePath9=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\05 - Mechanical\
 ReleaseManaged9=0
 OutputBasePath9=Manufacturing\
 OutputPathMedia9=05 - Mechanical
@@ -671,7 +671,7 @@ OutputFileNameSpecial9=
 OpenOutput9=0
 
 [GeneratedFilesSettings]
-RelativeOutputPath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
+RelativeOutputPath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\01 - PCB Manufacturing\
 OpenOutputs1=0
 AddToProject1=0
 TimestampFolder1=0
@@ -693,7 +693,7 @@ RelativeOutputPath6=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\04 - PCB Ass
 OpenOutputs6=0
 RelativeOutputPath7=C:\Daten\Temp\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
 OpenOutputs7=0
-RelativeOutputPath8=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+RelativeOutputPath8=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\04 - PCB Assembly\
 OpenOutputs8=0
 AddToProject8=0
 TimestampFolder8=0
@@ -703,7 +703,7 @@ OpenGerberOutput8=0
 OpenNCDrillOutput8=0
 OpenIPCOutput8=0
 EnableReload8=0
-RelativeOutputPath9=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\05 - Mechanical\
+RelativeOutputPath9=C:\Daten\Daniel\ele\bat_source\hw\PS1-2\Manufacturing\05 - Mechanical\
 OpenOutputs9=0
 AddToProject9=0
 TimestampFolder9=0
