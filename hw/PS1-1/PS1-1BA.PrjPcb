@@ -673,7 +673,7 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=140
+VariationCount=155
 Variation1=Designator=R125|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
 Variation2=Designator=R127|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
 Variation3=Designator=C62|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
@@ -738,28 +738,28 @@ Variation7=Designator=C138|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
 Variation8=Designator=J5|UniqueId=\JMGMUPPD\INWGCOFH|Kind=1|AlternatePart=
 Variation9=Designator=J4|UniqueId=\JMGMUPPD\ZZYVAOMH|Kind=1|AlternatePart=
 Variation10=Designator=C45|UniqueId=\DQZMXLQE\TWMHFQIF|Kind=1|AlternatePart=
-Variation11=Designator=C49|UniqueId=\DQZMXLQE\DNBFGLPY|Kind=1|AlternatePart=
+Variation11=Designator=C50|UniqueId=\DQZMXLQE\DNBFGLPY|Kind=1|AlternatePart=
 Variation12=Designator=C47|UniqueId=\DQZMXLQE\WGVWECJW|Kind=1|AlternatePart=
 Variation13=Designator=L3|UniqueId=\DQZMXLQE\QXJXSNLL|Kind=1|AlternatePart=
 Variation14=Designator=D9|UniqueId=\DQZMXLQE\YMVDKXQM|Kind=1|AlternatePart=
 Variation15=Designator=C46|UniqueId=\DQZMXLQE\XZLQXBOT|Kind=1|AlternatePart=
 Variation16=Designator=C48|UniqueId=\DQZMXLQE\BBHRYDTC|Kind=1|AlternatePart=
-Variation17=Designator=R71|UniqueId=\DQZMXLQE\RHMEFUVI|Kind=1|AlternatePart=
+Variation17=Designator=R69|UniqueId=\DQZMXLQE\RHMEFUVI|Kind=1|AlternatePart=
 Variation18=Designator=R63|UniqueId=\DQZMXLQE\UGQMQWNM|Kind=1|AlternatePart=
 Variation19=Designator=R73|UniqueId=\DQZMXLQE\WBNUSSDM|Kind=1|AlternatePart=
 Variation20=Designator=R62|UniqueId=\DQZMXLQE\ZNENSJCZ|Kind=1|AlternatePart=
 Variation21=Designator=R64|UniqueId=\DQZMXLQE\TUPAQOIR|Kind=1|AlternatePart=
-Variation22=Designator=R67|UniqueId=\DQZMXLQE\ABKANDGJ|Kind=1|AlternatePart=
+Variation22=Designator=R68|UniqueId=\DQZMXLQE\ABKANDGJ|Kind=1|AlternatePart=
 Variation23=Designator=R65|UniqueId=\DQZMXLQE\TLBEDYUN|Kind=1|AlternatePart=
 Variation24=Designator=Q21|UniqueId=\DQZMXLQE\DMVZEITS|Kind=1|AlternatePart=
 Variation25=Designator=U7|UniqueId=\DQZMXLQE\XBAYZAKZ|Kind=1|AlternatePart=
 Variation26=Designator=R66|UniqueId=\DQZMXLQE\XZVFMGHQ|Kind=1|AlternatePart=
-Variation27=Designator=R68|UniqueId=\DQZMXLQE\DQBJPWQP|Kind=1|AlternatePart=
+Variation27=Designator=R71|UniqueId=\DQZMXLQE\DQBJPWQP|Kind=1|AlternatePart=
 Variation28=Designator=Q22|UniqueId=\DQZMXLQE\XEIMIZIW|Kind=1|AlternatePart=
-Variation29=Designator=R70|UniqueId=\DQZMXLQE\XCLIYCOU|Kind=1|AlternatePart=
+Variation29=Designator=R67|UniqueId=\DQZMXLQE\XCLIYCOU|Kind=1|AlternatePart=
 Variation30=Designator=R60|UniqueId=\DQZMXLQE\WIARVUOS|Kind=1|AlternatePart=
 Variation31=Designator=R61|UniqueId=\DQZMXLQE\VWLPYSVU|Kind=1|AlternatePart=
-Variation32=Designator=R72|UniqueId=\DQZMXLQE\WLXIFDQF|Kind=1|AlternatePart=
+Variation32=Designator=R70|UniqueId=\DQZMXLQE\WLXIFDQF|Kind=1|AlternatePart=
 Variation33=Designator=Q23|UniqueId=\DQZMXLQE\VZBOEUFY|Kind=1|AlternatePart=
 Variation34=Designator=D10|UniqueId=\DQZMXLQE\CQHABYUQ\IVRZFYUF|Kind=1|AlternatePart=
 Variation35=Designator=Q24|UniqueId=\DQZMXLQE\CQHABYUQ\MVNXLCFQ|Kind=1|AlternatePart=
@@ -900,6 +900,21 @@ Variation137=Designator=R238|UniqueId=\WETRPCDH\WOAPGENC|Kind=1|AlternatePart=
 Variation138=Designator=C128|UniqueId=\NADDTKDW\RLCKGLWB|Kind=1|AlternatePart=
 Variation139=Designator=R48|UniqueId=\DMUNOPTP\QDNCJLVT|Kind=1|AlternatePart=
 Variation140=Designator=R49|UniqueId=\DMUNOPTP\EDBNBSZO|Kind=1|AlternatePart=
+Variation141=Designator=C49|UniqueId=\DQZMXLQE\ZHLLANTU|Kind=1|AlternatePart=
+Variation142=Designator=R72|UniqueId=\DQZMXLQE\PKRPQEYQ|Kind=1|AlternatePart=
+Variation143=Designator=D17|UniqueId=\GYUGFWKW\VJQAGTRB|Kind=1|AlternatePart=
+Variation144=Designator=R101|UniqueId=\GYUGFWKW\CWJFWNIX|Kind=1|AlternatePart=
+Variation145=Designator=C69|UniqueId=\JMGMUPPD\UUINQEWE\XMLQOLZX|Kind=1|AlternatePart=
+Variation146=Designator=R182|UniqueId=\ODRUASON\AEULGUKV|Kind=1|AlternatePart=
+Variation147=Designator=R183|UniqueId=\ODRUASON\SJPXFHDK|Kind=1|AlternatePart=
+Variation148=Designator=R195|UniqueId=\ODRUASON\DUIOQGUN|Kind=1|AlternatePart=
+Variation149=Designator=R185|UniqueId=\ODRUASON\TZXRZALW|Kind=1|AlternatePart=
+Variation150=Designator=R189|UniqueId=\ODRUASON\OHVCNANJ|Kind=1|AlternatePart=
+Variation151=Designator=R196|UniqueId=\ODRUASON\QWYMWNPG|Kind=1|AlternatePart=
+Variation152=Designator=C83|UniqueId=\ODRUASON\JETTDBAM|Kind=1|AlternatePart=
+Variation153=Designator=R198|UniqueId=\ODRUASON\OPBTZFWO|Kind=1|AlternatePart=
+Variation154=Designator=R199|UniqueId=\ODRUASON\LIFMJONC|Kind=1|AlternatePart=
+Variation155=Designator=C80|UniqueId=\ODRUASON\ENVNZLJP|Kind=1|AlternatePart=
 ParamVariationCount=43
 
 [Parameter3_1]
@@ -2125,9 +2140,9 @@ UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/D$
-ComponentDesignItemID0=BZT52C68
-ComponentSymbolReference0=D_Zener
+ComponentLibraryIdentifier0=daniw_altium_lib.DbLib/R$
+ComponentDesignItemID0=43K/0603
+ComponentSymbolReference0=R
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -2151,38 +2166,40 @@ ParameterName2=Component Kind
 ParameterUpdate2=1
 ParameterName3=Description
 ParameterUpdate3=1
-ParameterName4=HelpURL
+ParameterName4=Eurocircuits GPN
 ParameterUpdate4=1
-ParameterName5=Library Reference
+ParameterName5=HelpURL
 ParameterUpdate5=1
-ParameterName6=Manufacturer
+ParameterName6=Library Reference
 ParameterUpdate6=1
-ParameterName7=Manufacturer 1
+ParameterName7=Manufacturer
 ParameterUpdate7=1
-ParameterName8=Manufacturer 2
+ParameterName8=Manufacturer 1
 ParameterUpdate8=1
-ParameterName9=Manufacturer Part Number 1
+ParameterName9=Manufacturer 2
 ParameterUpdate9=1
-ParameterName10=Manufacturer Part Number 2
+ParameterName10=Manufacturer Part Number 1
 ParameterUpdate10=1
-ParameterName11=Package
+ParameterName11=Manufacturer Part Number 2
 ParameterUpdate11=1
-ParameterName12=Part Number
+ParameterName12=Package
 ParameterUpdate12=1
-ParameterName13=Supplier 1
+ParameterName13=Part Number
 ParameterUpdate13=1
-ParameterName14=Supplier 2
+ParameterName14=Supplier 1
 ParameterUpdate14=1
-ParameterName15=Supplier Part Number 1
+ParameterName15=Supplier 2
 ParameterUpdate15=1
-ParameterName16=Supplier Part Number 2
+ParameterName16=Supplier Part Number 1
 ParameterUpdate16=1
-ParameterName17=Value
+ParameterName17=Supplier Part Number 2
 ParameterUpdate17=1
+ParameterName18=Value
+ParameterUpdate18=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=SOD3718X125
+ModelName0=R0603-0.40-WW
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
