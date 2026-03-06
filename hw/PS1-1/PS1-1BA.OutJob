@@ -17,11 +17,11 @@ RevisionNamingSchemeGUID=
 [OutputGroup1]
 Name=PS1-1BA.OutJob
 Description=
-TargetOutputMedium=41 - PCB Assembly - Schematic
+TargetOutputMedium=48 - PCB 3D Print
 VariantName=PS1-1
 VariantScope=1
 CurrentConfigurationName=
-TargetPrinter=Virtual Printer
+TargetPrinter=\\SCHSPR02\SCHPAB3_ENTWICKLUNG
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 OutputMedium1=11 - PCB Manufacturing - Gerber & Drill
 OutputMedium1_Type=GeneratedFiles
@@ -41,12 +41,14 @@ OutputMedium8=47 - PCB Assembly - Pick & Place
 OutputMedium8_Type=GeneratedFiles
 OutputMedium9=51 - Mechanical
 OutputMedium9_Type=GeneratedFiles
+OutputMedium10=48 - PCB 3D Print
+OutputMedium10_Type=GeneratedFiles
 OutputType1=Schematic Print
 OutputName1=Schematic
 OutputCategory1=Documentation
 OutputDocumentPath1=[Project Physical Documents]
 OutputVariantName1=
-OutputEnabled1=1
+OutputEnabled1=0
 OutputEnabled1_OutputMedium1=0
 OutputEnabled1_OutputMedium2=1
 OutputEnabled1_OutputMedium3=0
@@ -56,10 +58,11 @@ OutputEnabled1_OutputMedium6=0
 OutputEnabled1_OutputMedium7=0
 OutputEnabled1_OutputMedium8=0
 OutputEnabled1_OutputMedium9=0
+OutputEnabled1_OutputMedium10=0
 OutputDefault1=0
 PageOptions1=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=0.73|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PrintScaleName=PrintFitPageWidth|PaperKind=A4|PaperIndex=9
 Configuration1_Name1=OutputConfigurationParameter1
-Configuration1_Item1=Record=SchPrintView|ShowNoERC=True|ShowParamSet=False|ShowProbe=True|ShowBlanket=False|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=True|ExpandPort=True|ExpandSheetNum=True|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=[Project Physical Documents]
+Configuration1_Item1=Record=SchPrintView|ShowNoERC=False|ShowParamSet=False|ShowProbe=True|ShowBlanket=False|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=True|ExpandPort=True|ExpandSheetNum=True|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=[Project Physical Documents]
 OutputType2=Schematic Print
 OutputName2=Schematic_Compact
 OutputCategory2=Documentation
@@ -75,10 +78,11 @@ OutputEnabled2_OutputMedium6=0
 OutputEnabled2_OutputMedium7=0
 OutputEnabled2_OutputMedium8=0
 OutputEnabled2_OutputMedium9=0
+OutputEnabled2_OutputMedium10=0
 OutputDefault2=0
 PageOptions2=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=0.73|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PrintScaleName=PrintFitPageWidth|PaperKind=A4|PaperIndex=9
 Configuration2_Name1=OutputConfigurationParameter1
-Configuration2_Item1=Record=SchPrintView|ShowNoERC=True|ShowParamSet=False|ShowProbe=True|ShowBlanket=False|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=True|ExpandPort=True|ExpandSheetNum=True|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=All SCH Documents
+Configuration2_Item1=Record=SchPrintView|ShowNoERC=False|ShowParamSet=False|ShowProbe=True|ShowBlanket=False|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=True|ExpandPort=True|ExpandSheetNum=True|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=All SCH Documents
 OutputType3=PCB Print
 OutputName3=Assembly_Plan
 OutputCategory3=Documentation
@@ -94,6 +98,7 @@ OutputEnabled3_OutputMedium6=0
 OutputEnabled3_OutputMedium7=0
 OutputEnabled3_OutputMedium8=0
 OutputEnabled3_OutputMedium9=0
+OutputEnabled3_OutputMedium10=0
 OutputDefault3=0
 PageOptions3=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=2|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PrintScaleName=PrintFitPageWidth|PaperKind=A4|PaperIndex=9
 Configuration3_Name1=OutputConfigurationParameter1
@@ -130,6 +135,7 @@ OutputEnabled4_OutputMedium6=0
 OutputEnabled4_OutputMedium7=0
 OutputEnabled4_OutputMedium8=0
 OutputEnabled4_OutputMedium9=0
+OutputEnabled4_OutputMedium10=0
 OutputDefault4=0
 PageOptions4=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration4_Name1=ColumnNameFormat
@@ -157,6 +163,7 @@ OutputEnabled5_OutputMedium6=0
 OutputEnabled5_OutputMedium7=0
 OutputEnabled5_OutputMedium8=0
 OutputEnabled5_OutputMedium9=1
+OutputEnabled5_OutputMedium10=0
 OutputDefault5=0
 Configuration5_Name1=OutputConfigurationParameter1
 Configuration5_Item1=Record=ExportSTEPView|ExportComponentOptions=0|ExportModelsOption=2|ExportHolesOption=0|CanSelectPrimitives=False|IncludeMechanicalPadHoles=True|IncludeElectricalPadHoles=True|IncludeFreePadHoles=True|ExportFoldedBoard=True|ExportFoldedBoardRate=0|ComponentSuffixType=1|ComponentSuffix= |ExportCopperOption=0|ExportCopperLayer=0|ExportPadAndViaBarrelsOnly=False|IgnoreBoardCopperLayerColors=False|ExportAsSinglePart=False|IncludeCoverLayer=True|SkipFreeBodies=True|SkipHidden=False|DocumentPath=C:\Daten\Daniel\studium\amz\inverter_wr_2023\PCB\Ctrl\DOCUMENTS\Layout\I_WR_23_Ctrl.PcbDoc
@@ -175,6 +182,7 @@ OutputEnabled6_OutputMedium6=0
 OutputEnabled6_OutputMedium7=0
 OutputEnabled6_OutputMedium8=0
 OutputEnabled6_OutputMedium9=0
+OutputEnabled6_OutputMedium10=0
 OutputDefault6=0
 PageOptions6=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=2.25|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration6_Name1=OutputConfigurationParameter1
@@ -201,6 +209,7 @@ OutputEnabled7_OutputMedium6=1
 OutputEnabled7_OutputMedium7=0
 OutputEnabled7_OutputMedium8=0
 OutputEnabled7_OutputMedium9=0
+OutputEnabled7_OutputMedium10=0
 OutputDefault7=0
 PageOptions7=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.07|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 Configuration7_Name1=OutputConfigurationParameter1
@@ -317,6 +326,7 @@ OutputEnabled8_OutputMedium6=0
 OutputEnabled8_OutputMedium7=0
 OutputEnabled8_OutputMedium8=0
 OutputEnabled8_OutputMedium9=0
+OutputEnabled8_OutputMedium10=0
 OutputDefault8=0
 Configuration8_Name1=OutputConfigurationParameter1
 Configuration8_Item1=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|BoardID=ERUPQRWG|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=False|GenerateDRCRulesFile=False|GenerateReliefShapes=True|GenerateReports=False|GerberUnit=Metric|GerberUnit=Metric|IncludeUnconnectedMidLayerPads=True|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=KeepLeadingAndTrailingZeroes|MaxApertureSize=2500000|MergePadAndRegion=False|MinusApertureTolerance=50|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NoRegularPolygons=False|NumberOfDecimals=4|NumberOfDecimals=4|OptimizeChangeLocationCommands=True|OptimizeChangeLocationCommands=True|OriginPosition=Relative|OutputFormat=Different|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16777219~1,16842751~1,16973830~1,16973831~1,16973834~1,16973835~1,16908289~1,16777220~1,16777221~1|PlotBoardProfile=False|PlotBoardProfileFileName=I_WR_23_Ctrl.GM|PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=False|Sorted=False|Sorted=False|UncheckPlotDrillDrawingLayerPair0_Backdrill=False|UncheckPlotDrillDrawingLayerPair0_Checked=False|UncheckPlotDrillDrawingLayerPair0_DrillType=Regular|UncheckPlotDrillDrawingLayerPair0_FileName= |UncheckPlotDrillDrawingLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillDrawingLayerPair0_LowLayer=Top Layer|UncheckPlotDrillGuideLayerPair0_Backdrill=False|UncheckPlotDrillGuideLayerPair0_Checked=False|UncheckPlotDrillGuideLayerPair0_DrillType=Regular|UncheckPlotDrillGuideLayerPair0_FileName= |UncheckPlotDrillGuideLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillGuideLayerPair0_LowLayer=Top Layer|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\PCB\PS1-1B-PANEL.PcbDoc
@@ -335,6 +345,7 @@ OutputEnabled9_OutputMedium6=0
 OutputEnabled9_OutputMedium7=0
 OutputEnabled9_OutputMedium8=0
 OutputEnabled9_OutputMedium9=0
+OutputEnabled9_OutputMedium10=0
 OutputDefault9=0
 Configuration9_Name1=OutputConfigurationParameter1
 Configuration9_Item1=BoardEdgeRoutToolDia=2000000|GenerateBoardEdgeRout=False|GenerateDrilledSlotsG85=False|GenerateEIADrillFile=False|GenerateSeparatePlatedNonPlatedFiles=False|GenerateSeparateViaTypeFiles=False|GenerateToolsByDrillSymbols=False|NumberOfDecimals=4|NumberOfUnits=4|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Record=DrillView|Units=Metric|ZeroesMode=KeepLeadingAndTrailingZeroes|DocumentPath=C:\Daten\Daniel\studium\amz\inverter_wr_2023\PCB\Ctrl\DOCUMENTS\Layout\I_WR_23_Ctrl.PcbDoc
@@ -353,6 +364,7 @@ OutputEnabled10_OutputMedium6=0
 OutputEnabled10_OutputMedium7=0
 OutputEnabled10_OutputMedium8=0
 OutputEnabled10_OutputMedium9=0
+OutputEnabled10_OutputMedium10=0
 OutputDefault10=0
 PageOptions10=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration10_Name1=ColumnNameFormat
@@ -386,6 +398,7 @@ OutputEnabled11_OutputMedium6=0
 OutputEnabled11_OutputMedium7=0
 OutputEnabled11_OutputMedium8=1
 OutputEnabled11_OutputMedium9=0
+OutputEnabled11_OutputMedium10=0
 OutputDefault11=0
 Configuration11_Name1=OutputConfigurationParameter1
 Configuration11_Item1=Record=PickPlaceView|Units=Metric|GenerateCSVFormat=True|GenerateTextFormat=False|ShowUnits=False|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=False|Filter= |FilterActive=False|YFlip=False|DifferentFootprints=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:Ascending,SortIndex:0,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:True,Sort:None,Position:1|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:None,Position:2|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:True,Sort:None,Position:3|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:4|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:5|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:6|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:7|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:8|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:9|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:10|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:11|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:12|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:13|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Supplier Part Number 2,Fixed:False,Metric:False,Visible:False,Sort:None,Position:32,Type:0|Column#18=Name:JLC Type,Fixed:False,Metric:False,Visible:False,Sort:None,Position:18,Type:0|Column#19=Name:Manufacturer 3,Fixed:False,Metric:False,Visible:False,Sort:None,Position:22,Type:0|Column#20=Name:Supplier Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:31,Type:0|Column#21=Name:Manufacturer Part Number 2,Fixed:False,Metric:False,Visible:False,Sort:None,Position:24,Type:0|Column#22=Name:Manufacturer,Fixed:False,Metric:False,Visible:False,Sort:None,Position:19,Type:0|Column#23=Name:Package,Fixed:False,Metric:False,Visible:False,Sort:None,Position:26,Type:0|Column#24=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:34,Type:0|Column#25=Name:HelpURL,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17,Type:0|Column#26=Name:Supplier 2,Fixed:False,Metric:False,Visible:False,Sort:None,Position:29,Type:0|Column#27=Name:Manufacturer 2,Fixed:False,Metric:False,Visible:False,Sort:None,Position:21,Type:0|Column#28=Name:Manufacturer Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:23,Type:0|Column#29=Name:Manufacturer Part Number 3,Fixed:False,Metric:False,Visible:False,Sort:None,Position:25,Type:0|Column#30=Name:Manufacturer 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:20,Type:0|Column#31=Name:Part Number,Fixed:False,Metric:False,Visible:False,Sort:None,Position:27,Type:0|Column#32=Name:Supplier 3,Fixed:False,Metric:False,Visible:False,Sort:None,Position:30,Type:0|Column#33=Name:Supplier Part Number 3,Fixed:False,Metric:False,Visible:False,Sort:None,Position:33,Type:0|Column#34=Name:Absolute Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16,Type:0|Column#35=Name:Supplier 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:28,Type:0|Column#36=Name:System,Fixed:False,Metric:False,Visible:False,Sort:None,Position:36,Type:0|Column#37=Name:Eurocircuits GPN,Fixed:False,Metric:False,Visible:False,Sort:None,Position:35,Type:0|DocumentPath=C:\Daten\Temp\bat_source\hw\PS1-1\PCB\PS1-1A-PANEL.PcbDoc
@@ -404,6 +417,7 @@ OutputEnabled12_OutputMedium6=0
 OutputEnabled12_OutputMedium7=1
 OutputEnabled12_OutputMedium8=0
 OutputEnabled12_OutputMedium9=0
+OutputEnabled12_OutputMedium10=0
 OutputDefault12=0
 PageOptions12=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration12_Name1=OutputConfigurationParameter1
@@ -423,6 +437,7 @@ OutputEnabled13_OutputMedium6=0
 OutputEnabled13_OutputMedium7=0
 OutputEnabled13_OutputMedium8=0
 OutputEnabled13_OutputMedium9=0
+OutputEnabled13_OutputMedium10=0
 OutputDefault13=0
 PageOptions13=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration13_Name1=ColumnNameFormat
@@ -452,6 +467,7 @@ OutputEnabled14_OutputMedium6=0
 OutputEnabled14_OutputMedium7=0
 OutputEnabled14_OutputMedium8=2
 OutputEnabled14_OutputMedium9=0
+OutputEnabled14_OutputMedium10=0
 OutputDefault14=0
 PageOptions14=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 Configuration14_Name1=ColumnNameFormat
@@ -466,6 +482,26 @@ Configuration14_Name5=VisibleOrder
 Configuration14_Item5=Comment=120|Designator=120|Footprint=100|Supplier Part Number 3=100
 Configuration14_Name6=VisibleOrder_Flat
 Configuration14_Item6=Comment=120|Designator=120|Footprint=100|Supplier Part Number 3=100
+OutputType15=PCB 3D Print
+OutputName15=PCB 3D Print
+OutputCategory15=Documentation
+OutputDocumentPath15=PS1-1B-BASIS.PcbDoc
+OutputVariantName15=
+OutputEnabled15=1
+OutputEnabled15_OutputMedium1=0
+OutputEnabled15_OutputMedium2=0
+OutputEnabled15_OutputMedium3=0
+OutputEnabled15_OutputMedium4=0
+OutputEnabled15_OutputMedium5=0
+OutputEnabled15_OutputMedium6=0
+OutputEnabled15_OutputMedium7=0
+OutputEnabled15_OutputMedium8=0
+OutputEnabled15_OutputMedium9=0
+OutputEnabled15_OutputMedium10=1
+OutputDefault15=0
+PageOptions15=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+Configuration15_Name1=OutputConfigurationParameter1
+Configuration15_Item1=Record=Pcb3DPrintView|ResX=600|ResY=600|ViewX=88617680|ViewY=47075160|LookAtX=103579560|LookAtY=109002800|LookAtZ=-16498.068359375|UpX=-0.742016971111298|UpY=0.305853217840195|UpZ=-0.596544027328491|FOV=45|QuatX=-0.274146556854248|QuatY=-0.155081942677498|QuatZ=0.521456480026245|QuatW=0.793017268180847|Zoom=2.09664711592216E-5|UnitsPercent=True|UnitsDPI=True|LockResAspect=True|ViewConfigType=.config_3d|CustomCamera=True|ViewFromTop=True|ScreenWidth=1858|ScreenHeight=987|ImageOutputType=1|ViewConfig=RECORD\3Board\2CFGALL.CONFIGURATIONKIND\33\2CFGALL.CONFIGURATIONDESC\3Enter%20description%20of%20new%20view%20configuration\2CFGALL.COMPONENTBODYREFPOINTCOLOR\316777215\2CFGALL.COMPONENTBODYSNAPPOINTCOLOR\316777215\2CFGALL.SHOWCOMPONENTSNAPMARKERS\3FALSE\2CFGALL.SHOWCOMPONENTSNAPREFERENCE\3FALSE\2CFGALL.SHOWCOMPONENTSNAPCUSTOM\3FALSE\2CFG3D.POSITIVETOPSOLDERMASK\3TRUE\2CFG3D.POSITIVEBOTTOMSOLDERMASK\3TRUE\2CFG3D.SHOWCOMPONENTBODIES\3TRUE\2CFG3D.SHOWCOMPONENTSTEPMODELS\3TRUE\2CFG3D.COMPONENTMODELPREFERENCE\30\2CFG3D.SHOWCOMPONENTAXES\3TRUE\2CFG3D.SHOWBOARDCORE\3TRUE\2CFG3D.SHOWBOARDPREPREG\3TRUE\2CFG3D.SHOWTOPSILKSCREEN\3TRUE\2CFG3D.SHOWBOTSILKSCREEN\3TRUE\2CFG3D.SHOWORIGINMARKER\3TRUE\2CFG3D.EYEDIST\32000\2CFG3D.SHOWCUTOUTS\3TRUE\2CFG3D.SHOWROUTETOOLPATH\3TRUE\2CFG3D.SHOWROOMS3D\3FALSE\2CFG3D.USESYSCOLORSFOR3D\3FALSE\2CFG3D.WORKSPACECOLOR\316777215\2CFG3D.BOARDCORECOLOR\30\2CFG3D.BOARDPREPREGCOLOR\30\2CFG3D.TOPSOLDERMASKCOLOR\33307556\2CFG3D.BOTSOLDERMASKCOLOR\33307556\2CFG3D.COPPERCOLOR\32402753\2CFG3D.TOPSILKSCREENCOLOR\316448250\2CFG3D.BOTSILKSCREENCOLOR\316448250\2CFG3D.WORKSPACELUMINANCEVARIATION\330\2CFG3D.WORKSPACEBEGINCOLOR\316777215\2CFG3D.WORKSPACEENDCOLOR\316777215\2CFG3D.WORKSPACECOLOROPACITY\31.000000\2CFG3D.BOARDCORECOLOROPACITY\30.500000\2CFG3D.BOARDPREPREGCOLOROPACITY\30.500000\2CFG3D.TOPSOLDERMASKCOLOROPACITY\30.600000\2CFG3D.BOTSOLDERMASKCOLOROPACITY\30.600000\2CFG3D.COPPERCOLOROPACITY\31.000000\2CFG3D.TOPSILKSCREENCOLOROPACITY\31.000000\2CFG3D.BOTSILKSCREENCOLOROPACITY\31.000000\2CFG3D.BOARDTHICKNESSSCALING\31.000000\2CFG3D.SHOWMECHANICALLAYERS\3FALSE\2CFG3D.MECHANICALLAYERSOPACITY\31.000000\2CFG3D.MECHCOVERLAYERUPDATED\3FALSE|DocumentPath=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\PCB\PS1-1B-BASIS.PcbDoc
 
 [PublishSettings]
 OutputFilePath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
@@ -669,6 +705,19 @@ OutputFileNameMulti9==PCB_Title+Index_Main+Index_Sub+'_'+OutputName+'_'+CurrentD
 UseOutputNameForMulti9=0
 OutputFileNameSpecial9=
 OpenOutput9=0
+OutputFilePath10=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+ReleaseManaged10=0
+OutputBasePath10=Manufacturing\
+OutputPathMedia10=04 - PCB Assembly
+OutputPathMediaValue10=04 - PCB Assembly
+OutputPathOutputer10=
+OutputPathOutputerPrefix10=
+OutputPathOutputerValue10=
+OutputFileName10=
+OutputFileNameMulti10==PCB_Title+Index_Main+Index_Sub+'_'+OutputName+'_'+CurrentDate
+UseOutputNameForMulti10=0
+OutputFileNameSpecial10=
+OpenOutput10=0
 
 [GeneratedFilesSettings]
 RelativeOutputPath1=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\01 - PCB Manufacturing\
@@ -713,4 +762,14 @@ OpenGerberOutput9=1
 OpenNCDrillOutput9=1
 OpenIPCOutput9=0
 EnableReload9=0
+RelativeOutputPath10=C:\Daten\Daniel\ele\bat_source\hw\PS1-1\Manufacturing\04 - PCB Assembly\
+OpenOutputs10=0
+AddToProject10=0
+TimestampFolder10=0
+UseOutputName10=0
+OpenODBOutput10=0
+OpenGerberOutput10=0
+OpenNCDrillOutput10=0
+OpenIPCOutput10=0
+EnableReload10=0
 
