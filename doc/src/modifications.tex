@@ -7,14 +7,14 @@
 \begin{ModTable}
 
 \ModItemDone
-{\acs{BMS} wakeup from shutdown}
+{BMS wakeup from shutdown}
 {When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
 {The TS pin should therefore be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. }
 {daniw}
 {2025-07-02}
 
 \ModItemDone
-{\acs{BMS} wakeup from shutdown}
+{BMS wakeup from shutdown}
 {When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
 {The TS pin should be connected to a GPIO pin (PF0, pin 5) of the microcontroller with a wire to allow wakeup from shutdown mode. }
 {daniw}
@@ -100,7 +100,7 @@
 \begin{ModTable}
 
 \ModItemDone
-{\acs{BMS} wakeup from shutdown}
+{BMS wakeup from shutdown}
 {When the \ac{BMS} enters shutdown mode, it can only be brought back to normal mode by a rising edge on the TS or VC0 pin. The shutdown mode is entered when sending the SHUTDOWN() command twice or when a low battery voltage is detected. After deep-discharging the battery it is not possible to charge the batteries because the \ac{BMS} remains in shutdown mode. }
 {The TS pin should be connected to a GPIO pin of the microcontroller to allow wakeup from shutdown mode. }
 {daniw}
@@ -229,6 +229,43 @@
 
 \FloatBarrier
 
+\subsubsection{Modifications PS1-1BA $\to$ BB}
+
+\begin{ModTable}
+
+\ModItemOpen
+{Buck boost inductor clearance}
+{The overlapping footprints of the buck boost inductor variants could potentially create a short circuit between the switch nodes and the core of the inductor PQ2012J. }
+{It is highly recommended to inspect the insulation between the switch nodes and the core of the inductor and add insulating kapton tape if neccessary. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsubsection{Modifications PS1-1BA $\to$ CA}
+
+\begin{ModTable}
+
+\ModItemOpen
+{Overvoltage category}
+{The clearance is sufficient for \qty{600}{\volt} CAT II. But the formula student rules \cite{FSG:Rules_2026} require \qty{600}{\volt} CAT III for measurement equipment that is used for accumulator inspection. }
+{The clearance should be increased to \qty{5.5}{\milli\meter} for basic insulation and \qty{11}{\milli\meter} for reinforced insulation to meet the criteria for \qty{600}{\volt} CAT III according to IEC 61010-1. }
+{}
+{}
+
+\ModItemOpen
+{Buck boost inductor selection}
+{The overlapping footprints of the buck boost inductor variants could potentially create a short circuit between the switch nodes and the core of the inductor PQ2012J. }
+{After testing, a single inductor type should be selected. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
 \subsection{PS1-2 - User interface}
 
 \subsubsection{Modifications PS1-2AA $\to$ AB}
@@ -297,6 +334,43 @@
 
 \FloatBarrier
 
+\subsubsection{Modifications PS1-2BA $\to$ BB}
+
+\begin{ModTable}
+
+\ModItemOpen
+{None so far}
+{No modification so far}
+{There is no modification so far. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
+\subsubsection{Modifications PS1-2BA $\to$ CA}
+
+\begin{ModTable}
+
+\ModItemOpen
+{Overvoltage category}
+{The clearance is sufficient for \qty{600}{\volt} CAT II. But the formula student rules \cite{FSG:Rules_2026} require \qty{600}{\volt} CAT III for measurement equipment that is used for accumulator inspection. }
+{The clearance should be increased to \qty{5.5}{\milli\meter} for basic insulation and \qty{11}{\milli\meter} for reinforced insulation to meet the criteria for \qty{600}{\volt} CAT III according to IEC 61010-1. }
+{}
+{}
+
+\ModItemOpen
+{Hole size for breakouts}
+{The clearance between the holes of the pushbutton breakout and the tracks running between them is too low for manufacturing. }
+{The hole size or location must be adjusted. }
+{}
+{}
+
+\end{ModTable}
+
+\FloatBarrier
+
 \subsection{PS1-3 - Programming adapter}
 
 \subsubsection{Modifications on PS1-3 AA $\to$ AB}
@@ -328,7 +402,7 @@
 \ModItemOpen
 {Incorrect connector type for STLINK-V3-MINIE}
 {The connector for the STLINK-V3-MINIE has a pitch of \qty{2.54}{\milli\meter}. The spacing should be \qty{1.27}{\milli\meter}. }
-{The connector need to be replaced. }
+{The connector need to be moved. }
 {}
 {}
 
