@@ -1,18 +1,25 @@
 import os
+import re
 
-def replace_string_in_files(root_folder, target_string, replacement_string, filename_contains):
+def replace_headers_in_files(root_folder):
+   pattern = re.compile(r"^.{7}_PIK_\d{4}-\d{2}-\d{2}\.csv$")
+
     for subdir, _, files in os.walk(root_folder):
         for file in files:
-            if filename_contains in file:
+            if pattern.match(file):
                 file_path = os.path.join(subdir, file)
-                with open(file_path, 'r') as f:
+
+                with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                content = content.replace(target_string, replacement_string)
-                with open(file_path, 'w') as f:
+
+                # Nur die gewünschten Header ersetzen
+                content = content.replace("Ref-X(mm)", "Mid-X(mm)")
+                content = content.replace("Ref-Y(mm)", "Mid-Y(mm)")
+
+                with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(content)
 
-# Example usage
-root_folder = '.' # Replace with the path to your folder
-replace_string_in_files(root_folder, 'Ref', 'Mid', 'PIK')
+# Beispielaufruf
+replace_headers_in_files('.',)
 
-print("String replacement completed.")
+print("Header-Anpassung abgeschlossen.")
