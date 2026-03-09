@@ -39,7 +39,7 @@ The IFR26700-45HE made by Tenpower is selected as a compromise between low cost 
     \centering
     \includegraphics[page=2, scale=\schscale, trim=60 370 840 120, clip]{\schfilemain}
     \caption{\acs{BMS} - battery cells}
-    \label{fig_onoff_switch}
+    \label{fig_bat_cells}
 \end{figure}
 
 The schematic is prepared for a configuration with 5 cells in series. To enable the 5S configuration, BAT5 to BAT9 are set to fitted, the text C3 is replaced with a matching net label and the connection between C2 and C3 is removed. If both, 4S and 5S should be possible with the same \ac{PCB}, BAT2 is replaced with the design item id BAT\_LFP-26700-4.5AH-2NEG. It includes an extra pad, which is shorted to the negative cell connection using the cell tab by bending it and soldering it to both pads. This extra pad is used to short BAT7, which is not used in 4S configuration. \autoref{fig_bat_2neg} demonstrates the use of this third pad. 
@@ -60,9 +60,44 @@ This protection is implemented with the battery monitor and protector BQ76905. I
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[page=2, scale=\schscale, trim=490 100 60 420, clip]{\schfilemain}
-    \caption{\acs{BMS} - current measurement}
-    \label{fig_onoff_switch}
+    \includegraphics[page=2, scale=\schscale, trim=174 371 740 120, clip]{\schfilemain}
+    \caption{\acs{BMS} - battery voltage measurement}
+    \label{fig_bms_volt}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=170 190 640 500, clip]{\schfilemain}
+    \caption{\acs{BMS} - battery temperature measurement}
+    \label{fig_bms_temp}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=475 25 360 690, clip]{\schfilemain}
+    \caption{\acs{BMS} - wakeup protection circuit}
+    \label{fig_bms_wakeup}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=490 275 355 420, clip]{\schfilemain}
+    \caption{\acs{BMS} - current measurement for overcurrent protection and fuel gauge}
+    \label{fig_bms_current_bms}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=675 100 60 495, clip]{\schfilemain}
+    \caption{\acs{BMS} - current measurement for the charge controller}
+    \label{fig_bms_current_uc}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=555 430 50 70, clip]{\schfilemain}
+    \caption{\acs{BMS} - power supply}
+    \label{fig_bms_power}
 \end{figure}
 
 \FloatBarrier
@@ -73,8 +108,8 @@ The on/off controller enables power to the device using the high-side P-channel 
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[page=3, scale=\schscale, trim=550 530 200 120, clip]{\schfilemain}
-    \caption{On/off controller - main switch}
+    \includegraphics[page=3, scale=\schscale, trim=420 560 230 50, clip]{\schfilemain}
+    \caption{On/off controller - highside switch with precharge circuit}
     \label{fig_onoff_switch}
 \end{figure}
 
@@ -82,23 +117,162 @@ To switch off the device when the microcontroller is unable to turn off the devi
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[page=3, scale=\schscale, trim=70 375 490 140, clip]{\schfilemain}
+    \includegraphics[page=3, scale=\schscale, trim=570 80 166 190, clip]{\schfilemain}
+    \caption{On/off controller - logic}
+    \label{fig_onoff_logic}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=95 295 495 220, clip]{\schfilemain}
     \caption{On/off controller - emergency off circuit}
     \label{fig_onoff_emergency_off}
 \end{figure}
 
 \FloatBarrier
 
-\subsection{Converter}
-\label{sec_converter}
+\subsection{Low voltage converter}
+\label{sec_lv_converter}
+\begin{itemize}
+    \item Topology
+    \item Converter design
+    \item Component selection
+    \item Charging operation
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=120 275 390 201, clip]{\schfilemain}
+    \caption{Low voltage converter - power stage with logic}
+    \label{fig_lv_conv_powerstage}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=120 125 390 525, clip]{\schfilemain}
+    \caption{Low voltage converter - temperature measurement}
+    \label{fig_lv_conv_temperature}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=800 65 50 590, clip]{\schfilemain}
+    \caption{Low voltage converter - discharge}
+    \label{fig_lv_conv_discharge}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{High voltage converter}
+\label{sec_hv_converter}
 \begin{itemize}
     \item Topology
     \item Converter design
     \item Component selection
     \item Transformer design
-    \item Secondary winding relay with switching DC link capacitors
-    \item Charging operation
 \end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=5, scale=\schscale, trim=30 255 455 110, clip]{\schfilemain}
+    \caption{High voltage converter}
+    \label{fig_hv_conv}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=1, scale=\schscale, trim=180 260 400 120, clip]{\schfiletrafo}
+    \caption{High voltage converter - flyback transformer \acs{PCB}}
+    \label{fig_hv_convtrafo_pcb}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=6, scale=\schscale, trim=140 345 465 330, clip]{\schfilemain}
+    \caption{High voltage converter - current limiter}
+    \label{fig_hv_conv_i_lim}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Overvoltage protection}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=7, scale=\schscale, trim=71 330 770 310, clip]{\schfilemain}
+    \caption{Overvoltage protection - crowbar}
+    \label{fig_overvoltage_prot_crowbar}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=7, scale=\schscale, trim=273 290 295 115, clip]{\schfilemain}
+    \caption{Overvoltage protection - logic}
+    \label{fig_overvoltage_prot_logic}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Overcurrent protection}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=8, scale=\schscale, trim=215 310 365 270, clip]{\schfilemain}
+    \caption{Overcurrent protection}
+    \label{fig_overcurrent_prot_crowbar}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Terminals}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=9, scale=\schscale, trim=495 270 105 55, clip]{\schfilemain}
+    \caption{Output terminals with \acs{GDT} and voltage detection}
+    \label{fig_terminals}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=9, scale=\schscale, trim=71 270 640 65, clip]{\schfilemain}
+    \caption{Output relais}
+    \label{fig_output_relais}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=9, scale=\schscale, trim=785 80 105 570, clip]{\schfilemain}
+    \caption{Shunt resistors for current measurement}
+    \label{fig_shunt}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Current controller}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=10, scale=\schscale, trim=71 85 498 235, clip]{\schfilemain}
+    \caption{Current controller - feedback and control}
+    \label{fig_i_ctrl_feedback}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=10, scale=\schscale, trim=445 318 105 70, clip]{\schfilemain}
+    \caption{Current controller - limiter and feedforward}
+    \label{fig_i_ctrl_feedforward}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=10, scale=\schscale, trim=775 155 108 525, clip]{\schfilemain}
+    \caption{Current controller - temperature measurement}
+    \label{fig_i_ctrl_temp}
+\end{figure}
 
 \FloatBarrier
 
@@ -110,6 +284,64 @@ To switch off the device when the microcontroller is unable to turn off the devi
     \item 4-wire voltage
     \item Output current
 \end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=71 580 415 25, clip]{\schfilemain}
+    \caption{Measurement - terminal voltage}
+    \label{fig_meas_term_volt}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=71 430 605 195, clip]{\schfilemain}
+    \caption{Measurement - output current}
+    \label{fig_meas_out_current}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=71 165 410 445, clip]{\schfilemain}
+    \caption{Measurement - sens voltage}
+    \label{fig_meas_sens_volt}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=71 20 790 605, clip]{\schfilemain}
+    \caption{Measurement - isolation current}
+    \label{fig_meas_iso_current}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=627 200 35 395, clip]{\schfilemain}
+    \caption{Measurement - \acs{ADC}}
+    \label{fig_meas_adc}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=763 620 35 40, clip]{\schfilemain}
+    \caption{Measurement - Terminal voltage for controller}
+    \label{fig_meas_term_volt_uc}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=770 425 37 205, clip]{\schfilemain}
+    \caption{Measurement - current high range for controller}
+    \label{fig_meas_out_current_uc}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=11, scale=\schscale, trim=800 60 37 590, clip]{\schfilemain}
+    \caption{Measurement - current low range for controller}
+    \label{fig_meas_iso_current_uc}
+\end{figure}
+
+\FloatBarrier
 
 \subsubsection{Voltage measurement}
 \label{sec_volt_meas}
@@ -140,6 +372,66 @@ To switch off the device when the microcontroller is unable to turn off the devi
 
 \FloatBarrier
 
+\subsection{Connection to user interface}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=65 20 640 585, clip]{\schfilemain}
+    \caption{User interfae - button protection}
+    \label{fig_ui_button_prot}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=480 20 325 510, clip]{\schfilemain}
+    \caption{User interfae - button level shifter}
+    \label{fig_ui_button_levelshifter}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=790 60 37 610, clip]{\schfilemain}
+    \caption{User interfae - button on / off logic}
+    \label{fig_ui_button_onoff}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=385 575 285 20, clip]{\schfilemain}
+    \caption{User interfae - connector, supply and presence detection}
+    \label{fig_ui_connector}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=565 389 37 223, clip]{\schfilemain}
+    \caption{User interfae - \acs{SPI} protection}
+    \label{fig_ui_spi}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=565 250 37 365, clip]{\schfilemain}
+    \caption{User interfae - encoder filtering and protection}
+    \label{fig_ui_encoder}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=71 500 710 195, clip]{\schfilemain}
+    \caption{User interfae - \ac{I2C} protection}
+    \label{fig_ui_i2c}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=12, scale=\schscale, trim=71 325 710 335, clip]{\schfilemain}
+    \caption{User interfae - \acs{UART} and high voltage detection protection}
+    \label{fig_ui_uart}
+\end{figure}
+
+\FloatBarrier
+
 \subsection{Microcontroller}
 \label{sec_microcontroller}
 \begin{itemize}
@@ -148,6 +440,65 @@ To switch off the device when the microcontroller is unable to turn off the devi
     \item Analog reference
 \end{itemize}
 The STM32F334series is selected as microcontroller. This controller is suited for controlling a DC/DC converter due to the inclusion of the \ac{HRTIM}, which allows \ac{PWM} generation with a resolution as low as \qty{217}{\pico\second}. The QFP-48 package is selected due to the solderability and number of \ac{GPIO} pins. For the prototype the mximum of \qty{64}{\kibi\byte} is selected. This leads to the selected device: STM32F334C8T
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=13, scale=\schscale, trim=285 318.2 455 409, clip]{\schfilemain}
+    \caption{Microcontroller - \acs{RTC} crystal}
+    \label{fig_uc_crystal}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=13, scale=\schscale, trim=285 20 350 611, clip]{\schfilemain}
+    \caption{Microcontroller - supply}
+    \label{fig_uc_supply}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=14, scale=\schscale, trim=71 575 655 70, clip]{\schfilemain}
+    \caption{Microcontroller - reference voltage buffer}
+    \label{fig_uc_ref_buf}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=14, scale=\schscale, trim=71 340 865 360, clip]{\schfilemain}
+    \caption{Microcontroller - \acs{EEPROM}}
+    \label{fig_uc_eeprom}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=14, scale=\schscale, trim=740 530 200 180, clip]{\schfilemain}
+    \caption{Microcontroller - flash memory}
+    \label{fig_uc_flash}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=14, scale=\schscale, trim=680 300 105 350, clip]{\schfilemain}
+    \caption{Microcontroller - programming interface}
+    \label{fig_uc_programming}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    %\includegraphics[page=14, scale=\schscale, trim=71 35 655 510, clip]{\schfilemain}
+    \includegraphics[page=14, scale=\schscale, trim=71 100 655 550, clip]{\schfilemain}
+    \caption{Microcontroller - hardware identification}
+    \label{fig_uc_hw_id}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=14, scale=\schscale, trim=645 130 105 590, clip]{\schfilemain}
+    \caption{Microcontroller - \acs{I2C} pull-up}
+    \label{fig_uc_i2c}
+\end{figure}
+
+\FloatBarrier
 
 \subsubsection{Pinout and module usage}
 \paragraph{Reference voltage}
@@ -188,6 +539,62 @@ A display shows the current operating mode and measurement values to the user. I
     \item Rotaty encoder
 \end{itemize}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=215 495 297 20, clip]{\schfileui}
+    \caption{Isolated encoder}
+    \label{fig_ui_endocer}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=2, scale=\schscale, trim=225 60 380 340, clip]{\schfileui}
+    \caption{Isolated encoder}
+    \label{fig_ui_endocer}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=3, scale=\schscale, trim=285 415 352 150, clip]{\schfileui}
+    \caption{User interface connector}
+    \label{fig_ui_connector}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=215 245 345 395, clip]{\schfileui}
+    \caption{Terminal indicator \acsp{LED} with \ac{LED} driver}
+    \label{fig_ui_led_driver}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=745 215 210 208, clip]{\schfileui}
+    \caption{High voltage indicator}
+    \label{fig_ui_hv_indicator}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=5, scale=\schscale, trim=71 225 540 155, clip]{\schfileui}
+    \caption{Display}
+    \label{fig_ui_display}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=5, scale=\schscale, trim=717 510 108 115, clip]{\schfileui}
+    \caption{Ambient light sensor}
+    \label{fig_ui_amb_light_sensor}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=6, scale=\schscale, trim=430 425 323 255, clip]{\schfileui}
+    \caption{Backlight driver}
+    \label{fig_ui_backlight_driver}
+\end{figure}
+
 \FloatBarrier
 
 \subsection{Power supply}
@@ -196,6 +603,123 @@ A display shows the current operating mode and measurement values to the user. I
     \item \qty{3.3}{\volt} supply
     \item Alternative charging power supply
 \end{itemize}
+
+\FloatBarrier
+
+\subsubsection{Power supply VCC}
+\label{sec_power_vcc}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=15, scale=\schscale, trim=395 185 105 417, clip]{\schfilemain}
+    \caption{Power - VCC high voltage buck converter}
+    \label{fig_power_vcc}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=15, scale=\schscale, trim=71 260 613 215, clip]{\schfilemain}
+    \caption{Power - VCC - logic}
+    \label{fig_power_vcc_logic}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=15, scale=\schscale, trim=880 375 35 205, clip]{\schfilemain}
+    \caption{Power - VCC - output or-ing}
+    \label{fig_power_vcc_oring}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply 15\,V}
+\label{sec_power_15v}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=16, scale=\schscale, trim=260 280 230 279, clip]{\schfilemain}
+    \caption{Power - \qty{15}{\volt} boost converter}
+    \label{fig_power_15v}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply 5\,V}
+\label{sec_power_5v}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=17, scale=\schscale, trim=65 505 460 130, clip]{\schfilemain}
+    \caption{Power - \qty{5}{\volt} buck converter}
+    \label{fig_power_5v}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply 3.3\,V}
+\label{sec_power_3v3}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=18, scale=\schscale, trim=65 505 460 130, clip]{\schfilemain}
+    \caption{Power - \qty{3.3}{\volt} buck converter}
+    \label{fig_power_3v3}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply analog 3.3\,V}
+\label{sec_power_3v3_a}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=19, scale=\schscale, trim=280 340 310 235, clip]{\schfilemain}
+    \caption{Power - analog \qty{3.3}{\volt} \acs{LDO} regulator}
+    \label{fig_power_3v3_a}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply VLED}
+\label{sec_power_vled}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=7, scale=\schscale, trim=65 505 460 130, clip]{\schfileui}
+    \caption{Power - VLED}
+    \label{fig_power_vled}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply 3.3\,V UI}
+\label{sec_power_3v3_ui}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=8, scale=\schscale, trim=65 505 460 130, clip]{\schfileui}
+    \caption{Power - \qty{3.3}{\volt} UI buck converter}
+    \label{fig_power_3v3_ui}
+\end{figure}
+
+\FloatBarrier
+
+\subsubsection{Power supply isolated 3.3\,V UI}
+\label{sec_power_3v3_iso}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=9, scale=\schscale, trim=71 225 430 270, clip]{\schfileui}
+    \caption{Power - isolated \qty{3.3}{\volt} UI forward converter - primary side}
+    \label{fig_power_3v3_iso_prim}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=9, scale=\schscale, trim=510 330 200 280, clip]{\schfileui}
+    \caption{Power - isolated \qty{3.3}{\volt} UI forward converter - secondary side}
+    \label{fig_power_3v3_iso_sec}
+\end{figure}
 
 \FloatBarrier
 
