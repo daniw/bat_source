@@ -55,8 +55,33 @@ The schematic is prepared for a configuration with 5 cells in series. To enable 
 \subsection{Battery Management System}
 \label{sec_bms}
 The battery must be protected against deep-discharge, over-charge, overcurrent and overtemperature. (\ReqRef{R:BMS})
-This protection is implemented with the battery monitor and protector BQ76905. It can be configured through the \ac{I2C} interface. To avoid the need for an \ac{I2C} isolator, level shifters and high-side \acp{MOSFET} are implemented to switch the power to the device. 
-\todo[inline]{Detailed description and design}
+This is implemented with the battery monitor and protector BQ76905. It is powered directly from the batteries and can be configured through its \ac{I2C} interface. The cells are connected to the battery monitor with a \qty{100}{\ohm} resistor for overcurrent protection. These resistors also limit the balancing current. 
+\begin{align}
+    I_{Bal} 
+    = \dfrac{U_{Bal}}{R_{Bal}} 
+    = \dfrac{n_{Bal} \cdot U_{cell}}{2 \cdot R_C + n_{Bal} \cdot R_{CB}}
+    = \dfrac{n_{Bal} \cdot U_{cell}}{2 \cdot \qty{100}{\ohm} + n_{Bal} \cdot R_{CB}}
+\end{align}
+\begin{align}
+    I_{Bal_{typ}} 
+    = \dfrac{n_{Bal_{typ}} \cdot U_{cell_{typ}}}{2 \cdot R_C + n_{Bal_{typ}} \cdot R_{CB_{typ}}}
+    = \dfrac{1 \cdot \qty{3.65}{\volt}}{2 \cdot \qty{100}{\ohm} + 1 \cdot \qty{93}{\ohm}}
+    = \qty{12.46}{\milli\ampere}
+\end{align}
+\begin{align}
+    I_{Bal_{min}} 
+    = \dfrac{n_{Bal_{min}} \cdot U_{cell_{min}}}{2 \cdot R_C + n_{Bal_{min}} \cdot R_{CB_{max}}}
+    = \dfrac{1 \cdot \qty{2.0}{\volt}}{2 \cdot \qty{100}{\ohm} + 1 \cdot \qty{200}{\ohm}}
+    = \qty{5}{\milli\ampere}
+\end{align}
+\todo[inline]{Check minimum cell voltage}
+\begin{align}
+    I_{Bal_{max}} 
+    = \dfrac{n_{Bal_{max}} \cdot U_{cell_{max}}}{2 \cdot R_C + n_{Bal_{max}} \cdot R_{CB_{min}}}
+    = \dfrac{4 \cdot \qty{3.65}{\volt}}{2 \cdot \qty{100}{\ohm} + 4 \cdot \qty{53}{\ohm}}
+    = \qty{35.44}{\milli\ampere}
+\end{align}
+All signals directly connected to the battery cells are assigned to the netclass BAT to enforce a minimum clearance. A capacitor with a value of \qty{100}{\nano\farad} is connected to each cell voltage measurement for filtering as recommended by the datasheet \cite{TI:BQ76905}. \autoref{fig_bms_volt} shows the cell connection to the \ac{BMS}. 
 
 \begin{figure}[h!]
     \centering
@@ -65,6 +90,8 @@ This protection is implemented with the battery monitor and protector BQ76905. I
     \label{fig_bms_volt}
 \end{figure}
 
+The temperature of the battery is measured with a \qty{10}{\kilo\ohm} \ac{NTC} thermistor with a B value of \qty{3380}{\kelvin}. The \ac{BMS} includes a pull-up resistor with a value of \qty{20}{\kilo\ohm}, therefore no external pull-up resistor is necessary. The temperature sensor is soldered to the bottom side of the PCB and glued to the cells using thermally conductive adhesive. A \qty{1}{\nano\farad} capacitor is connected in parallel to the thermistor for filtering. For testing purpose, an \ac{SMD} thermistor is placed on the PCB as well, which can be activated by bridging the solder-jumper J1. The temperature sensor is shown in \autoref{fig_bms_temp}. 
+
 \begin{figure}[h!]
     \centering
     \includegraphics[page=2, scale=\schscale, trim=170 190 640 500, clip]{\schfilemain}
@@ -72,12 +99,16 @@ This protection is implemented with the battery monitor and protector BQ76905. I
     \label{fig_bms_temp}
 \end{figure}
 
+The \ac{BMS} can be woken up from deepsleep or shutdown mode by a rising edge on the pins TS or VC0. In order to allow the microcontroller to wake up the \ac{BMS}, a \ac{GPIO} pin is connected to the TS pin through a protection circuit (\autoref{fig_bms_wakeup}), which keeps the voltage on the TS pin within the absolute maximum ratings of \qty{2.1}{\volt}. \cite{TI:BQ76905}
+
 \begin{figure}[h!]
     \centering
     \includegraphics[page=2, scale=\schscale, trim=475 25 360 690, clip]{\schfilemain}
     \caption{\acs{BMS} - wakeup protection circuit}
     \label{fig_bms_wakeup}
 \end{figure}
+
+The battery current is measured with a \qty{5}{\milli\ohm} shunt resistor. The signal is filtered (2x \qty{100}{\ohm}, \qty{100}{\nano\farad}) and connected to the battery monitor. The voltage across the shunt resistor is also amplified by a difference amplifier and connected to the \ac{ADC} of the microcontroller for current control during battery charging. 
 
 \begin{figure}[h!]
     \centering
@@ -93,6 +124,9 @@ This protection is implemented with the battery monitor and protector BQ76905. I
     \label{fig_bms_current_uc}
 \end{figure}
 
+The CHG and DSG signals connected to the on/off controller instead of directly controlling \acp{MOSFET}. As the low side is not switched, no \ac{I2C} isolator or level shifter is needed. 
+The \ac{BMS} is supplied from the batteries through the pins BAT and REGSRC. Both pins are bypassed with a \qty{1}{\micro\farad} capacitor and individually connected to the top of the stack (\verb!VBAT!) through a shottky diode and a \qty{10}{\ohm} series resistor. The output of the internal voltage regulator (REGOUT) is made available for powering standby operations like buttons for powering on or an \ac{RTC} with a voltage of \qty{3.3}{\volt}. A standby battery voltage (\verb!VBAT_STBY!) is provided for the on/off controller. This voltage is available as long as all battery parameters are within the allowed range. 
+
 \begin{figure}[h!]
     \centering
     \includegraphics[page=2, scale=\schscale, trim=555 430 50 70, clip]{\schfilemain}
@@ -104,7 +138,11 @@ This protection is implemented with the battery monitor and protector BQ76905. I
 
 \subsection{On/off controller}
 \label{sec_onoff}
-The on/off controller enables power to the device using the high-side P-channel \ac{MOSFET} Q5. The \ac{MOSFET} can be enabled by pushing any of the buttons that allow turn-off. The selection of on-capable buttons is done with assemblyng the diodes D45, D46 and D47 in the \nameref{sec_ui}. Once the power to the device is enabled, the microcontroller can keep the power enabled by setting the \ac{GPIO} ON\_REQ high. To turn-off the device, the signal ON\_REQ is set low. 
+The \ac{MOSFET} Q6 blocks any charging current to the battery when the \ac{BMS} does not allow charging. Q5 prevents discharge of the batteries and is the main power switch for the device. A precharge circuit is implemented parallel to Q5 to limit the inrush current. The precharge current is set to \qty{100}{\milli\ampere}. The precharge current runs through the resistors R22 $\ldots$ R25. The \ac{BJT} Q4 pulls the gate of Q5 up when the voltage across the resistors reaches the base-emiter voltage of aproximately \qty{0.65}{\volt}. \autoref{fig_onoff_switch} shows the mains switch \acp{MOSFET} and the precharge circuit. 
+\begin{align}
+    I_{precharge} = \dfrac{U_{BE} \cdot n_{R_{Precharge}}}{R_{Precharge}}
+    = \dfrac{\qty{0.65}{\volt} \cdot 4}{\qty{27}{\ohm}} = \qty{96.3}{\milli\ampere}
+\end{align}
 
 \begin{figure}[h!]
     \centering
@@ -113,7 +151,7 @@ The on/off controller enables power to the device using the high-side P-channel 
     \label{fig_onoff_switch}
 \end{figure}
 
-To switch off the device when the microcontroller is unable to turn off the device, an emergency shut-off is implemented. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C14. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 through the level shifters Q7 and Q6. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is supplied with the BUTTON\_OFF signal through D6. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
+The charging \ac{MOSFET} Q6 is directly controlled by the \ac{BMS} through the signal \verb!BMS_ON_OFF.CHG!, which is level-shifted and inverted with Q17. The discharging \ac{MOSFET} Q5 can be enabled by the signal \verb!UI_ON_OFF.ON! (Q14), which is active when any of the on-enabled buttons (see \ref{sec_ui_button} \nameref{sec_ui_button}) is pressed. The microcontroller is able to keep the device running by the signal \verb!ON_REQ! (Q15) which should be set high immediatelly after boot. To turn the device off, the microcontroller sets the signal \verb!ON_REQ! low. The on logic is only activated through Q16, when the signal \verb!BMS_ON_OFF.DSG! is active. After enabling the device, the precharge circuit is activated through R40. The gate voltage of the precharge \ac{MOSFET} Q3 is monitored by Q11. When precharge is completed, the current limiter is inactive, which causes the gate voltage to drop to 0, which enables the main \ac{MOSFET} Q5 through the level-shifter Q11 and Q10. 
 
 \begin{figure}[h!]
     \centering
@@ -123,6 +161,8 @@ To switch off the device when the microcontroller is unable to turn off the devi
 \end{figure}
 
 \FloatBarrier
+
+To switch the device off when the microcontroller is unable to turn off the device, an emergency shut-off is implemented as shown in \autoref{fig_onoff_emergency_off}. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C17 through the level-shifter Q13, Q9. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 and the precharge Q3 through the level shifters Q12, Q7 and Q8. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is also supplied with the BUTTON\_OFF signal through D7. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
 
 \begin{figure}[h!]
     \centering
@@ -510,7 +550,7 @@ To store persistent data such as serial number or calibration data, an \ac{I2C} 
 \FloatBarrier
 
 \subsection{\acs{I2C} address list}
-All devices on the \ac{I2C} bus are listed in \autoref{tab:i2c_list} to avoid address conflicts. 
+All devices on the \ac{I2C} bus are listed in \autoref{tab_i2c_list} to avoid address conflicts. 
 \begin{table}[h!]
     \begin{zebratabular}{lllllll}
         \rowcolor{gray}
@@ -525,7 +565,7 @@ All devices on the \ac{I2C} bus are listed in \autoref{tab:i2c_list} to avoid ad
         Backlight driver        &  User interface & U9            & LP5816    & 0b0101100 & 0x2C              & VLED (UI) \\
     \end{zebratabular}
     \caption{\acs{I2C} address overview}
-    \label{tab:i2c_list}
+    \label{tab_i2c_list}
 \end{table}
 
 \FloatBarrier
@@ -720,6 +760,27 @@ A display shows the current operating mode and measurement values to the user. I
     \caption{Power - isolated \qty{3.3}{\volt} UI forward converter - secondary side}
     \label{fig_power_3v3_iso_sec}
 \end{figure}
+
+\FloatBarrier
+
+\subsection{Layout}
+\label{sec_layout}
+
+\FloatBarrier
+
+\subsubsection{Layer stack}
+\label{sec_leayout_stack}
+
+\FloatBarrier
+
+\subsubsection{Clearance}
+\label{sec_layout_cleraance}
+All signals directly connected to the battery are assignet to the netclass BAT to enforce a minumum clearance of \qty{0.5}{\milli\meter}. An exception is implemented for the gate of Q5 and I2C.SCL. This is necessary due to the low clearance of the packages of the \ac{MOSFET} Q5 and the \ac{BMS} U1. 
+
+\FloatBarrier
+
+\subsubsection{Component placement}
+\label{sec_layout_placement}
 
 \FloatBarrier
 
