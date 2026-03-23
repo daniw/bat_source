@@ -240,6 +240,13 @@
 {}
 {}
 
+\ModItemOpen
+{Swapped supply pins of U17 and U20}
+{The supply pins of the operational amplifiers U17 and U20 are swapped, which leads to them being reverse-polarity powered. }
+{The trace between the bypass capacitors (C75 and C84) and the V- pins (2) of the operational amplifiers U17 and U20 must be cut. The now disconnected pins must be connected to the GND side of the bypass capacitors using enameled wire. \newline The supply pins (5) of the operational amplifiers U17 and U20 should be lifted and connected to the +3V3\_A side of the bypass capacitors using enameled wire. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier
@@ -259,6 +266,13 @@
 {Buck boost inductor selection}
 {The overlapping footprints of the buck boost inductor variants could potentially create a short circuit between the switch nodes and the core of the inductor PQ2012J. }
 {After testing, a single inductor type should be selected. }
+{}
+{}
+
+\ModItemOpen
+{Swapped supply pins of U17 and U20}
+{The supply pins of the operational amplifiers U17 and U20 are swapped, which leads to them being reverse-polarity powered. }
+{The supply pins of U17 and U20 must be swapped. \newline Additionally, renaming the supply pins of all operational amplifiers to V+ and V- is highly recommended for easier recognition of swapped supply pins during schematic review. }
 {}
 {}
 
