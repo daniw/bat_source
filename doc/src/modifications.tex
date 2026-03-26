@@ -247,6 +247,13 @@
 {}
 {}
 
+\ModItemOpen
+{Insufficient \ac{I2C} level}
+{The high level of the \ac{I2C} signals is only \qty{2.4}{\volt} instead of the expected \qty{3.3}{\volt}. \newline This is caused by the reverse voltage of the zener diodes D35 and D36 at low current. }
+{The zener diodes D35 and D36 should be removed. \newline \textbf{Caution!} This removes the overvoltage protection from the \ac{I2C} signals. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier
@@ -273,6 +280,13 @@
 {Swapped supply pins of U17 and U20}
 {The supply pins of the operational amplifiers U17 and U20 are swapped, which leads to them being reverse-polarity powered. }
 {The supply pins of U17 and U20 must be swapped. \newline Additionally, renaming the supply pins of all operational amplifiers to V+ and V- is highly recommended for easier recognition of swapped supply pins during schematic review. }
+{}
+{}
+
+\ModItemOpen
+{Insufficient \ac{I2C} level}
+{The high level of the \ac{I2C} signals is only \qty{2.4}{\volt} instead of the expected \qty{3.3}{\volt}. \newline This is caused by the reverse voltage of the zener diodes D35 and D36 at low current. }
+{The zener diodes D35 and D36 should be replaced with double diodes to clamp the \ac{I2C} signals to the +3V3 supply. }
 {}
 {}
 
