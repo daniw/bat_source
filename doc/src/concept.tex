@@ -31,7 +31,7 @@ To select an energy source, the following requirements have to be considered:
     \item \ReqRef{R:BSPD_Voltage} (Output voltage in current mode)
 \end{itemize}
 
-Based on these requirements, the power and energy requirements can be extracted. 
+Based on these requirements, the power (\autoref{eq_bat_pow_req}) and energy (\autoref{eq_bat_energy_req}) requirements can be extracted by using an estimated overall efficiency of 0.8. 
 \begin{align}
     P_{volt_{max}}
     = U_{volt_{max}} \cdot I_{volt_{max}}
@@ -45,12 +45,14 @@ Based on these requirements, the power and energy requirements can be extracted.
     = \qty{50}{\watt}
 \end{align}
 \begin{align}
+    \label{eq_bat_pow_req}
     P_{Bat_{max}}
     = \dfrac{max\left(P_{volt_{max}}, P_{current_{max}}\right)}{\eta}
     = \dfrac{\qty{60}{\watt}, \qty{50}{\watt}}{\qty{0.8}{}}
     = \qty{75}{\watt}
 \end{align}
 \begin{align}
+    \label{eq_bat_energy_req}
     E_{Bat_{max}}
     = P_{Bat_{max}} \cdot t_{run}
     = \qty{75}{\watt} \cdot \qty{0.5}{\hour}

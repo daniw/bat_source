@@ -74,12 +74,14 @@ This is implemented with the battery monitor and protector BQ76905. It is powere
     = \dfrac{1 \cdot \qty{2.0}{\volt}}{2 \cdot \qty{100}{\ohm} + 1 \cdot \qty{200}{\ohm}}
     = \qty{5}{\milli\ampere}
 \end{align}
-\todo[inline]{Check minimum cell voltage}
 \begin{align}
     I_{Bal_{max}} 
     = \dfrac{n_{Bal_{max}} \cdot U_{cell_{max}}}{2 \cdot R_C + n_{Bal_{max}} \cdot R_{CB_{min}}}
     = \dfrac{4 \cdot \qty{3.65}{\volt}}{2 \cdot \qty{100}{\ohm} + 4 \cdot \qty{53}{\ohm}}
     = \qty{35.44}{\milli\ampere}
+\end{align}
+\begin{align}
+    P_{R_{C_{max}}} = I_{Bal_{max}} ^{2} \cdot R_{C} = \qty{35.44}{\milli\ampere} ^{2} \cdot \qty{100}{\ohm} = \qty{125.6}{\milli\watt}
 \end{align}
 All signals directly connected to the battery cells are assigned to the netclass BAT to enforce a minimum clearance. A capacitor with a value of \qty{100}{\nano\farad} is connected to each cell voltage measurement for filtering as recommended by the datasheet \cite{TI:BQ76905}. \autoref{fig_bms_volt} shows the cell connection to the \ac{BMS}. 
 
@@ -138,8 +140,9 @@ The \ac{BMS} is supplied from the batteries through the pins BAT and REGSRC. Bot
 
 \subsection{On/off controller}
 \label{sec_onoff}
-The \ac{MOSFET} Q6 blocks any charging current to the battery when the \ac{BMS} does not allow charging. Q5 prevents discharge of the batteries and is the main power switch for the device. A precharge circuit is implemented parallel to Q5 to limit the inrush current. The precharge current is set to \qty{100}{\milli\ampere}. The precharge current runs through the resistors R22 $\ldots$ R25. The \ac{BJT} Q4 pulls the gate of Q5 up when the voltage across the resistors reaches the base-emiter voltage of aproximately \qty{0.65}{\volt}. \autoref{fig_onoff_switch} shows the mains switch \acp{MOSFET} and the precharge circuit. 
+The \ac{MOSFET} Q6 blocks any charging current to the battery when the \ac{BMS} does not allow charging. Q5 prevents discharge of the batteries and is the main power switch for the device. A precharge circuit is implemented parallel to Q5 to limit the inrush current. The precharge current is set to \qty{100}{\milli\ampere}. (\autoref{eq_i_precharge})The precharge current runs through the resistors R22 $\ldots$ R25. The \ac{BJT} Q4 pulls the gate of Q5 up when the voltage across the resistors reaches the base-emiter voltage of aproximately \qty{0.65}{\volt}. \autoref{fig_onoff_switch} shows the mains switch \acp{MOSFET} and the precharge circuit. 
 \begin{align}
+    \label{eq_i_precharge}
     I_{precharge} = \dfrac{U_{BE} \cdot n_{R_{Precharge}}}{R_{Precharge}}
     = \dfrac{\qty{0.65}{\volt} \cdot 4}{\qty{27}{\ohm}} = \qty{96.3}{\milli\ampere}
 \end{align}
@@ -151,7 +154,7 @@ The \ac{MOSFET} Q6 blocks any charging current to the battery when the \ac{BMS} 
     \label{fig_onoff_switch}
 \end{figure}
 
-The charging \ac{MOSFET} Q6 is directly controlled by the \ac{BMS} through the signal \verb!BMS_ON_OFF.CHG!, which is level-shifted and inverted with Q17. The discharging \ac{MOSFET} Q5 can be enabled by the signal \verb!UI_ON_OFF.ON! (Q14), which is active when any of the on-enabled buttons (see \ref{sec_ui_button} \nameref{sec_ui_button}) is pressed. The microcontroller is able to keep the device running by the signal \verb!ON_REQ! (Q15) which should be set high immediatelly after boot. To turn the device off, the microcontroller sets the signal \verb!ON_REQ! low. The on logic is only activated through Q16, when the signal \verb!BMS_ON_OFF.DSG! is active. After enabling the device, the precharge circuit is activated through R40. The gate voltage of the precharge \ac{MOSFET} Q3 is monitored by Q11. When precharge is completed, the current limiter is inactive, which causes the gate voltage to drop to 0, which enables the main \ac{MOSFET} Q5 through the level-shifter Q11 and Q10. 
+The charging \ac{MOSFET} Q6 is directly controlled by the \ac{BMS} through the signal \verb!BMS_ON_OFF.CHG!, which is level-shifted and inverted with Q17. The discharging \ac{MOSFET} Q5 can be enabled by the signal \verb!UI_ON_OFF.ON! (Q14), which is active when any of the on-enabled buttons (see \secref{sec_ui}\todo{Consider more precise reference to buttons}) is pressed. The microcontroller is able to keep the device running by the signal \verb!ON_REQ! (Q15) which should be set high immediatelly after boot. To turn the device off, the microcontroller sets the signal \verb!ON_REQ! low. The on logic is only activated through Q16, when the signal \verb!BMS_ON_OFF.DSG! is active. After enabling the device, the precharge circuit is activated through R40. The gate voltage of the precharge \ac{MOSFET} Q3 is monitored by Q11. When precharge is completed, the current limiter is inactive, which causes the gate voltage to drop to 0, which enables the main \ac{MOSFET} Q5 through the level-shifter Q11 and Q10. 
 
 \begin{figure}[h!]
     \centering
@@ -162,7 +165,7 @@ The charging \ac{MOSFET} Q6 is directly controlled by the \ac{BMS} through the s
 
 \FloatBarrier
 
-To switch the device off when the microcontroller is unable to turn off the device, an emergency shut-off is implemented as shown in \autoref{fig_onoff_emergency_off}. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C17 through the level-shifter Q13, Q9. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 and the precharge Q3 through the level shifters Q12, Q7 and Q8. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is also supplied with the BUTTON\_OFF signal through D7. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
+To disable the device when the microcontroller is unable to turn off the device, an emergency shut-off is implemented as shown in \autoref{fig_onoff_emergency_off}. Pressing the ESC button pulls the signal BUTTON\_OFF high. This charges the capacitor C17 through the level-shifter Q13, Q9. The comparator U3 compares the voltage across the capacitor with half of the supply voltage and disables the \ac{MOSFET} Q5 and the precharge Q3 through the level shifters Q12, Q7 and Q8. The comparator is primarilly supplied from the output of the on/off controller VIN through the diode D5. To keep the \ac{MOSFET} disabled until the ESC button is released, the comparator is also supplied with the BUTTON\_OFF signal through D7. Without that secondary supply, the ESC button would turn on the device when the supply of the comparator is discharged. 
 
 \begin{figure}[h!]
     \centering
@@ -182,25 +185,81 @@ To switch the device off when the microcontroller is unable to turn off the devi
     \item Charging operation
 \end{itemize}
 
+The low voltage converter is a 4-switch buck-boost converter. It is supplied from the battery voltage directly after the on/off controller. The power stage is build with two \ac{GaN} half bridges LMG2100R044 from Texas Instuments. The LMG2100R044 continains two \ac{GaN} \acp{FET} with gate driver. They offer a typical $R_{DS_{ON}}$ of \qty{44}{\milli\ohm}, a maximum supply voltage of \qty{90}{\volt} and a maximum continuous drain current of \qty{35}{\ampere}. The half bridges are connected by an inductor. The input and output are stabilized with ceramic capacitors. The converter is operated at a switching frequency of \qty{1}{\mega\hertz}. 
+\todo[inline]{Design of inductor and DC-link capacitors}
+The integrated low side gate driver is supplied with \qty{5}{\volt}. The high side gate driver is supplied by an integrated bootstrap diode, which charges the bootstrap capacitor C39 / C40. The discharge of the bootstrap capacitor limits the maximum on-time of the high-side switch as by \autoref{eq_bootstrap_ton}. 
+\begin{align}
+    \label{eq_lv_conv_sup_bypass}
+    C_{VCC} 
+    \geq \dfrac{2 \cdot Q_{G} + Q_{RR}}{\Delta V} 
+    = \dfrac{2 \cdot \qty{9.3}{\nano\coulomb} + \qty{2}{\nano\coulomb}}{\qty{100}{\milli\volt}} 
+    = \qty{206}{\nano\farad}
+\end{align}
+\begin{align}
+    \label{eq_bootstrap}
+    C_{BST} = \dfrac{Q_{G} + Q_{RR} + I_{HB} \cdot t_{ON_{max}}}{\Delta V}
+\end{align}
+\begin{align}
+    \label{eq_bootstrap}
+    t_{ON_{max}} 
+    = \dfrac{C_{BST} \cdot \Delta V - Q_{G} - Q_{RR}}{I_{HB}}
+    = \dfrac{\qty{1}{\micro\farad} \cdot \qty{100}{\milli\volt} - \qty{9.3}{\nano\coulomb} - \qty{2}{\nano\coulomb}}{\qty{4.5}{\milli\ampere}}
+    = \qty{19.7}{\micro\second}
+\end{align}
+The control signals are blocked by an enable logic which stops the converter from running when the enable signal from the microcontroller is missing or when the \ac{OVP} latch is active. The \ac{OVP} latch only blocks the primary side. This allows the microcontroller to activte both \acp{FET} on the secondary stage in shoot-through to prevent overheating of the thyristor during continuous crowbar activation. This is possible as the gate driver of the half bridge does not include any shoot-through protection. See \secref{sec_ovp} for detailed operation of the crowbar. The secondary half bridge is olso activated in shoot-through for current measurement. The measurement funcionallity is explained in \secref{sec_meas}. The half bridge with the enable logic is shown in \autoref{fig_lv_conv_powerstage}. 
+
 \begin{figure}[h!]
     \centering
-    \includegraphics[page=4, scale=\schscale, trim=120 275 390 201, clip]{\schfilemain}
+    \includegraphics[page=4, scale=\schscale, trim=120 275 390 202, clip]{\schfilemain}
     \caption{Low voltage converter - power stage with logic}
     \label{fig_lv_conv_powerstage}
 \end{figure}
+
+When the converter is not in use, the output can be discharged with the discharge circuit shown in \autoref{fig_lv_conv_discharge}. The current through the discharge \ac{MOSFET} Q18 is measured with the shunt resistor R59 and controlled by the \ac{BJT} Q20. The discharge circuit can be deactivated with the signal \verb!DISCHARGE/! and Q19. 
+\begin{align}
+    \label{eq_lv_discharge_current}
+    I_{Dsg} 
+    = \dfrac{V_{Q20_{BE}}}{R59}
+    = \dfrac{\qty{0.6}{\volt}}{\qty{30}{\ohm}}
+    = \qty{20}{\milli\ampere}
+\end{align}
+\begin{align}
+    \label{eq_lv_discharge_power}
+    P_{Dsg_{max}} 
+    = I_{Dsg} \cdot V_{LV_{max}}
+    = \dfrac{V_{Q20_{BE}}}{R59} \cdot V_{LV_{max}}
+    = \dfrac{\qty{0.6}{\volt}}{\qty{30}{\ohm}} \cdot \qty{60}{\volt}
+    = \qty{1.2}{\watt}
+\end{align}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[page=4, scale=\schscale, trim=800 65 50 590, clip]{\schfilemain}
+    \caption{Low voltage converter - discharge}
+    \label{fig_lv_conv_discharge}
+\end{figure}
+
+The temperature of the inductor and the two half bridges are measured with the \ac{NTC} thermistors R54, R55 and R56 as per \autoref{fig_lv_conv_temperature}. \autoref{formula}
+\begin{align}
+    \label{formula}
+    R_{NTC} 
+    = R_{N} \cdot e^{B \cdot \left(\dfrac{1}{\vartheta} - \dfrac{1}{\vartheta_{N}}\right)}
+    = \qty{10}{\kilo\ohm} \cdot e^{\qty{3380}{\kelvin} \cdot \left(\dfrac{1}{\vartheta} - \dfrac{1}{\qty{25}{\celsius}}\right)}
+\end{align}
+\begin{align}
+    V_{NTC} 
+    = V_{Ref} \cdot \dfrac{R_{NTC}}{R + R_{NTC}}
+    = V_{Ref} \cdot \dfrac{R_{NTC}}{\qty{10}{\kilo\ohm} + R_{NTC}}
+\end{align}
+\begin{align}
+    \vartheta
+    = \dfrac{1}{\dfrac{1}{\vartheta_{N}} + \dfrac{ln\left(\dfrac{R_{NTC}}{R_{N}}\right)}{B}}
+\end{align}
 
 \begin{figure}[h!]
     \centering
     \includegraphics[page=4, scale=\schscale, trim=120 125 390 525, clip]{\schfilemain}
     \caption{Low voltage converter - temperature measurement}
     \label{fig_lv_conv_temperature}
-\end{figure}
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[page=4, scale=\schscale, trim=800 65 50 590, clip]{\schfilemain}
-    \caption{Low voltage converter - discharge}
-    \label{fig_lv_conv_discharge}
 \end{figure}
 
 \FloatBarrier
@@ -238,6 +297,7 @@ To switch the device off when the microcontroller is unable to turn off the devi
 \FloatBarrier
 
 \subsection{Overvoltage protection}
+\label{sec_ovp}
 
 \begin{figure}[h!]
     \centering
@@ -256,6 +316,7 @@ To switch the device off when the microcontroller is unable to turn off the devi
 \FloatBarrier
 
 \subsection{Overcurrent protection}
+\label{sec_ocp}
 
 \begin{figure}[h!]
     \centering
@@ -267,6 +328,7 @@ To switch the device off when the microcontroller is unable to turn off the devi
 \FloatBarrier
 
 \subsection{Terminals}
+\label{sec_terminal}
 
 \begin{figure}[h!]
     \centering
@@ -292,6 +354,7 @@ To switch the device off when the microcontroller is unable to turn off the devi
 \FloatBarrier
 
 \subsection{Current controller}
+\label{sec_i_ctrl}
 
 \begin{figure}[h!]
     \centering
