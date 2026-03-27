@@ -50,7 +50,7 @@ void display_clear(void) {
 	memset(gs_handle.gram, 0, 1024);
 }
 
-void display_debug_state(void) {
+/*void display_debug_state(void) {
 	sprintf(string, "Vbat    : %d.%03dV",
 			bms.VoltageRegisters.StackVoltage / 1000,
 			bms.VoltageRegisters.StackVoltage % 1000);
@@ -66,7 +66,7 @@ void display_debug_state(void) {
 			(uint16_t) (((ctrl_main_handle.poti_reference * 10))) % 10);
 	ssd1309_gram_write_string(&gs_handle, 10, 34, string, 20, 1,
 			SSD1309_FONT_08);
-}
+}*/
 
 void display_draw(void) {
 	ssd1309_gram_update(&gs_handle);
@@ -207,11 +207,11 @@ void display_draw_measure_data(void) {
 				SSD1309_FONT_16);
 
 		// Reference Voltage
-		sprintf(string, "%*d", 2, ctrl_main_handle.poti_reference >> 1);
+		sprintf(string, "%*d", 2, ctrl_main_handle.voltage_60v_reference_mV /1000);
 		ssd1309_gram_write_string(&gs_handle, 87, 47, string, 2, 1,
 				SSD1309_FONT_16);
 
-		sprintf(string, "%d", (ctrl_main_handle.poti_reference & 0x1) * 5);
+		sprintf(string, "%d", (ctrl_main_handle.voltage_60v_reference_mV %1000) /100);
 		ssd1309_gram_write_string(&gs_handle, 106, 47, string, 2, 1,
 				SSD1309_FONT_16);
 		// Output Voltage
@@ -236,11 +236,11 @@ void display_draw_measure_data(void) {
 				SSD1309_FONT_16);
 
 		// Reference Voltage
-		sprintf(string, "%d", ctrl_main_handle.poti_reference >> 4);
+		sprintf(string, "%d", ctrl_main_handle.current_10A_reference_mA /1000);
 		ssd1309_gram_write_string(&gs_handle, 87, 47, string, 1, 1,
 				SSD1309_FONT_16);
 
-		sprintf(string, "%d", (ctrl_main_handle.poti_reference & 0xf) * 6);
+		sprintf(string, "%d", (ctrl_main_handle.current_10A_reference_mA % 1000) / 100);
 		ssd1309_gram_write_string(&gs_handle, 106, 47, string, 2, 1,
 				SSD1309_FONT_16);
 		// Output Voltage

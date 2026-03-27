@@ -7,3 +7,8 @@
 *.mk
 
 bat_source/Debug
+
+DisplayTest/Debug
+DisplayTest/Drivers
+DisplayTest/CMSIS
+DisplayTest/.settings

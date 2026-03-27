@@ -29,7 +29,7 @@ void statemachine_init(void) {
 	ok_button_pressed = 0;
 	esc_button_pressed = 0;
 	adc_encoder_reset(62);
-	timer_add(STATEMACHINE_STEP_PERIOD, TIMER_TYPE_TICK, EVENT_SM_STEP, 0);
+	timer_add(STATEMACHINE_STEP_PERIOD_mS, TIMER_TYPE_TICK, EVENT_SM_STEP, 0);
 }
 
 void statemachine_step(void) {
