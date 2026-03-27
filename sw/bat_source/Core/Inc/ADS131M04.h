@@ -1,7 +1,7 @@
 #ifndef ADS131M04_H
 #define ADS131M04_H
 
-#include "stm32f3xx_hal.h"
+#include "main.h"
 #include "ADS131M04_Config.h"
 #include "stdint.h"
 

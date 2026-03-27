@@ -33,7 +33,7 @@ void pwm_init(uint16_t pwm_top) {
 		Error_Handler();
 	}
 	if (HAL_HRTIM_DLLCalibrationStart(&pwm_unit_1.hrtim1,
-			HRTIM_CALIBRATIONRATE_14) != HAL_OK) {
+			HRTIM_CALIBRATIONRATE_1) != HAL_OK) { // TODO: HRTIM_CALIBRATIONRATE_1 correct? Was HRTIM_CALIBRATIONRATE_14 before.
 		Error_Handler();
 	}
 	if (HAL_HRTIM_PollForDLLCalibration(&pwm_unit_1.hrtim1, 10) != HAL_OK) {

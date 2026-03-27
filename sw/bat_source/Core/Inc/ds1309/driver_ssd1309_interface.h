@@ -38,7 +38,7 @@
 #define DRIVER_SSD1309_INTERFACE_H
 
 #include "driver_ssd1309.h"
-#include "stm32f3xx_hal.h"
+#include "main.h"
 #include "i2c.h"
 
 #ifdef __cplusplus

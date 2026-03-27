@@ -8,7 +8,7 @@
 #ifndef INC_PWM_H_
 #define INC_PWM_H_
 
-#include "stm32f3xx_hal.h"
+#include "main.h"
 
 #define PWM_150KHZTOP 13653
 

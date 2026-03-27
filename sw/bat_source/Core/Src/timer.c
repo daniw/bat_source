@@ -7,7 +7,7 @@
 
 #include "timer.h"
 #include "error.h"
-#include "stm32f3xx_hal.h"
+#include "main.h"
 #include "list.h"
 
 /**

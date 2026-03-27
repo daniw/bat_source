@@ -1,19 +1,64 @@
-/*
- * dac.h
- *
- *  Created on: May 25, 2025
- *      Author: Andreas
- */
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    dac.h
+  * @brief   This file contains all the function prototypes for
+  *          the dac.c file
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __DAC_H__
+#define __DAC_H__
 
-#ifndef INC_DAC_H_
-#define INC_DAC_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "stm32f3xx_hal.h"
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
 
-void dac_init(void);
-void dac_setValueRef(uint16_t value);
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+extern DAC_HandleTypeDef hdac1;
+
+/* USER CODE BEGIN Private defines */
+
+/* USER CODE END Private defines */
+
+void MX_DAC1_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+/**
+  * Sets the DAC Value of the DAC used as reference / 2
+  * @param value 12 bit value for the DAC Output
+  */
+void dac_setValueRef2(uint16_t value);
+
+/**
+  * Sets the DAC Value of the DAC used as reference for the 1A current source
+  * @param value 12 bit value for the DAC Output
+  */
 void dac_setValue1ARef(uint16_t value);
 
+/* USER CODE END Prototypes */
 
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* INC_DAC_H_ */
+#endif /* __DAC_H__ */
+

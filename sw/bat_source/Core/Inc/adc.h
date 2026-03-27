@@ -1,15 +1,50 @@
-/*
- * adc.h
- *
- *  Created on: May 27, 2025
- *      Author: ahorat
- */
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    adc.h
+  * @brief   This file contains all the function prototypes for
+  *          the adc.c file
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __ADC_H__
+#define __ADC_H__
 
-#ifndef INC_ADC_H_
-#define INC_ADC_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
 
-#include "stm32f3xx_hal.h"
+/* USER CODE BEGIN Includes */
+
+#include "ctrl_main.h"
+
+/* USER CODE END Includes */
+
+extern ADC_HandleTypeDef hadc1;
+
+extern ADC_HandleTypeDef hadc2;
+
+extern ADC_HandleTypeDef hadc3;
+
+extern ADC_HandleTypeDef hadc4;
+
+extern ADC_HandleTypeDef hadc5;
+
+/* USER CODE BEGIN Private defines */
 
 #define ADC_VIN_GAIN_MV    (3300* 210 /4096 /10)
 #define ADC_VHV_GAIN_MV    (3300 * 960 /4096/1)
@@ -34,6 +69,16 @@
 #define ADC_IBAT_OFFSET_MA  1926
 
 #define ADC_POTI_MAX 127
+
+/* USER CODE END Private defines */
+
+void MX_ADC1_Init(void);
+void MX_ADC2_Init(void);
+void MX_ADC3_Init(void);
+void MX_ADC4_Init(void);
+void MX_ADC5_Init(void);
+
+/* USER CODE BEGIN Prototypes */
 
 typedef struct {
 	uint16_t v_in_raw; 			// ADC1_IN1
@@ -98,4 +143,11 @@ void adc_data_convert(void);
 uint16_t adc_encoder_read(void);
 void adc_encoder_reset(uint8_t value);
 
-#endif /* INC_ADC_H_ */
+/* USER CODE END Prototypes */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __ADC_H__ */
+

@@ -9,7 +9,7 @@
 #define SRC_AUX_IO_CTRL_H_
 
 #include "stdint.h"
-#include "stm32f3xx_hal.h"
+#include "main.h"
 #include "stdio.h"
 #include "driver_pca9554.h"
 

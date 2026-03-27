@@ -50,7 +50,7 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 	case CTRL_MODE_60V:
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
-		ctrl_main_ctrl_60v(0, adc_data->v_out_mV, adc_data->v_term_ext_mv, adc_data->i_bat_mA);
+		ctrl_main_ctrl_60v(adc_data->v_out_mV, adc_data->v_term_ext_mv, adc_data->i_bat_mA);
 		break;
 	case CTRL_MODE_10A:
 		// ToDo: Implement

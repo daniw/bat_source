@@ -1,116 +1,153 @@
-/*
- * dac.c
- *
- *  Created on: May 25, 2025
- *      Author: Andreas
- */
-
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    dac.c
+  * @brief   This file provides code for the configuration
+  *          of the DAC instances.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
 #include "dac.h"
 
-DAC_HandleTypeDef hdacRef;
+/* USER CODE BEGIN 0 */
 
-TIM_HandleTypeDef htim1ARef;
+/* USER CODE END 0 */
 
-/**
- * Initialise the DAC
- */
-void dac_init(void) {
+DAC_HandleTypeDef hdac1;
 
-	DAC_ChannelConfTypeDef sConfig = { 0 };
+/* DAC1 init function */
+void MX_DAC1_Init(void)
+{
 
-	/** DAC Initialization
-	 */
-	hdacRef.Instance = DAC1;
-	if (HAL_DAC_Init(&hdacRef) != HAL_OK) {
-		Error_Handler();
-	}
+  /* USER CODE BEGIN DAC1_Init 0 */
 
-	/** DAC channel OUT1 config
-	 */
-	sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-	sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
-	if (HAL_DAC_ConfigChannel(&hdacRef, &sConfig, DAC_CHANNEL_1) != HAL_OK) {
-		Error_Handler();
-	}
-	HAL_DAC_Start(&hdacRef, DAC_CHANNEL_1);
+  /* USER CODE END DAC1_Init 0 */
 
-	  dac_setValueRef(2048);
+  DAC_ChannelConfTypeDef sConfig = {0};
 
-	/*************** TIM15 *****************/
+  /* USER CODE BEGIN DAC1_Init 1 */
 
-	  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-	  TIM_MasterConfigTypeDef sMasterConfig = {0};
-	  TIM_OC_InitTypeDef sConfigOC = {0};
-	  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+  /* USER CODE END DAC1_Init 1 */
 
-	  htim1ARef.Instance = TIM15;
-	  htim1ARef.Init.Prescaler = 0;
-	  htim1ARef.Init.CounterMode = TIM_COUNTERMODE_UP;
-	  htim1ARef.Init.Period = 4096;
-	  htim1ARef.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	  htim1ARef.Init.RepetitionCounter = 0;
-	  htim1ARef.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-	  if (HAL_TIM_Base_Init(&htim1ARef) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-	  if (HAL_TIM_ConfigClockSource(&htim1ARef, &sClockSourceConfig) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  if (HAL_TIM_PWM_Init(&htim1ARef) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	  if (HAL_TIMEx_MasterConfigSynchronization(&htim1ARef, &sMasterConfig) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	  sConfigOC.Pulse = 0;
-	  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-	  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-	  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-	  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-	  if (HAL_TIM_PWM_ConfigChannel(&htim1ARef, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-	  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-	  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-	  sBreakDeadTimeConfig.DeadTime = 0;
-	  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-	  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-	  sBreakDeadTimeConfig.BreakFilter = 0;
-	  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-	  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1ARef, &sBreakDeadTimeConfig) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  HAL_TIM_Base_Start_IT(&htim1ARef);
-	  HAL_TIM_PWM_Start(&htim1ARef, TIM_CHANNEL_1);
-	  dac_setValue1ARef(2048);
-	  HAL_TIM_MspPostInit(&htim1ARef);
+  /** DAC Initialization
+  */
+  hdac1.Instance = DAC1;
+  if (HAL_DAC_Init(&hdac1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** DAC channel OUT1 config
+  */
+  sConfig.DAC_HighFrequency = DAC_HIGH_FREQUENCY_INTERFACE_MODE_AUTOMATIC;
+  sConfig.DAC_DMADoubleDataMode = DISABLE;
+  sConfig.DAC_SignedFormat = DISABLE;
+  sConfig.DAC_SampleAndHold = DAC_SAMPLEANDHOLD_DISABLE;
+  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
+  sConfig.DAC_Trigger2 = DAC_TRIGGER_NONE;
+  sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
+  sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_EXTERNAL;
+  sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
+  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** DAC channel OUT2 config
+  */
+  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN DAC1_Init 2 */
+
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+
+  /* USER CODE END DAC1_Init 2 */
 
 }
 
+void HAL_DAC_MspInit(DAC_HandleTypeDef* dacHandle)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  if(dacHandle->Instance==DAC1)
+  {
+  /* USER CODE BEGIN DAC1_MspInit 0 */
+
+  /* USER CODE END DAC1_MspInit 0 */
+    /* DAC1 clock enable */
+    __HAL_RCC_DAC1_CLK_ENABLE();
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    /**DAC1 GPIO Configuration
+    PA4     ------> DAC1_OUT1
+    PA5     ------> DAC1_OUT2
+    */
+    GPIO_InitStruct.Pin = VREF_2_UC_Pin|I_1A_REF_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN DAC1_MspInit 1 */
+
+  /* USER CODE END DAC1_MspInit 1 */
+  }
+}
+
+void HAL_DAC_MspDeInit(DAC_HandleTypeDef* dacHandle)
+{
+
+  if(dacHandle->Instance==DAC1)
+  {
+  /* USER CODE BEGIN DAC1_MspDeInit 0 */
+
+  /* USER CODE END DAC1_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_DAC1_CLK_DISABLE();
+
+    /**DAC1 GPIO Configuration
+    PA4     ------> DAC1_OUT1
+    PA5     ------> DAC1_OUT2
+    */
+    HAL_GPIO_DeInit(GPIOA, VREF_2_UC_Pin|I_1A_REF_Pin);
+
+  /* USER CODE BEGIN DAC1_MspDeInit 1 */
+
+  /* USER CODE END DAC1_MspDeInit 1 */
+  }
+}
+
+/* USER CODE BEGIN 1 */
+
 /**
- * Sets the DAC Value of the DAC1-1 used as reference
- * @param value 12 bit value for the DAC Output
- */
-void dac_setValueRef(uint16_t value) {
-	HAL_DAC_SetValue(&hdacRef, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
+  * Sets the DAC Value of the DAC used as reference / 2
+  * @param value 12 bit value for the DAC Output
+  */
+void dac_setValueRef2(uint16_t value)
+{
+	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, value);
 }
 
 /**
- * Sets the DAC Value of the TIM15-1 PWM used as reference for the 1A
- * @param value 12 bit value for the DAC Output
- */
-void dac_setValue1ARef(uint16_t value){
-	  __HAL_TIM_SET_COMPARE(&htim1ARef, TIM_CHANNEL_1, (uint32_t)(value));
+  * Sets the DAC Value of the DAC used as reference for the 1A current source
+  * @param value 12 bit value for the DAC Output
+  */
+void dac_setValue1ARef(uint16_t value)
+{
+	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, value);
 }
+
+/* USER CODE END 1 */
