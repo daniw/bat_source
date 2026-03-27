@@ -5,6 +5,7 @@
  *      Author: ahorat
  */
 #include "adc.h"
+#include "ctrl_main.h"
 
 ADC_MEAS_DATA adc_data;
 
@@ -257,13 +258,25 @@ static void adc_Init2(void)
 
 void adc_convert_data(void){
 	adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
-	adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
+	//adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
 	adc_data.v_term_mV = (adc_data.v_term_raw - adc_data.v_term_offset)* ADC_VTERM_GAIN_MV;
 	adc_data.v_hv_mV   = (adc_data.v_hv_raw   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
-	adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
+	//adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
+	 adc_data.i_out_mA = adc_data.i_out_raw - adc_data.i_out_offset * ADC_IOUT_GAIN_MA;
+	 adc_data.i_iso_mA = adc_data.i_iso_raw - adc_data.i_iso_offset * ADC_IISO_GAIN_MA;
 
 	adc_data.v_sens_ext_uv = adc_data.ext_adc_data[1] * ADC_EXT_VSENS_GAIN_UV;
 	adc_data.i_iso_ext_uA  = adc_data.ext_adc_data[2] * ADC_EXT_IISO_GAIN_UA;
+
+	// Calculate resistance
+	adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
+
+	// Calculate / Estimate Temperatures
+	 adc_data.temp_int_deg     = 114 - 0.0378*adc_data.temp_int_raw;
+	 adc_data.temp_prim_deg    = 114 - 0.0378*adc_data.temp_prim_raw;
+	 adc_data.temp_current_deg = 114 - 0.0378*adc_data.temp_current_raw;
+	 adc_data.temp_sec_deg     = 114 - 0.0378*adc_data.temp_sec_raw;
+	 adc_data.temp_trafo_deg   = 114 - 0.0378*adc_data.temp_trafo_raw;
 
 	//HAL_ADC_Stop_DMA(&hadc1);
 	//HAL_ADC_Stop_DMA(&hadc2);
@@ -285,7 +298,9 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
 	adc_data.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
 	//adc_data.v_term_ext_mv_filt = 0.9f*adc_data.v_term_ext_mv_filt + 0.1f*adc_data.v_term_ext_mv;
 	adc_data.i_out_ext_mA  = adc_data.ext_adc_data[3] * ADC_EXT_IOUT_GAIN_mA;
-	ctrl_main_ctrl_60v(adc_encoder_read(), adc_data.v_out_mV, adc_data.v_term_ext_mv, adc_data.i_bat_mA);
+
+	adc_data.reference_poti = adc_encoder_read();
+	ctrl_main_ctrl_60v(0, adc_data.v_out_mV, adc_data.v_term_ext_mv, adc_data.i_bat_mA);
 }
 
 
@@ -302,7 +317,7 @@ void adc_init_encoder(void) {
 	htim1.Instance = TIM1;
 	htim1.Init.Prescaler = 0;
 	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim1.Init.Period = 127;
+	htim1.Init.Period = ADC_POTI_MAX;
 	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim1.Init.RepetitionCounter = 0;
 	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;

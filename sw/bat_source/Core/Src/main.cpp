@@ -436,11 +436,17 @@ static void MX_DMA_Init(void) {
 }
 
 // --------------------------------- Interrupt Handler --------------------------------
-
+/**
+ * External ADC finished SPI communication
+ */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 	ADS131M04_handleSPIComplete(&ext_adc);
 }
 
+
+/**
+ * Interrupt for external ADC
+ */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == ADC_DRDY_Pin) {
 		ADS131M04_handleDRDYInterrupt(&ext_adc);

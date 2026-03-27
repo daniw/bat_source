@@ -15,6 +15,9 @@
 #define ADC_VHV_GAIN_MV    (3300 * 960 /4096/1)
 #define ADC_VOUT_GAIN_MV   	33.8115f //30.61661342   //(3300 * 36400/4096/1300)
 #define ADC_VTERM_GAIN_MV  (3300 * 14400/4096/15/1.0417f)
+
+#define ADC_IOUT_GAIN_MA   0 // ToDo: Calculate
+#define ADC_IISO_GAIN_MA   0 // ToDo: Calculate
 								// Empirical Value	// Calculated Value 	// Calculation
 #define ADC_EXT_VTERM_GAIN_MV 	0.144499515f 		//0.1373291015625 		//(1200/8388608 * 14400/15) (ADC * Resistor divider) Max Value 1152 V
 #define ADC_EXT_VSENS_GAIN_UV	0.7152557373046875f  //(1200/8388608 * 1 * 5)(ADC * ADC GAIN * Resistor divider) Max Value 6V
@@ -30,6 +33,7 @@
 #define ADC_VHV_OFFSET_MV   0
 #define ADC_IBAT_OFFSET_MA  1926
 
+#define ADC_POTI_MAX 127
 
 typedef struct {
 	uint16_t v_in_raw; 			// ADC1_IN1
@@ -41,8 +45,8 @@ typedef struct {
 
 	uint16_t v_in_mV; 			// ADC1_IN1
 	uint16_t v_hv_mV; 			// ADC1_IN2
-	uint16_t i_bat_mA; 		// ADC1_IN3
-	uint16_t v_out_mV; 		// ADC1_IN4
+	uint16_t i_bat_mA; 		    // ADC1_IN3
+	uint16_t v_out_mV; 		    // ADC1_IN4
 	uint16_t v_term_mV; 		// ADC1_IN13
 	uint16_t temp_int_deg; 		// ADC1_INT
 
@@ -53,11 +57,11 @@ typedef struct {
 	uint16_t i_iso_raw; 		// ADC2_IN13
 	uint16_t temp_trafo_raw; 	// ADC2_IN15
 
-	int16_t i_out_mA; 		// ADC2_IN5
+	int16_t i_out_mA; 		    // ADC2_IN5
 	uint16_t temp_prim_deg; 	// ADC2_IN8
 	uint16_t temp_current_deg; 	// ADC2_IN11
 	uint16_t temp_sec_deg; 		// ADC2_IN12
-	int16_t i_iso_mA; 		// ADC2_IN13
+	int16_t i_iso_mA; 		    // ADC2_IN13
 	uint16_t temp_trafo_deg; 	// ADC2_IN15
 
 	uint16_t v_in_offset;
@@ -80,6 +84,10 @@ typedef struct {
     int32_t v_sens_ext_uv;
     int32_t i_iso_ext_uA;
     int32_t i_out_ext_mA;
+
+    uint16_t reference_poti;
+
+    uint16_t r_mOhmx10;
 
 }ADC_MEAS_DATA;
 

@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 
-#define STATEMACHINE_STEP_PERIOD 100 //ms
+#define STATEMACHINE_STEP_PERIOD_mS 100 //ms
 
 typedef enum
 {
@@ -23,6 +23,7 @@ typedef enum
 	  STATEMACHINE_MODE_VOLTMETER,
 	  STATEMACHINE_MODE_SETTINGS,
 	  STATEMACHINE_MODE_SHUTDOWN,
+	  STATEMACHINE_MODE_CHARGE,
 	  STATEMACHINE_MODE_RESERVED
 } statemachine_modes_t;
 
