@@ -254,6 +254,13 @@
 {}
 {}
 
+\ModItemOpen
+{Inaccurate voltage reference buffer output}
+{The voltage reference buffer output is inaccurate. The buffer requires an output capacity in the range of \qty{0.5}{\micro\farad} $\ldots$ \qty{1.5}{\micro\farad}. }
+{A \qty{1}{\micro\farad} capacitor should be added between the input (pin 3) of the external reference voltage buffer (U22) and the GND pin of C146. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier
@@ -287,6 +294,13 @@
 {Insufficient \ac{I2C} level}
 {The high level of the \ac{I2C} signals is only \qty{2.4}{\volt} instead of the expected \qty{3.3}{\volt}. \newline This is caused by the reverse voltage of the zener diodes D35 and D36 at low current. }
 {The zener diodes D35 and D36 should be replaced with double diodes to clamp the \ac{I2C} signals to the +3V3 supply. }
+{}
+{}
+
+\ModItemOpen
+{Inaccurate voltage reference buffer output}
+{The voltage reference buffer output is inaccurate. The buffer requires an output capacity in the range of \qty{0.5}{\micro\farad} $\ldots$ \qty{1.5}{\micro\farad}. }
+{A \qty{1}{\micro\farad} capacitor should be added to the signal VREF\_UC. }
 {}
 {}
 
