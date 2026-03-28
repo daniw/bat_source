@@ -27,6 +27,8 @@ extern HRTIM_HandleTypeDef hhrtim1;
 extern ADS131M04_handle ext_adc;
 extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
+extern opt3004_handle hamb;
+extern PCA9554_handle hpca_hw_rev;
 
 // Function declarations
 void cmd_help(void);
@@ -38,9 +40,11 @@ void cmd_setGPIO(void);
 void cmd_setDAC(void);
 void cmd_printBMS(void);
 void cmd_printADC(void);
-void cmd_pulse(void);
+void cmd_setDuty(void);
+void cmd_PWM_en(void);
 void cmd_setRef(void);
 void cmd_test_i2c(void);
+void cmd_readLux(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -53,9 +57,11 @@ void (*cmd_func[])(void) = {
 	cmd_setDAC,
 	cmd_printBMS,
 	cmd_printADC,
-	cmd_pulse,
+	cmd_setDuty,
+	cmd_PWM_en,
 	cmd_setRef,
-	cmd_test_i2c
+	cmd_test_i2c,
+	cmd_readLux
 };
 
 // List of command names
@@ -69,9 +75,11 @@ const char *cmd_str[] = {
 		"setDAC",
 		"pBMS",
 		"pADC",
-		"pulse",
+		"setDuty",
+		"enPWM",
 		"setRef",
-		"test_i2c"
+		"test_i2c",
+		"readLux"
 };
 
 int num_commands = sizeof(cmd_str) / sizeof(char*);
@@ -94,6 +102,26 @@ void cli_init(UART_HandleTypeDef *huart1) {
 }
 
 #ifdef CLI_ENABLED
+
+
+int _write(int fd, char *ptr, int len) {
+	(void) fd;
+	HAL_UART_Transmit(_huart, (uint8_t*) ptr, len, 100);
+	return len;
+}
+
+//size_t _read(int fd, char *ptr, size_t len){
+//  (void)fd;
+//  size_t i;
+//  for(i=0;i<len;i++){
+//    *ptr++ = uart_read();
+//    uart_write(*ptr++);  //For Terminal Echo
+//
+//    HAL_UART_Receive(&_huart, ptr, len);
+//  }
+//  return i;
+//}
+
 
 /**
  * Read the line from the buffer
@@ -232,8 +260,18 @@ void cmd_turnOff(void) {
 }
 
 void cmd_printGPIO(void) {
-	aux_io_ctrl_print_inputs();
-	aux_io_ctrl_print_Output();
+	printf("Input Pins: \n");
+	printf("Button Out: 	%d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
+	printf("Button OK: 		%d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
+	printf("Button ESC:	 	%d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
+
+	printf("I2C Alert: 		%d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
+	printf("ADC_DRDY: 		%d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
+	printf("UI Present: 	%d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
+	printf("OVP Pin Latch:	%d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
+	printf("OCP Pin Latch:	%d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
+
+	printf("HW Revision: 	%d\n", pca9554_read_input(&hpca_hw_rev));
 }
 void cmd_setGPIO(void) {
 	uint8_t pin, value;
@@ -257,10 +295,10 @@ void cmd_setDAC(void) {
 	char *end;
 	pin = strtol(arg_locs[1], &end, 10);
 	value = strtol(arg_locs[2], &end, 10);
-	if (pin == 0)
-		dac_setValueRef(value);
-	else
-		dac_setValue1ARef(value);
+	//if (pin == 0)
+		//dac_setValueRef(value);
+	//else
+		//dac_setValue1ARef(value);
 }
 
 void cmd_setRef(void){
@@ -275,6 +313,7 @@ void cmd_setRef(void){
 
 
 void cmd_printBMS(void){
+	  BQ76905_readAllValues(&bms);
 	  printf("SafetyRegisters.safetyAlertA         = 0x%02X\n", bms.SafetyRegisters.safetyAlertA);
 	  printf("SafetyRegisters.safetyStatusA        = 0x%02X\n", bms.SafetyRegisters.safetyStatusA);
 	  printf("SafetyRegisters.safetyAlertB         = 0x%02X\n", bms.SafetyRegisters.safetyAlertB);
@@ -311,7 +350,7 @@ void cmd_printBMS(void){
 
 void cmd_printADC() {
 	//for(int i=0; i<10; i++){
-	adc_convert_data();
+	//adc_convert_data();
     printf("ADC Measurements:\n");
     printf("  v_in         (ADC1_IN1)  : %u \t: %u mV\n",adc_data.v_in_raw, adc_data.v_in_mV);
     printf("  v_hv         (ADC1_IN2)  : %u \t: %u mV\n",adc_data.v_hv_raw, adc_data.v_hv_mV);
@@ -335,41 +374,64 @@ void cmd_printADC() {
 
 
 
-void cmd_pulse(){
-	//HRTIM_SimpleOnePulseChannelCfgTypeDef pSimpleOnePulseChannelCfg;
-	// pSimpleOnePulseChannelCfg.Pulse = 0x10;
-	// pSimpleOnePulseChannelCfg.OutputPolarity = HRTIM_OUTPUTPOLARITY_HIGH;
-	// pSimpleOnePulseChannelCfg.OutputIdleLevel = HRTIM_OUTPUTIDLELEVEL_INACTIVE;
-	// pSimpleOnePulseChannelCfg.Event = HRTIM_EVENT_NONE;
-	// pSimpleOnePulseChannelCfg.EventPolarity = HRTIM_EVENTPOLARITY_HIGH;
-	//HAL_HRTIM_SimpleOnePulseChannelConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_B, HRTIM_OUTPUT_TB1, &pSimpleOnePulseChannelCfg);
+void cmd_setDuty(void){
+	uint8_t  channel;
+	float value;
+	if (number_of_args != 3)
+		return;
 
-	//HAL_HRTIM_SimpleOnePulseStart(&hhrtim1, HRTIM_TIMERINDEX_TIMER_B, HRTIM_OUTPUT_TB1);
-	//HAL_HRTIM_WaveformCountStop(&hhrtim1, HRTIM_TIMERID_TIMER_B);
-	HRTIM1_COMMON->CR2 |= (0x04 << 8);
-	  //HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TB1);  // Enable the generation of the waveform signal on the designated output
-	  //HAL_HRTIM_WaveformCountStart(&hhrtim1, HRTIM_TIMERID_TIMER_B);  // Start the counter of the Timer A operating in waveform mode
-	//HAL_Delay(1);
+	char *end;
+	channel = strtol(arg_locs[1], &end, 10);
+	value = strtof(arg_locs[2], &end);
+	switch(channel){
+	case 0: hrtim_set_duty_pri(value);
+	return;
+	case 1: hrtim_set_duty_sek(value);
+	return;
+	case 2: hrtim_set_duty_hv(value);
+	return;
+	}
 
+}
+
+
+void cmd_PWM_en(void){
+	uint8_t  channel;
+	uint16_t value;
+	if (number_of_args != 3)
+		return;
+
+	char *end;
+	channel = strtol(arg_locs[1], &end, 10);
+	value = strtol(arg_locs[2], &end, 10);
+	if(value == 1)
+		hrtim_enable(channel);
+	else
+		hrtim_disable(channel);
 }
 
 void cmd_test_i2c(void){
 	uint64_t fw_version;
 	uint8_t buffer[2] = {0x68,2};
-	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 2), i2c_handle->ErrorCode);
+	/*printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 2), i2c_handle->ErrorCode);
 	buffer[0] = 0x12;
 	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
 	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
 		buffer[0] = 0;
 	buffer[1] = 0;
 	i2c_ReadBlocking(bms.address, buffer, 2);
-	printf("Test Read 0x%x\r\n", *((uint16_t*)&buffer));
+	printf("Test Read 0x%x\r\n", *((uint16_t*)&buffer));*/
 
 	printf("Read HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
-	BQ76905_GetFWVersion(&bms, &fw_version);
+	BQ76905_GetFWVersion(&bms, (uint8_t*)&fw_version);
 	printf("Read FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) fw_version>>32);
 	printf("Read Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
 
+}
+
+void cmd_readLux(void){
+
+	printf("Read Optical Sensor: %d cLux\r\n", opt3004_readLux(&hamb));
 }
 
 #endif

@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "stdio.h"
 
 // Register addresses
 #define BQ76905_COMMAND_ALERT_A        0x02

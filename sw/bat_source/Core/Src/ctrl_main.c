@@ -8,7 +8,6 @@
 #include "ctrl_main.h"
 #include "ctrl_param.h"
 #include "ctrl_PID_control.h"
-#include "pwm.h"
 #include "adc.h"
 
 ctrl_main_t ctrl_main_handle;
@@ -33,7 +32,6 @@ void ctrl_main_init(void) {
 	ctrl_PID_controller_init(&ctrl_pi_current, CTRL_PARAM_CURRENT_P,
 	CTRL_PARAM_CURRENT_I, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
 	CTRL_PARAM_CURRENT_DUTY_SAT_LOW);
-	pwm_setduty_prim(0.0F);
 
 	ctrl_main_handle.ramp = 0.0F;
 
@@ -121,6 +119,6 @@ void ctrl_main_ctrl_60v(uint16_t voltage_meas_mV, uint16_t voltage_meas_accurate
 	ctrl_pi_current.ref = ctrl_pi_voltage.action;
 	ctrl_PID_controller_execute(&ctrl_pi_current, current_meas_mA / 1000.0F, current_meas_mA / 1000.0F, 0);
 	// Apply Duty
-	pwm_setduty_prim(ctrl_pi_current.action);
+	//hrtim_set_duty_pri(ctrl_pi_current.action);
 }
 

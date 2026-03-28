@@ -43,7 +43,13 @@ void MX_HRTIM1_Init(void);
 void HAL_HRTIM_MspPostInit(HRTIM_HandleTypeDef *hhrtim);
 
 /* USER CODE BEGIN Prototypes */
-
+void hrtim_set_freq_prim(uint32_t freq);
+void hrtim_set_freq_sek(uint32_t freq);
+void hrtim_set_duty_pri(float value);
+void hrtim_set_duty_sek(float value);
+void hrtim_set_duty_hv(float value);
+void hrtim_enable(uint8_t channel);
+void hrtim_disable(uint8_t channel);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

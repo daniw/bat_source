@@ -97,8 +97,8 @@ void display_draw_battery(uint8_t percentage) {
 }
 
 void display_draw_crowbar_icon(uint8_t position) {
-	if (AUX_IO_READ_CROWBAR)
-		return;
+	//if (AUX_IO_READ_CROWBAR)
+	//	return;
 	gs_handle.gram[position + 0][0] = 0x18;
 	gs_handle.gram[position + 1][0] = 0x18;
 	gs_handle.gram[position + 2][0] = 0x1E;

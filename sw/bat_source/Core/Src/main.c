@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dac.h"
+#include "dma.h"
 #include "hrtim.h"
 #include "i2c.h"
 #include "quadspi.h"
@@ -52,6 +53,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+BQ76905_handle bms;
+opt3004_handle hamb;
+lp581x_handle hled;
+lp581x_handle hbacklight;
+ADC_MEAS_DATA adc_data;
+ADS131M04_handle ext_adc;
+PCA9554_handle hpca_hw_rev;
 
 /* USER CODE END PV */
 
@@ -94,6 +102,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_HRTIM1_Init();
   MX_QUADSPI1_Init();
   MX_SPI4_Init();
@@ -118,20 +127,27 @@ int main(void)
   dac_setValue1ARef(dac_value);
 
   /*
+   * CLI Setup
+   */
+  cli_init(&huart2);
+
+  /*
    * LED test setup
    */
-  uint8_t led_address = 0x2D<<1;
-  uint8_t led_current = 3;
-  uint8_t led_en[] = {0x00, 0x01, 0x00, 0x07, 0x00};
-  i2c_WriteBlocking(led_address, led_en, sizeof(led_en));
-  uint8_t led_update[] = {0x0F, 0x55};
-  i2c_WriteBlocking(led_address, led_update, sizeof(led_update));
-  uint8_t led_pwms[] = {0x18, 0xFF, 0xFF, 0xFF};
-  i2c_WriteBlocking(led_address, led_pwms, sizeof(led_pwms));
+
+  lp581x_init(&hled, LP5817_ADDRESS);
+  uint8_t led_pwms[] = {0xFF, 0xFF, 0xFF, 0xFF};
+  lp581x_setPWMDimming(&hled, led_pwms);
+
+  lp581x_init(&hbacklight, LP5816_ADDRESS);
 
   /*
    * Ambient light sensor test setup
    */
+
+  opt3004_init(&hamb, OPT3004_DEVICE_ADDRESS_GND);
+  pca9554_init(&hpca_hw_rev,PCA9554_ADDRESS_HW_REV, 0xFF);
+
   uint8_t amb_address = 0x44<<1;
   uint8_t amb_brightness_arr[] = {0, 0, 0, 0};
   uint16_t amb_brightness = 0;
@@ -139,12 +155,34 @@ int main(void)
   i2c_WriteBlocking(amb_address, amb_setup, sizeof(amb_setup));
   uint8_t amb_dummy[] = {0x00};
   i2c_WriteBlocking(amb_address, amb_dummy, sizeof(amb_dummy));
+
+  /*
+   * Wakeup BMS and configure if necessary
+   */
+  GPIO_SET_BMS_CTRL_WAKEUP(1);
+  HAL_Delay(100);
+  GPIO_SET_BMS_CTRL_WAKEUP(0);
+  BQ76905_init(&bms, BQ76905_I2C_ADDRESS);
+
+
+  /*
+   * PWM Init
+   */
+
+  hrtim_set_freq_prim(50000);
+  hrtim_set_freq_sek(150000);
+  hrtim_set_duty_pri(0.985);
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+
 	  /*
 	   * DAC Test
 	   */
@@ -156,7 +194,6 @@ int main(void)
 	  {
 		  dac_value += 256;
 	  }
-	  dac_setValueRef2(2048);
 	  dac_setValue1ARef(dac_value);
 	  /*
 	   * LED test
@@ -173,27 +210,37 @@ int main(void)
 	  i2c_WriteBlocking(led_address, led_currents, sizeof(led_currents));
 	  */
 
+	  cli_loop();
+
+
 	  /*
 	   * Ambient light sensor test
 	   */
-	  i2c_ReadBlocking(amb_address, amb_brightness_arr, sizeof(amb_brightness_arr));
-	  amb_brightness = (uint16_t) amb_brightness_arr[1] + (uint16_t) amb_brightness_arr[0] * 256;
-	  led_current = amb_brightness_arr[0];
+
+
+	  /*amb_brightness = opt3004_readLux(&hamb);
+
+	  led_current = amb_brightness/1000;
+
 	  if (led_current > 200)
 	  {
 		  led_current = 200;
 	  }
-	  else if (amb_brightness < 512)
+	  else if (amb_brightness < 1000)
 	  {
 		  led_current = 2;
 	  }
 	  uint8_t led_currents[] = {0x14, led_current, led_current/2, led_current/2};
-	  i2c_WriteBlocking(led_address, led_currents, sizeof(led_currents));
+	  lp581x_setAnalogDimming(&hled, 0, led_current);
+	  lp581x_setAnalogDimming(&hled, 0, led_current/2);
+	  lp581x_setAnalogDimming&(hled, 0, led_current/2);
+
+	  i2c_WriteBlocking(led_address, led_currents, sizeof(led_currents));*/
 
 	  /*
 	   * Loop delay
 	   */
-	  HAL_Delay(100);
+	  HAL_Delay(1);
 
     /* USER CODE END WHILE */
 
