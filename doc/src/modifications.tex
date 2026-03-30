@@ -261,6 +261,34 @@
 {}
 {}
 
+\ModItemOpen
+{On/off controller unable to turn on}
+{While precharging V\_IN, Q12 turns the prescharge off due to the pull-up resistor R37 before the comparator U3 is operating, which stops the precharge from continuing. }
+{A \qty{47}{\kilo\ohm} should be added from the gate of Q12 to GND. }
+{}
+{}
+
+\ModItemOpen
+{On/off controller does not activate main discharge MOSFET}
+{The precharge detection MOSFET Q11 is unable to detect the completion of the precharge due to the still too high voltage at its gate. }
+{Change R40 to \qty{1}{\kilo\ohm} or add a \qty{1.1}{\kilo\ohm} resistor parallel to R40. }
+{}
+{}
+
+\ModItemOpen
+{Overvoltage protection latch reset}
+{The overvoltage protection latch reset does not work due to insufficient voltage at the positive input of the latch comparator. }
+{Change R82 to \qty{2.4}{\kilo\ohm}. }
+{}
+{}
+
+\ModItemOpen
+{Overcurrent protection always active}
+{The overcurrent protection is always active because the threshold does not account for the offset $\frac{VREF}{2}$ on the current mesurement. }
+{Change R105 to \qty{1}{\mega\ohm} and R106 to \qty{330}{\kilo\ohm}. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier
@@ -301,6 +329,34 @@
 {Inaccurate voltage reference buffer output}
 {The voltage reference buffer output is inaccurate. The buffer requires an output capacity in the range of \qty{0.5}{\micro\farad} $\ldots$ \qty{1.5}{\micro\farad}. }
 {A \qty{1}{\micro\farad} capacitor should be added to the signal VREF\_UC. }
+{}
+{}
+
+\ModItemOpen
+{On/off controller unable to turn on}
+{While precharging V\_IN, Q12 turns the prescharge off due to the pull-up resistor R37 before the comparator U3 is operating, which stops the precharge from continuing. }
+{A \qty{47}{\kilo\ohm} should be added from the gate of Q12 to GND. }
+{}
+{}
+
+\ModItemOpen
+{On/off controller does not activate main discharge MOSFET}
+{The precharge detection MOSFET Q11 is unable to detect the completion of the precharge due to the still too high voltage at its gate. }
+{Change R40 to \qty{1}{\kilo\ohm} or add a \qty{1.1}{\kilo\ohm} resistor parallel to R40. }
+{}
+{}
+
+\ModItemOpen
+{Overvoltage protection latch reset}
+{The overvoltage protection latch reset does not work due to insufficient voltage at the positive input of the latch comparator. }
+{Change R82 to \qty{2.4}{\kilo\ohm}. }
+{}
+{}
+
+\ModItemOpen
+{Overcurrent protection always active}
+{The overcurrent protection is always active because the threshold does not account for the offset $\frac{VREF}{2}$ on the current mesurement. }
+{Change R105 to \qty{1}{\mega\ohm} and R106 to \qty{330}{\kilo\ohm}. }
 {}
 {}
 
