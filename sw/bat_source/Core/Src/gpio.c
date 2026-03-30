@@ -56,7 +56,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOE, DISPLAY_WR_Pin|CONV_CTRL_EN_Pin|OUT_SEL_ISO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, SHUNT_EN_Pin|DISCHARGE__Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, SHUNT_EN_Pin|DISCHARGE_N_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, OUT_SEL_HV_Pin|OVP_RESET_Pin, GPIO_PIN_RESET);
@@ -68,7 +71,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, SHUNT_ISO_EN_Pin|ADC_SYNC_RESET__Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, SHUNT_ISO_EN_Pin|ADC_SYNC_RESET_N_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : DISPLAY_WR_Pin CONV_CTRL_EN_Pin ON_REQ_Pin OUT_SEL_ISO_Pin */
   GPIO_InitStruct.Pin = DISPLAY_WR_Pin|CONV_CTRL_EN_Pin|ON_REQ_Pin|OUT_SEL_ISO_Pin;
@@ -85,19 +88,20 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : BMS_CTRL_WAKEUP_Pin */
   GPIO_InitStruct.Pin = BMS_CTRL_WAKEUP_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(BMS_CTRL_WAKEUP_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SHUNT_EN_Pin OUT_SEL_HV_Pin OVP_RESET_Pin DISCHARGE__Pin */
-  GPIO_InitStruct.Pin = SHUNT_EN_Pin|OUT_SEL_HV_Pin|OVP_RESET_Pin|DISCHARGE__Pin;
+  /*Configure GPIO pins : SHUNT_EN_Pin OUT_SEL_HV_Pin OVP_RESET_Pin DISCHARGE_N_Pin */
+  GPIO_InitStruct.Pin = SHUNT_EN_Pin|OUT_SEL_HV_Pin|OVP_RESET_Pin|DISCHARGE_N_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : OVP__Pin OCP__Pin */
-  GPIO_InitStruct.Pin = OVP__Pin|OCP__Pin;
+  /*Configure GPIO pins : OVP_N_Pin OCP_N_Pin */
+  GPIO_InitStruct.Pin = OVP_N_Pin|OCP_N_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -115,8 +119,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SHUNT_ISO_EN_Pin ADC_SYNC_RESET__Pin */
-  GPIO_InitStruct.Pin = SHUNT_ISO_EN_Pin|ADC_SYNC_RESET__Pin;
+  /*Configure GPIO pins : SHUNT_ISO_EN_Pin ADC_SYNC_RESET_N_Pin */
+  GPIO_InitStruct.Pin = SHUNT_ISO_EN_Pin|ADC_SYNC_RESET_N_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -128,8 +132,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RESTRICT__No_toggleD14_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : I2C_ALERT_Pin ADC_DRDY__Pin BUTTON_ESC_Pin */
-  GPIO_InitStruct.Pin = I2C_ALERT_Pin|ADC_DRDY__Pin|BUTTON_ESC_Pin;
+  /*Configure GPIO pins : I2C_ALERT_Pin ADC_DRDY_N_Pin BUTTON_ESC_Pin */
+  GPIO_InitStruct.Pin = I2C_ALERT_Pin|ADC_DRDY_N_Pin|BUTTON_ESC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);

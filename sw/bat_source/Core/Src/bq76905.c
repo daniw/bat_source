@@ -56,6 +56,9 @@ void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	i2c_WriteBlocking(handle->address, &command, 1);
 	i2c_ReadBlocking(handle->address, (uint8_t*) &handle->CellVoltageRegisters,
 			sizeof(handle->CellVoltageRegisters));
+	for(int i = 0; i<4; i++){
+		printf("Read Cell Voltages %d\r\n", handle->CellVoltageRegisters.CellVoltages[i]);
+	}
 
 	if((handle->CellVoltageRegisters.BatteryStatus & 0x80) || (handle->CellVoltageRegisters.BatteryStatus == 0x0)){
 		BQ76905_resetDevice(handle);

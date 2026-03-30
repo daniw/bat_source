@@ -6,7 +6,7 @@
  */
 
 #include "driver_pca9554.h"
-#include "i2c.h"
+
 
 
 /**
@@ -20,6 +20,18 @@ uint8_t pca9554_read_register(PCA9554_handle* hpca9554, uint8_t reg) {
 	i2c_WriteBlocking(hpca9554->address, &reg, 1);
     i2c_ReadBlocking(hpca9554->address, &value, 1);
     return value;
+}
+
+
+/**
+ * Initialises the PCA5994 Device
+ * @param hpca9554 handle of the device
+ * @param i2c_address i2c device address
+ * @param direction  8 bit word containing all direction bits. 1 = input
+ */
+void pca9554_init(PCA9554_handle* hpca9554, uint8_t i2c_address, uint8_t direction){
+	hpca9554->address = i2c_address;
+	pca9554_set_direction(hpca9554, direction);
 }
 
 /**

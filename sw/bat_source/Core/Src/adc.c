@@ -29,6 +29,7 @@ ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
 ADC_HandleTypeDef hadc4;
 ADC_HandleTypeDef hadc5;
+DMA_HandleTypeDef hdma_adc5;
 
 /* ADC1 init function */
 void MX_ADC1_Init(void)
@@ -58,8 +59,8 @@ void MX_ADC1_Init(void)
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
   hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.OversamplingMode = DISABLE;
@@ -78,7 +79,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR_ADC1;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -120,8 +121,8 @@ void MX_ADC2_Init(void)
   hadc2.Init.ContinuousConvMode = DISABLE;
   hadc2.Init.NbrOfConversion = 1;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc2.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
+  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
   hadc2.Init.DMAContinuousRequests = DISABLE;
   hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc2.Init.OversamplingMode = DISABLE;
@@ -175,8 +176,8 @@ void MX_ADC3_Init(void)
   hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.NbrOfConversion = 1;
   hadc3.Init.DiscontinuousConvMode = DISABLE;
-  hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
+  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
   hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc3.Init.OversamplingMode = DISABLE;
@@ -237,8 +238,8 @@ void MX_ADC4_Init(void)
   hadc4.Init.ContinuousConvMode = DISABLE;
   hadc4.Init.NbrOfConversion = 1;
   hadc4.Init.DiscontinuousConvMode = DISABLE;
-  hadc4.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc4.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
+  hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
   hadc4.Init.DMAContinuousRequests = DISABLE;
   hadc4.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc4.Init.OversamplingMode = DISABLE;
@@ -273,6 +274,7 @@ void MX_ADC5_Init(void)
   /* USER CODE END ADC5_Init 0 */
 
   ADC_ChannelConfTypeDef sConfig = {0};
+  ADC_InjectionConfTypeDef sConfigInjected = {0};
 
   /* USER CODE BEGIN ADC5_Init 1 */
 
@@ -285,15 +287,15 @@ void MX_ADC5_Init(void)
   hadc5.Init.Resolution = ADC_RESOLUTION_12B;
   hadc5.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc5.Init.GainCompensation = 0;
-  hadc5.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc5.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc5.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc5.Init.LowPowerAutoWait = DISABLE;
   hadc5.Init.ContinuousConvMode = DISABLE;
-  hadc5.Init.NbrOfConversion = 1;
+  hadc5.Init.NbrOfConversion = 12;
   hadc5.Init.DiscontinuousConvMode = DISABLE;
   hadc5.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc5.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc5.Init.DMAContinuousRequests = DISABLE;
+  hadc5.Init.DMAContinuousRequests = ENABLE;
   hadc5.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc5.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc5) != HAL_OK)
@@ -303,13 +305,132 @@ void MX_ADC5_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_6;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
   if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_8;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Rank = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Rank = ADC_REGULAR_RANK_5;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_13;
+  sConfig.Rank = ADC_REGULAR_RANK_6;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_14;
+  sConfig.Rank = ADC_REGULAR_RANK_7;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_15;
+  sConfig.Rank = ADC_REGULAR_RANK_8;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_16;
+  sConfig.Rank = ADC_REGULAR_RANK_9;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR_ADC5;
+  sConfig.Rank = ADC_REGULAR_RANK_10;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_VBAT;
+  sConfig.Rank = ADC_REGULAR_RANK_11;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  sConfig.Rank = ADC_REGULAR_RANK_12;
+  if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+  sConfigInjected.InjectedOffset = 0;
+  sConfigInjected.InjectedNbrOfConversion = 1;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.QueueInjectedContext = DISABLE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_HRTIM_TRG1;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+  sConfigInjected.InjecOversamplingMode = DISABLE;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
   {
     Error_Handler();
   }
@@ -454,34 +575,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
     /**ADC4 GPIO Configuration
-    PE8     ------> ADC4_IN6
-    PE10     ------> ADC4_IN14
-    PE11     ------> ADC4_IN15
-    PE12     ------> ADC4_IN16
     PE15     ------> ADC4_IN2
     PB15     ------> ADC4_IN5
-    PD8     ------> ADC4_IN12
-    PD9     ------> ADC4_IN13
-    PD10     ------> ADC4_IN7
-    PD11     ------> ADC4_IN8
     PD12     ------> ADC4_IN9
     */
-    GPIO_InitStruct.Pin = V_3V3_Pin|V_15V_Pin|V_VCC_Pin|V_5V_Pin
-                          |V_OUT_Pin;
+    GPIO_InitStruct.Pin = V_OUT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+    HAL_GPIO_Init(V_OUT_GPIO_Port, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = V_HV_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(V_HV_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = TEMP_CURRENT_Pin|CONV_CTRL_TEMP_PRIM_Pin|CONV_CTRL_TEMP_SEC_Pin|V_3V3_A_Pin
-                          |CONV_CTRL_TEMP_TRAFO_Pin;
+    GPIO_InitStruct.Pin = CONV_CTRL_TEMP_TRAFO_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+    HAL_GPIO_Init(CONV_CTRL_TEMP_TRAFO_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC4_MspInit 1 */
 
@@ -508,15 +619,55 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
       __HAL_RCC_ADC345_CLK_ENABLE();
     }
 
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**ADC5 GPIO Configuration
+    PE8     ------> ADC5_IN6
+    PE10     ------> ADC5_IN14
+    PE11     ------> ADC5_IN15
+    PE12     ------> ADC5_IN16
+    PD8     ------> ADC5_IN12
+    PD9     ------> ADC5_IN13
+    PD10     ------> ADC5_IN7
+    PD11     ------> ADC5_IN8
+    PD12     ------> ADC5_IN9
     PA8     ------> ADC5_IN1
     PA9     ------> ADC5_IN2
     */
+    GPIO_InitStruct.Pin = V_3V3_Pin|V_15V_Pin|V_VCC_Pin|V_5V_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = TEMP_CURRENT_Pin|CONV_CTRL_TEMP_PRIM_Pin|CONV_CTRL_TEMP_SEC_Pin|V_3V3_A_Pin
+                          |CONV_CTRL_TEMP_TRAFO_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
     GPIO_InitStruct.Pin = BMS_CTRL_I_BAT_Pin|I_ISO_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* ADC5 DMA Init */
+    /* ADC5 Init */
+    hdma_adc5.Instance = DMA1_Channel1;
+    hdma_adc5.Init.Request = DMA_REQUEST_ADC5;
+    hdma_adc5.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc5.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc5.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc5.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc5.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc5.Init.Mode = DMA_CIRCULAR;
+    hdma_adc5.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_adc5) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc5);
 
   /* USER CODE BEGIN ADC5_MspInit 1 */
 
@@ -599,25 +750,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     }
 
     /**ADC4 GPIO Configuration
-    PE8     ------> ADC4_IN6
-    PE10     ------> ADC4_IN14
-    PE11     ------> ADC4_IN15
-    PE12     ------> ADC4_IN16
     PE15     ------> ADC4_IN2
     PB15     ------> ADC4_IN5
-    PD8     ------> ADC4_IN12
-    PD9     ------> ADC4_IN13
-    PD10     ------> ADC4_IN7
-    PD11     ------> ADC4_IN8
     PD12     ------> ADC4_IN9
     */
-    HAL_GPIO_DeInit(GPIOE, V_3V3_Pin|V_15V_Pin|V_VCC_Pin|V_5V_Pin
-                          |V_OUT_Pin);
+    HAL_GPIO_DeInit(V_OUT_GPIO_Port, V_OUT_Pin);
 
     HAL_GPIO_DeInit(V_HV_GPIO_Port, V_HV_Pin);
 
-    HAL_GPIO_DeInit(GPIOD, TEMP_CURRENT_Pin|CONV_CTRL_TEMP_PRIM_Pin|CONV_CTRL_TEMP_SEC_Pin|V_3V3_A_Pin
-                          |CONV_CTRL_TEMP_TRAFO_Pin);
+    HAL_GPIO_DeInit(CONV_CTRL_TEMP_TRAFO_GPIO_Port, CONV_CTRL_TEMP_TRAFO_Pin);
 
   /* USER CODE BEGIN ADC4_MspDeInit 1 */
 
@@ -635,11 +776,27 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     }
 
     /**ADC5 GPIO Configuration
+    PE8     ------> ADC5_IN6
+    PE10     ------> ADC5_IN14
+    PE11     ------> ADC5_IN15
+    PE12     ------> ADC5_IN16
+    PD8     ------> ADC5_IN12
+    PD9     ------> ADC5_IN13
+    PD10     ------> ADC5_IN7
+    PD11     ------> ADC5_IN8
+    PD12     ------> ADC5_IN9
     PA8     ------> ADC5_IN1
     PA9     ------> ADC5_IN2
     */
+    HAL_GPIO_DeInit(GPIOE, V_3V3_Pin|V_15V_Pin|V_VCC_Pin|V_5V_Pin);
+
+    HAL_GPIO_DeInit(GPIOD, TEMP_CURRENT_Pin|CONV_CTRL_TEMP_PRIM_Pin|CONV_CTRL_TEMP_SEC_Pin|V_3V3_A_Pin
+                          |CONV_CTRL_TEMP_TRAFO_Pin);
+
     HAL_GPIO_DeInit(GPIOA, BMS_CTRL_I_BAT_Pin|I_ISO_Pin);
 
+    /* ADC5 DMA DeInit */
+    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC5_MspDeInit 1 */
 
   /* USER CODE END ADC5_MspDeInit 1 */

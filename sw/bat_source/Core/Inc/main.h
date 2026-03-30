@@ -43,11 +43,13 @@ extern "C" {
 #include "bq76905_config.h"
 #include "adc.h"
 #include "ADS131M04.h"
-#include "pwm.h"
 #include "ctrl_main.h"
 #include "timer.h"
 #include "statemachine.h"
 #include "display.h"
+#include "opt3004.h"
+#include "lp581x.h"
+#include "hrtim.h"
 
 /* USER CODE END Includes */
 
@@ -94,8 +96,8 @@ void Error_Handler(void);
 #define OUT_SEL_HV_GPIO_Port GPIOC
 #define OVP_RESET_Pin GPIO_PIN_2
 #define OVP_RESET_GPIO_Port GPIOC
-#define OVP__Pin GPIO_PIN_3
-#define OVP__GPIO_Port GPIOC
+#define OVP_N_Pin GPIO_PIN_3
+#define OVP_N_GPIO_Port GPIOC
 #define I_OUT_Pin GPIO_PIN_0
 #define I_OUT_GPIO_Port GPIOA
 #define V_TERM_Pin GPIO_PIN_1
@@ -112,10 +114,10 @@ void Error_Handler(void);
 #define QSPI_IO3_GPIO_Port GPIOA
 #define QSPI_IO2_Pin GPIO_PIN_7
 #define QSPI_IO2_GPIO_Port GPIOA
-#define OCP__Pin GPIO_PIN_4
-#define OCP__GPIO_Port GPIOC
-#define DISCHARGE__Pin GPIO_PIN_5
-#define DISCHARGE__GPIO_Port GPIOC
+#define OCP_N_Pin GPIO_PIN_4
+#define OCP_N_GPIO_Port GPIOC
+#define DISCHARGE_N_Pin GPIO_PIN_5
+#define DISCHARGE_N_GPIO_Port GPIOC
 #define QSPI_IO1_Pin GPIO_PIN_0
 #define QSPI_IO1_GPIO_Port GPIOB
 #define QSPI_IO0_Pin GPIO_PIN_1
@@ -198,10 +200,10 @@ void Error_Handler(void);
 #define SPI_MISO_GPIO_Port GPIOC
 #define SPI_MOSI_Pin GPIO_PIN_12
 #define SPI_MOSI_GPIO_Port GPIOC
-#define ADC_SYNC_RESET__Pin GPIO_PIN_0
-#define ADC_SYNC_RESET__GPIO_Port GPIOD
-#define ADC_DRDY__Pin GPIO_PIN_2
-#define ADC_DRDY__GPIO_Port GPIOD
+#define ADC_SYNC_RESET_N_Pin GPIO_PIN_0
+#define ADC_SYNC_RESET_N_GPIO_Port GPIOD
+#define ADC_DRDY_N_Pin GPIO_PIN_2
+#define ADC_DRDY_N_GPIO_Port GPIOD
 #define BUTTON_ESC_Pin GPIO_PIN_4
 #define BUTTON_ESC_GPIO_Port GPIOD
 #define UART_TX_Pin GPIO_PIN_5
@@ -225,6 +227,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 
+#define PCA9554_ADDRESS_HW_REV 0x70
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
