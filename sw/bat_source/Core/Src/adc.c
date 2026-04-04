@@ -274,7 +274,6 @@ void MX_ADC5_Init(void)
   /* USER CODE END ADC5_Init 0 */
 
   ADC_ChannelConfTypeDef sConfig = {0};
-  ADC_InjectionConfTypeDef sConfigInjected = {0};
 
   /* USER CODE BEGIN ADC5_Init 1 */
 
@@ -290,7 +289,7 @@ void MX_ADC5_Init(void)
   hadc5.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc5.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc5.Init.LowPowerAutoWait = DISABLE;
-  hadc5.Init.ContinuousConvMode = DISABLE;
+  hadc5.Init.ContinuousConvMode = ENABLE;
   hadc5.Init.NbrOfConversion = 12;
   hadc5.Init.DiscontinuousConvMode = DISABLE;
   hadc5.Init.ExternalTrigConv = ADC_SOFTWARE_START;
@@ -411,26 +410,6 @@ void MX_ADC5_Init(void)
   sConfig.Channel = ADC_CHANNEL_VREFINT;
   sConfig.Rank = ADC_REGULAR_RANK_12;
   if (HAL_ADC_ConfigChannel(&hadc5, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Injected Channel
-  */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
-  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
-  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
-  sConfigInjected.InjectedOffset = 0;
-  sConfigInjected.InjectedNbrOfConversion = 1;
-  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected.AutoInjectedConv = DISABLE;
-  sConfigInjected.QueueInjectedContext = DISABLE;
-  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_HRTIM_TRG1;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
-  sConfigInjected.InjecOversamplingMode = DISABLE;
-  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
   {
     Error_Handler();
   }
@@ -817,6 +796,8 @@ void adc_init(int32_t* ext_adc_data)
 void adc_start(void){
 
 	HAL_ADC_Start_DMA(&hadc5, (uint32_t*)&adc_data.raw.v_3v3, 12);
+	ADC345_COMMON->CCR |= ADC_CCR_VBATSEL;
+	ADC12_COMMON->CCR |= ADC_CCR_VBATSEL;
 	//HAL_ADCEx_InjectedStart_IT(&hadc1);
 
 }
@@ -830,6 +811,7 @@ void adc_convert_data(void){
 	// adc_data.i_out_mA = adc_data.i_out_raw - adc_data.i_out_offset * ADC_IOUT_GAIN_MA;
 	// adc_data.i_iso_mA = adc_data.i_iso_raw - adc_data.i_iso_offset * ADC_IISO_GAIN_MA;
     //
+
 	adc_data.v_sens_ext_uv = adc_data.ext_adc_data[1] * ADC_EXT_VSENS_GAIN_UV;
 	adc_data.i_iso_ext_uA  = adc_data.ext_adc_data[2] * ADC_EXT_IISO_GAIN_UA;
     //
@@ -849,7 +831,7 @@ void adc_convert_data(void){
 	 adc_data.converted.v_vcc        = adc_data.raw.v_vcc     *   ADC_GAIN_V_VCC;
 	 adc_data.converted.v_5v         = adc_data.raw.v_5v      *   ADC_GAIN_V_5V;
 	 adc_data.converted.v_bat        = adc_data.raw.v_bat     *   ADC_GAIN_V_BAT;
-	 adc_data.converted.v_ref_int    = adc_data.raw.v_ref_int *   ADC_GAIN_V_REF_INT;
+	 adc_data.converted.v_ref_int    = __LL_ADC_CALC_VREFANALOG_VOLTAGE( adc_data.raw.v_ref_int,LL_ADC_RESOLUTION_12B);
 
 
 

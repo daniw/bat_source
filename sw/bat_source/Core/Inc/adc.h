@@ -68,7 +68,7 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_GAIN_TEMP_TRAFO    0.0f
 #define ADC_GAIN_TEMP_CURRENT  0.0f
 #define ADC_GAIN_TEMP_PRIM     0.0f
-#define ADC_GAIN_V_BAT         2500*3/4096
+#define ADC_GAIN_V_BAT         (2500.0f*3.0F/4096.0f)
 #define ADC_GAIN_V_REF_INT     1.0f
 
 
