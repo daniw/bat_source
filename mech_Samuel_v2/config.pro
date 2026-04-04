@@ -16,3 +16,5 @@ pro_unit_sys mks
 search_path_file D:\GIT_Projekte\bat_source\mech_Samuel_v2\search.pro
 search_path_file C:\GIT_Projekte\bat_source\mech_Samuel_v2\search.pro
 save_file_iterations no
+
+! Abschaltung der Ansicht von Ebenen, Achsen, Punkten, Koordinatensystemen, ...
