@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    hrtim.c
-  * @brief   This file provides code for the configuration
-  *          of the HRTIM instances.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    hrtim.c
+ * @brief   This file provides code for the configuration
+ *          of the HRTIM instances.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2026 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "hrtim.h"
@@ -90,7 +90,7 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  pTimeBaseCfg.Period = 0x3555;
+  pTimeBaseCfg.Period = 0x1400;
   pTimeBaseCfg.RepetitionCounter = 0x00;
   pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL32;
   pTimeBaseCfg.Mode = HRTIM_MODE_CONTINUOUS;
@@ -202,6 +202,7 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
+  pTimeBaseCfg.Period = 0x3924;
   if (HAL_HRTIM_TimeBaseConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, &pTimeBaseCfg) != HAL_OK)
   {
     Error_Handler();
@@ -221,7 +222,7 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  pTimeBaseCfg.Period = 0x5000;
+  pTimeBaseCfg.Period = 0xC800;
   pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL16;
   if (HAL_HRTIM_TimeBaseConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_E, &pTimeBaseCfg) != HAL_OK)
   {
@@ -237,13 +238,13 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  pCompareCfg.CompareValue = 0x133;
+  pCompareCfg.CompareValue = 0x300;
   if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_E, HRTIM_COMPAREUNIT_1, &pCompareCfg) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN HRTIM1_Init 2 */
-  HRTIM1->sMasterRegs.MCR |= (HRTIM_MCR_TBCEN | HRTIM_MCR_TCCEN|HRTIM_MCR_TECEN);
+
   /* USER CODE END HRTIM1_Init 2 */
   HAL_HRTIM_MspPostInit(&hhrtim1);
 
@@ -330,81 +331,66 @@ void HAL_HRTIM_MspDeInit(HRTIM_HandleTypeDef* hrtimHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void hrtim_set_freq_prim(uint32_t freq){
-	HRTIM1->sTimerxRegs[1].PERxR = (0x7A120000/freq);
-	HRTIM1->sTimerxRegs[1].TIMxCR = (HRTIM1->sTimerxRegs[1].TIMxCR & (~ HRTIM_PRESCALERRATIO_DIV4))| HRTIM_PRESCALERRATIO_MUL32;
+/**
+ * Starts all HRTIM Channel counters
+ */
+void hrtim_start_timer(void) {
+	HRTIM1->sMasterRegs.MCR |= (HRTIM_MCR_TBCEN | HRTIM_MCR_TCCEN | HRTIM_MCR_TECEN);
 }
 
-void hrtim_set_freq_sek(uint32_t freq){
-	HRTIM1->sTimerxRegs[4].PERxR = (0x7A120000/freq);
-	HRTIM1->sTimerxRegs[4].TIMxCR = (HRTIM1->sTimerxRegs[4].TIMxCR & (~ HRTIM_PRESCALERRATIO_DIV4))| HRTIM_PRESCALERRATIO_MUL32;
+/**
+ * Sets the frequency for the specified channel
+ * @param channel Channel for which to set the frequency.
+ * @param freq Frequency to set in Hz.
+ */
+void hrtim_set_freq(uint8_t channel, uint32_t freq) {
+	HRTIM1->sTimerxRegs[channel].PERxR = (0x7A120000 / freq);
+	HRTIM1->sTimerxRegs[channel].TIMxCR = (HRTIM1->sTimerxRegs[channel].TIMxCR & (~ HRTIM_PRESCALERRATIO_DIV4)) | HRTIM_PRESCALERRATIO_MUL32;
 }
 
+/**
+ * Set the duty cacle for the specified channel
+ * @param channel Channel for which to set the frequency.
+ * @param value duty in pu from 0 to 1
+ */
 
-
-void hrtim_set_duty_pri(float value){
+void hrtim_set_duty(uint8_t channel, float value) {
 	uint32_t duty;
-	if(value <0.0F)
+	if (value < 0.0F)
 		value = 0.0F;
-	else if(value>1.0F)
+	else if (value > 1.0F)
 		value = 1.0F;
-	duty =(HRTIM1->sTimerxRegs[1].PERxR * value);
-	if(duty < 0x60)
+	duty = (HRTIM1->sTimerxRegs[1].PERxR * value);
+	// Enforce more strict limit imposed by HRTIM
+	if (duty < 0x60)
 		duty = 0x60;
 	else if (duty > 0xFFDF)
 		duty = 0xFFDF;
-
-	HRTIM1->sTimerxRegs[1].CMP1xR =  duty;
-}
-void hrtim_set_duty_sek(float value){
-	uint32_t duty;
-	if(value <0.0F)
-		value = 0.0F;
-	else if(value>1.0F)
-		value = 1.0F;
-	duty =(HRTIM1->sTimerxRegs[4].PERxR * value);
-	if(duty < 0x60)
-		duty = 0x60;
-	else if (duty > 0xFFDF)
-		duty = 0xFFDF;
-	HRTIM1->sTimerxRegs[4].CMP1xR =  duty;
-}
-void hrtim_set_duty_hv(float value){
-	uint32_t duty;
-	if(value <0.0F)
-		value = 0.0F;
-	else if(value>1.0F)
-		value = 1.0F;
-	duty =(HRTIM1->sTimerxRegs[2].PERxR * value);
-	if(duty < 0x60)
-		duty = 0x60;
-	else if (duty > 0xFFDF)
-		duty = 0xFFDF;
-	HRTIM1->sTimerxRegs[2].CMP1xR =  duty;
+	HRTIM1->sTimerxRegs[channel].CMP1xR = duty;
 }
 
 void hrtim_enable(uint8_t channel) {
 	switch (channel) {
-	case 0:
+	case HRTIM_CHANNEL_PRIM:
 		HRTIM1->sCommonRegs.OENR = (HRTIM_OENR_TB1OEN | HRTIM_OENR_TB2OEN);
 		break;
-	case 1:
+	case HRTIM_CHANNEL_SEK:
 		HRTIM1->sCommonRegs.OENR = (HRTIM_OENR_TE1OEN | HRTIM_OENR_TE2OEN);
 		break;
-	case 2:
+	case HRTIM_CHANNEL_HV:
 		HRTIM1->sCommonRegs.OENR = (HRTIM_OENR_TC1OEN | HRTIM_OENR_TC2OEN);
 		break;
 	}
 }
 void hrtim_disable(uint8_t channel) {
 	switch (channel) {
-	case 0:
+	case HRTIM_CHANNEL_PRIM:
 		HRTIM1->sCommonRegs.ODISR = (HRTIM_OENR_TB1OEN | HRTIM_OENR_TB2OEN);
 		break;
-	case 1:
+	case HRTIM_CHANNEL_SEK:
 		HRTIM1->sCommonRegs.ODISR = (HRTIM_OENR_TE1OEN | HRTIM_OENR_TE2OEN);
 		break;
-	case 2:
+	case HRTIM_CHANNEL_HV:
 		HRTIM1->sCommonRegs.ODISR = (HRTIM_OENR_TC1OEN | HRTIM_OENR_TC2OEN);
 		break;
 	}

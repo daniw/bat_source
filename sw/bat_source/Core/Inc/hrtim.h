@@ -35,7 +35,9 @@ extern "C" {
 extern HRTIM_HandleTypeDef hhrtim1;
 
 /* USER CODE BEGIN Private defines */
-
+#define HRTIM_CHANNEL_PRIM 1
+#define HRTIM_CHANNEL_SEK 4
+#define HRTIM_CHANNEL_HV 2
 /* USER CODE END Private defines */
 
 void MX_HRTIM1_Init(void);
@@ -43,11 +45,9 @@ void MX_HRTIM1_Init(void);
 void HAL_HRTIM_MspPostInit(HRTIM_HandleTypeDef *hhrtim);
 
 /* USER CODE BEGIN Prototypes */
-void hrtim_set_freq_prim(uint32_t freq);
-void hrtim_set_freq_sek(uint32_t freq);
-void hrtim_set_duty_pri(float value);
-void hrtim_set_duty_sek(float value);
-void hrtim_set_duty_hv(float value);
+void hrtim_start_timer(void);
+void hrtim_set_freq(uint8_t channel, uint32_t freq);
+void hrtim_set_duty(uint8_t channel, float value);
 void hrtim_enable(uint8_t channel);
 void hrtim_disable(uint8_t channel);
 /* USER CODE END Prototypes */

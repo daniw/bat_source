@@ -30,7 +30,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 
-#include "ctrl_main.h"
+//#include "ctrl_main.h"
 
 /* USER CODE END Includes */
 
@@ -59,6 +59,19 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_EXT_IISO_GAIN_UA 	0.0014305114746093f  //(1200/8388608 * 1 * 0.01) (ADC * ADC Gain * mA/mV)
 #define ADC_EXT_IOUT_GAIN_mA 	0.001821494f			//0.00178813934326171875 	//(1200/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
 
+#define ADC_GAIN_V_3V3         2500*53/10/4096
+#define ADC_GAIN_V_3V3A        2500*53/10/4096
+#define ADC_GAIN_V_15V         2500*25/4096
+#define ADC_GAIN_V_VCC         2500*19/4096
+#define ADC_GAIN_V_5V          2500*78/10/4096
+#define ADC_GAIN_TEMP_SEC      0.0f
+#define ADC_GAIN_TEMP_TRAFO    0.0f
+#define ADC_GAIN_TEMP_CURRENT  0.0f
+#define ADC_GAIN_TEMP_PRIM     0.0f
+#define ADC_GAIN_V_BAT         2500*3/4096
+#define ADC_GAIN_V_REF_INT     1.0f
+
+
 
 #define ADC_IBAT_GAIN_MA  0.004761905f //(3300 *200 / 10/4096)
 
@@ -67,6 +80,7 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_VTERM_OFFSET_MV 0
 #define ADC_VHV_OFFSET_MV   0
 #define ADC_IBAT_OFFSET_MA  1926
+
 
 #define ADC_POTI_MAX 127
 
@@ -81,33 +95,51 @@ void MX_ADC5_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 typedef struct {
-	uint16_t v_in_raw; 			// ADC1_IN1
-	uint16_t i_bat_raw; 		// ADC1_IN3
-	uint16_t v_out_raw; 		// ADC1_IN4
-	uint16_t v_hv_raw; 			// ADC1_IN2
-	uint16_t v_term_raw; 		// ADC1_IN13
-	uint16_t temp_int_raw; 		// ADC1_INT
+	struct  {
+		uint16_t v_in;		        // ADC3_IN3
+		uint16_t v_hv;              // ADC4_IN5
+		uint16_t v_term;            // ADC2_IN2
+		uint16_t i_out;             // ADC1_IN1
+		uint16_t i_iso;             // ADC5_IN2
+		uint16_t v_out;             // ADC4_IN2
+		uint16_t i_bat;             // ADC5_IN1
 
-	uint16_t v_in_mV; 			// ADC1_IN1
-	uint16_t v_hv_mV; 			// ADC1_IN2
-	uint16_t i_bat_mA; 		    // ADC1_IN3
-	uint16_t v_out_mV; 		    // ADC1_IN4
-	uint16_t v_term_mV; 		// ADC1_IN13
-	uint16_t temp_int_deg; 		// ADC1_INT
+		uint16_t v_3v3; 		    // ADC5_IN6
+		uint16_t temp_sec;      	// ADC5_IN7
+		uint16_t v_3v3a;           	// ADC5_IN8
+		uint16_t temp_trafo;   		// ADC5_IN9
+		uint16_t temp_current;      // ADC5_IN12
+		uint16_t temp_prim;         // ADC5_IN13
+		uint16_t v_15v;             // ADC5_IN14
+		uint16_t v_vcc;             // ADC5_IN15
+		uint16_t v_5v;              // ADC5_IN16
+		uint16_t int_temp;          // ADC5
+		uint16_t v_bat;             // ADC5
+		uint16_t v_ref_int;         // ADC5
+	} raw;
+	struct {
+		uint16_t v_in;		        // ADC3_IN3
+		uint16_t v_hv;              // ADC4_IN5
+		uint16_t v_term;            // ADC2_IN2
+		uint16_t i_out;             // ADC1_IN1
+		uint16_t i_iso;             // ADC5_IN2
+		uint16_t v_out;             // ADC4_IN2
+		uint16_t i_bat;             // ADC5_IN1
 
-	uint16_t i_out_raw; 		// ADC2_IN5
-	uint16_t temp_prim_raw; 	// ADC2_IN8
-	uint16_t temp_current_raw; 	// ADC2_IN11
-	uint16_t temp_sec_raw; 		// ADC2_IN12
-	uint16_t i_iso_raw; 		// ADC2_IN13
-	uint16_t temp_trafo_raw; 	// ADC2_IN15
+		uint16_t v_3v3; 		    // ADC5_IN6
+		uint16_t temp_sec;      	// ADC5_IN7
+		uint16_t v_3v3a;           	// ADC5_IN8
+		uint16_t temp_trafo;   		// ADC5_IN9
+		uint16_t temp_current;      // ADC5_IN12
+		uint16_t temp_prim;         // ADC5_IN13
+		uint16_t v_15v;             // ADC5_IN14
+		uint16_t v_vcc;             // ADC5_IN15
+		uint16_t v_5v;              // ADC5_IN16
+		uint16_t int_temp;          // ADC5
+		uint16_t v_bat;             // ADC5
+		uint16_t v_ref_int;         // ADC5
+	} converted;
 
-	int16_t i_out_mA; 		    // ADC2_IN5
-	uint16_t temp_prim_deg; 	// ADC2_IN8
-	uint16_t temp_current_deg; 	// ADC2_IN11
-	uint16_t temp_sec_deg; 		// ADC2_IN12
-	int16_t i_iso_mA; 		    // ADC2_IN13
-	uint16_t temp_trafo_deg; 	// ADC2_IN15
 
 	uint16_t v_in_offset;
     uint16_t v_hv_offset;
@@ -134,12 +166,14 @@ typedef struct {
 
     uint16_t r_mOhmx10;
 
+    uint16_t vref_mV;
+
 }ADC_MEAS_DATA;
 
 
 void adc_init(int32_t* ext_adc_data);
 void adc_start(void);
-void adc_data_convert(void);
+void adc_convert_data(void);
 uint16_t adc_encoder_read(void);
 void adc_encoder_reset(uint8_t value);
 
