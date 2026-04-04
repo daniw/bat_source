@@ -21,7 +21,7 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
-
+extern ADC_MEAS_DATA adc_data;
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;
@@ -573,11 +573,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 
     __HAL_RCC_GPIOE_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
     /**ADC4 GPIO Configuration
     PE15     ------> ADC4_IN2
     PB15     ------> ADC4_IN5
-    PD12     ------> ADC4_IN9
     */
     GPIO_InitStruct.Pin = V_OUT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -588,11 +586,6 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(V_HV_GPIO_Port, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = CONV_CTRL_TEMP_TRAFO_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(CONV_CTRL_TEMP_TRAFO_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC4_MspInit 1 */
 
@@ -752,13 +745,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     /**ADC4 GPIO Configuration
     PE15     ------> ADC4_IN2
     PB15     ------> ADC4_IN5
-    PD12     ------> ADC4_IN9
     */
     HAL_GPIO_DeInit(V_OUT_GPIO_Port, V_OUT_Pin);
 
     HAL_GPIO_DeInit(V_HV_GPIO_Port, V_HV_Pin);
-
-    HAL_GPIO_DeInit(CONV_CTRL_TEMP_TRAFO_GPIO_Port, CONV_CTRL_TEMP_TRAFO_Pin);
 
   /* USER CODE BEGIN ADC4_MspDeInit 1 */
 
@@ -804,5 +794,100 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+void adc_init(int32_t* ext_adc_data)
+{
+	adc_data.ext_adc_data = ext_adc_data;
+
+	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+	HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
+	HAL_ADCEx_Calibration_Start(&hadc3, ADC_SINGLE_ENDED);
+	HAL_ADCEx_Calibration_Start(&hadc4, ADC_SINGLE_ENDED);
+	HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
+
+	  adc_data.v_in_offset   = ADC_VIN_OFFSET_MV  ;
+	  adc_data.v_out_offset  = ADC_VOUT_OFFSET_MV ;
+	  adc_data.v_term_offset = ADC_VTERM_OFFSET_MV;
+	  adc_data.v_hv_offset   = ADC_VHV_OFFSET_MV  ;
+	  adc_data.i_bat_offset  = ADC_IBAT_OFFSET_MA ;
+
+}
+
+
+void adc_start(void){
+
+	HAL_ADC_Start_DMA(&hadc5, (uint32_t*)&adc_data.raw.v_3v3, 12);
+	//HAL_ADCEx_InjectedStart_IT(&hadc1);
+
+}
+
+void adc_convert_data(void){
+	//adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
+	////adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
+	//adc_data.v_term_mV = (adc_data.v_term_raw - adc_data.v_term_offset)* ADC_VTERM_GAIN_MV;
+	//adc_data.v_hv_mV   = (adc_data.v_hv_raw   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
+	////adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
+	// adc_data.i_out_mA = adc_data.i_out_raw - adc_data.i_out_offset * ADC_IOUT_GAIN_MA;
+	// adc_data.i_iso_mA = adc_data.i_iso_raw - adc_data.i_iso_offset * ADC_IISO_GAIN_MA;
+    //
+	adc_data.v_sens_ext_uv = adc_data.ext_adc_data[1] * ADC_EXT_VSENS_GAIN_UV;
+	adc_data.i_iso_ext_uA  = adc_data.ext_adc_data[2] * ADC_EXT_IISO_GAIN_UA;
+    //
+	//// Calculate resistance
+	adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
+
+	// Calculate / Estimate Temperatures
+	 adc_data.converted.temp_trafo   =  114 - 0.0378*adc_data.raw.temp_trafo;
+	 adc_data.converted.temp_current =  114 - 0.0378*adc_data.raw.temp_current;
+	 adc_data.converted.temp_prim    =  114 - 0.0378*adc_data.raw.temp_prim;
+	 adc_data.converted.temp_sec     =  114 - 0.0378*adc_data.raw.temp_sec;
+	 adc_data.converted.int_temp     =  30 + 2*(2500*adc_data.raw.int_temp/4096-760)/5;
+
+	 adc_data.converted.v_3v3        = adc_data.raw.v_3v3     *   ADC_GAIN_V_3V3;
+	 adc_data.converted.v_3v3a       = adc_data.raw.v_3v3a    *   ADC_GAIN_V_3V3A;
+	 adc_data.converted.v_15v        = adc_data.raw.v_15v     *   ADC_GAIN_V_15V;
+	 adc_data.converted.v_vcc        = adc_data.raw.v_vcc     *   ADC_GAIN_V_VCC;
+	 adc_data.converted.v_5v         = adc_data.raw.v_5v      *   ADC_GAIN_V_5V;
+	 adc_data.converted.v_bat        = adc_data.raw.v_bat     *   ADC_GAIN_V_BAT;
+	 adc_data.converted.v_ref_int    = adc_data.raw.v_ref_int *   ADC_GAIN_V_REF_INT;
+
+
+
+
+
+
+
+
+
+
+
+
+	//HAL_ADC_Stop_DMA(&hadc1);
+	//HAL_ADC_Stop_DMA(&hadc2);
+    //
+	//HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+	//HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
+	//adc_start();
+}
+
+
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+
+	//adc_data.v_in_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+	//adc_data.i_bat_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
+	//adc_data.v_out_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_3);
+	////adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  ) * ADC_VIN_GAIN_MV;
+	//adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset ) * ADC_IBAT_GAIN_MA;
+	//adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset ) * ADC_VOUT_GAIN_MV;
+	adc_data.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
+	//adc_data.v_term_ext_mv_filt = 0.9f*adc_data.v_term_ext_mv_filt + 0.1f*adc_data.v_term_ext_mv;
+	adc_data.i_out_ext_mA  = adc_data.ext_adc_data[3] * ADC_EXT_IOUT_GAIN_mA;
+
+	adc_data.reference_poti = adc_encoder_read();
+	//ctrl_main_ctrl_60v(0, adc_data.v_out_mV, adc_data.v_term_ext_mv, adc_data.i_bat_mA);
+}
+
+
 
 /* USER CODE END 1 */

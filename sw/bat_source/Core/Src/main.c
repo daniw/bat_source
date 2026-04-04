@@ -156,6 +156,12 @@ int main(void)
   uint8_t amb_dummy[] = {0x00};
   i2c_WriteBlocking(amb_address, amb_dummy, sizeof(amb_dummy));
 
+
+  /*
+   * ADC Init
+   */
+  adc_init(ext_adc.channelData);
+  adc_start();
   /*
    * Wakeup BMS and configure if necessary
    */
@@ -169,9 +175,9 @@ int main(void)
    * PWM Init
    */
 
-  hrtim_set_freq_prim(50000);
-  hrtim_set_freq_sek(150000);
-  hrtim_set_duty_pri(0.985);
+  hrtim_set_freq(HRTIM_CHANNEL_PRIM, 50000);
+  hrtim_set_freq(HRTIM_CHANNEL_SEK, 150000);
+  hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0.985);
 
 
 
@@ -260,7 +266,7 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
 
   /** Configure LSE Drive Capability
   */
@@ -276,8 +282,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
-  RCC_OscInitStruct.PLL.PLLN = 16;
+  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV2;
+  RCC_OscInitStruct.PLL.PLLN = 40;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;

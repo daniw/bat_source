@@ -350,25 +350,25 @@ void cmd_printBMS(void){
 
 void cmd_printADC() {
 	//for(int i=0; i<10; i++){
-	//adc_convert_data();
+	adc_convert_data();
     printf("ADC Measurements:\n");
-    printf("  v_in         (ADC1_IN1)  : %u \t: %u mV\n",adc_data.v_in_raw, adc_data.v_in_mV);
-    printf("  v_hv         (ADC1_IN2)  : %u \t: %u mV\n",adc_data.v_hv_raw, adc_data.v_hv_mV);
-    printf("  i_bat        (ADC1_IN3)  : %u \t: %u mA\n",adc_data.i_bat_raw, adc_data.i_bat_mA);
-    printf("  v_out        (ADC1_IN4)  : %u \t: %u mV\n",adc_data.v_out_raw, adc_data.v_out_mV);
-    printf("  v_term       (ADC1_IN13) : %u \t: %u mV\n",adc_data.v_term_raw, adc_data.v_term_mV);
-    printf("  temp_int     (ADC1_INT)  : %u \t: %u °C\n",adc_data.temp_int_raw, adc_data.temp_int_deg);
-    printf("  i_out        (ADC2_IN5)  : %u \t: %u mA\n",adc_data.i_out_raw, adc_data.i_out_mA);
-    printf("  temp_prim    (ADC2_IN8)  : %u \t: %u °C\n",adc_data.temp_prim_raw, adc_data.temp_prim_deg);
-    printf("  temp_current (ADC2_IN11) : %u \t: %u °C\n",adc_data.temp_current_raw, adc_data.temp_current_deg);
-    printf("  temp_sec     (ADC2_IN12) : %u \t: %u °C\n",adc_data.temp_sec_raw, adc_data.temp_sec_deg);
-    printf("  i_iso        (ADC2_IN13) : %u \t: %u mA\n",adc_data.i_iso_raw, adc_data.i_iso_mA);
-    printf("  temp_trafo   (ADC2_IN15) : %u \t: %u °C\n",adc_data.temp_trafo_raw, adc_data.temp_trafo_deg);
+    printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
+    printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %u °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
+    printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
+    printf(" 		temp_trafo     (ADC5_IN9 ) : %u \t: %u °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
+    printf(" 		temp_current   (ADC5_IN12) : %u \t: %u °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
+    printf(" 		temp_prim      (ADC5_IN13) : %u \t: %u °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
+    printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
+    printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
+    printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
+    printf(" 		int_temp       (ADC5     ) : %u \t: %u °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
+    printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
+    printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
 
-    printf("  Ext V_Term : %i : %i mV\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
-    printf("  Ext V_Sns  : %i : %i uV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
-    printf("  Ext I_Iso  : %i : %i uA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
-    printf("  Ext I_Out  : %i : %i mA\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
+    //printf("  Ext V_Term : %i : %i mV\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
+    //printf("  Ext V_Sns  : %i : %i uV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
+    //printf("  Ext I_Iso  : %i : %i uA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
+    //printf("  Ext I_Out  : %i : %i mA\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
 //}
 }
 
@@ -384,11 +384,11 @@ void cmd_setDuty(void){
 	channel = strtol(arg_locs[1], &end, 10);
 	value = strtof(arg_locs[2], &end);
 	switch(channel){
-	case 0: hrtim_set_duty_pri(value);
+	case 0: hrtim_set_duty(HRTIM_CHANNEL_PRIM, value);
 	return;
-	case 1: hrtim_set_duty_sek(value);
+	case 1: hrtim_set_duty(HRTIM_CHANNEL_SEK, value);
 	return;
-	case 2: hrtim_set_duty_hv(value);
+	case 2: hrtim_set_duty(HRTIM_CHANNEL_HV, value);
 	return;
 	}
 
