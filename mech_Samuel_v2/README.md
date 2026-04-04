@@ -237,3 +237,10 @@ flowchart TD
 ````
 
 Kleinst-möglicher Abstand zwischen den beiden Platinen sind 9.5mm. Also etwas mehr Abstand einplanen.
+
+
+### CREO-Konfiguration anpassen
+
+* Relativer Suchpfad in die search-Datei einbauen, damit nicht verschiedene Pfad für Workstation und Laptop notwendig sind.
+
+* In der config-Datei die Ansicht von Ebenen, Achsen, Punkte, Koordinatensystemen, ... abschalten.

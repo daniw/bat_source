@@ -54,6 +54,11 @@ D:\GIT_Projekte\bat_source
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA-3D_STEP_2026-03-09"
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
 
+! Version 3, 09.03.2026 - LAPTOP
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-03-09"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA-3D_STEP_2026-03-09"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
+
 
 
 
