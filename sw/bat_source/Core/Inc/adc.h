@@ -46,12 +46,12 @@ extern ADC_HandleTypeDef hadc5;
 
 /* USER CODE BEGIN Private defines */
 
-#define ADC_VIN_GAIN_MV    (3300* 210 /4096 /10)
-#define ADC_VHV_GAIN_MV    (3300 * 960 /4096/1)
-#define ADC_VOUT_GAIN_MV   	33.8115f //30.61661342   //(3300 * 36400/4096/1300)
-#define ADC_VTERM_GAIN_MV  (3300 * 14400/4096/15/1.0417f)
+#define ADC_VIN_GAIN_MV    (2500* 21 /4096)
+#define ADC_VHV_GAIN_MV    (2500 * 441 /4096)
+#define ADC_VOUT_GAIN_MV   (2500 * 2731/4096/91)
+#define ADC_VTERM_GAIN_MV  (2500 * 1001/4096/1.0417f)
 
-#define ADC_IOUT_GAIN_MA   0 // ToDo: Calculate
+#define ADC_IOUT_GAIN_MA   (2500*1000/43.33/4096) // ToDo: Calculate
 #define ADC_IISO_GAIN_MA   0 // ToDo: Calculate
 								// Empirical Value	// Calculated Value 	// Calculation
 #define ADC_EXT_VTERM_GAIN_MV 	0.144499515f 		//0.1373291015625 		//(1200/8388608 * 14400/15) (ADC * Resistor divider) Max Value 1152 V
@@ -59,27 +59,21 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_EXT_IISO_GAIN_UA 	0.0014305114746093f  //(1200/8388608 * 1 * 0.01) (ADC * ADC Gain * mA/mV)
 #define ADC_EXT_IOUT_GAIN_mA 	0.001821494f			//0.00178813934326171875 	//(1200/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
 
-#define ADC_GAIN_V_3V3         2500*53/10/4096
-#define ADC_GAIN_V_3V3A        2500*53/10/4096
-#define ADC_GAIN_V_15V         2500*25/4096
-#define ADC_GAIN_V_VCC         2500*19/4096
-#define ADC_GAIN_V_5V          2500*78/10/4096
-#define ADC_GAIN_TEMP_SEC      0.0f
-#define ADC_GAIN_TEMP_TRAFO    0.0f
-#define ADC_GAIN_TEMP_CURRENT  0.0f
-#define ADC_GAIN_TEMP_PRIM     0.0f
-#define ADC_GAIN_V_BAT         (2500.0f*3.0F/4096.0f)
-#define ADC_GAIN_V_REF_INT     1.0f
-
-
+#define ADC_GAIN_V_3V3         2500*53/10/65536
+#define ADC_GAIN_V_3V3A        2500*53/10/65536
+#define ADC_GAIN_V_15V         2500*25/65536
+#define ADC_GAIN_V_VCC         2500*19/65536
+#define ADC_GAIN_V_5V          2500*78/10/65536
+#define ADC_GAIN_V_BAT         (2500*3/4096)
 
 #define ADC_IBAT_GAIN_MA  0.004761905f //(3300 *200 / 10/4096)
 
 #define ADC_VIN_OFFSET_MV   0
-#define ADC_VOUT_OFFSET_MV  329
-#define ADC_VTERM_OFFSET_MV 0
+#define ADC_VOUT_OFFSET_MV  0
+#define ADC_VTERM_OFFSET_MV 2006
 #define ADC_VHV_OFFSET_MV   0
 #define ADC_IBAT_OFFSET_MA  1926
+#define ADC_IOUT_OFFSET  2006
 
 
 #define ADC_POTI_MAX 127
@@ -119,11 +113,11 @@ typedef struct {
 	} raw;
 	struct {
 		uint16_t v_in;		        // ADC3_IN3
-		uint16_t v_hv;              // ADC4_IN5
-		uint16_t v_term;            // ADC2_IN2
+		uint32_t v_hv;              // ADC4_IN5
+		int32_t v_term;            // ADC2_IN2
 		uint16_t i_out;             // ADC1_IN1
 		uint16_t i_iso;             // ADC5_IN2
-		uint16_t v_out;             // ADC4_IN2
+		uint32_t v_out;             // ADC4_IN2
 		uint16_t i_bat;             // ADC5_IN1
 
 		uint16_t v_3v3; 		    // ADC5_IN6
@@ -135,7 +129,7 @@ typedef struct {
 		uint16_t v_15v;             // ADC5_IN14
 		uint16_t v_vcc;             // ADC5_IN15
 		uint16_t v_5v;              // ADC5_IN16
-		uint16_t int_temp;          // ADC5
+		int16_t int_temp;          // ADC5
 		uint16_t v_bat;             // ADC5
 		uint16_t v_ref_int;         // ADC5
 	} converted;
@@ -174,6 +168,7 @@ typedef struct {
 void adc_init(int32_t* ext_adc_data);
 void adc_start(void);
 void adc_convert_data(void);
+void adc_configure_mode(statemachine_modes_t mode);
 uint16_t adc_encoder_read(void);
 void adc_encoder_reset(uint8_t value);
 

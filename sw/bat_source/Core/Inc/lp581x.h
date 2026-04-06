@@ -18,10 +18,10 @@ typedef struct {
 } lp581x_handle;
 
 // LP581X I2C Address
-#define LP5814_ADDRESS 0x2C
-#define LP5815_ADDRESS 0x2D
-#define LP5816_ADDRESS 0x2C
-#define LP5817_ADDRESS 0x2D
+#define LP5814_ADDRESS (0x2C <<1)
+#define LP5815_ADDRESS (0x2D <<1)
+#define LP5816_ADDRESS (0x2C <<1)
+#define LP5817_ADDRESS (0x2D <<1)
 
 
 // LP581X Commands
@@ -123,11 +123,18 @@ uint8_t lp581xdisableChannel(lp581x_handle *hlp581x, uint8_t channel);
 
 /**
  * Set the analog Current value
+ * @param hlp581x lp581x handle to the device.
+ * @param values pointer to 8bit 4 element array containing all Analog Values
+ */
+uint8_t lp581x_setAnalogDimming(lp581x_handle *hlp581x, uint8_t* value);
+
+/**
+ * Set the analog Current value
  * @param hlp581x lp581x handle to the device. 
  * @param channel channel number 
  * @param value 8-bit analog dimming value
  */
-uint8_t lp581x_setAnalogDimming(lp581x_handle *hlp581x, uint8_t channel, uint8_t value);
+uint8_t lp581x_setAnalogDimmingChannel(lp581x_handle *hlp581x, uint8_t channel, uint8_t value);
 
 /**
  * Set the digital PWM value

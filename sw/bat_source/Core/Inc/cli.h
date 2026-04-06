@@ -23,6 +23,7 @@
 #include "adc.h"
 #include "ADS131M04.h"
 #include "bq76905.h"
+#include <stdarg.h>
 
 #define LINE_BUF_SIZE 128
 #define MAX_NUM_ARGS 8

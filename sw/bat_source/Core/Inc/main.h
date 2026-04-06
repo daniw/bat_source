@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ds1309/driver_ssd1309_basic.h"
+#include "statemachine.h"
 #include "cli.h"
 #include <stdio.h>
 #include "stdint.h"
@@ -45,7 +46,6 @@ extern "C" {
 #include "ADS131M04.h"
 #include "ctrl_main.h"
 #include "timer.h"
-#include "statemachine.h"
 #include "display.h"
 #include "opt3004.h"
 #include "lp581x.h"

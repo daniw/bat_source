@@ -40,9 +40,10 @@ uint8_t opt3004_writeRegister(opt3004_handle *hopt3004, uint8_t reg_address, uin
  */
 uint16_t opt3004_readRegister(opt3004_handle *hopt3004, uint8_t reg_address){
    uint8_t result[2];
-	i2c_WriteBlocking(hopt3004->address, &reg_address, 1);
+   result[0] = reg_address;
+	i2c_WriteBlocking(hopt3004->address, result, 1);
 	i2c_ReadBlocking(hopt3004->address, (uint8_t*) &result, 2);
-   return result[0]<<8 |result[1];
+   return (result[0] << 8) |result[1];
 }
 
 /**

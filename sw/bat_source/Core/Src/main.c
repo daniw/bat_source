@@ -134,27 +134,26 @@ int main(void)
   /*
    * LED test setup
    */
+  uint8_t led_pwms[] = {0x18, 0xFF, 0xFF, 0xFF};
 
   lp581x_init(&hled, LP5817_ADDRESS);
-  uint8_t led_pwms[] = {0xFF, 0xFF, 0xFF, 0xFF};
+  led_pwms[0] = 0xFF;
   lp581x_setPWMDimming(&hled, led_pwms);
+  led_pwms[0] = 0x10;
+  led_pwms[1] = 0x10;
+  led_pwms[2] = 0x10;
+  led_pwms[2] = 0x10;
+  lp581x_setAnalogDimming(&hled, led_pwms);
+
 
   lp581x_init(&hbacklight, LP5816_ADDRESS);
 
   /*
    * Ambient light sensor test setup
    */
-
   opt3004_init(&hamb, OPT3004_DEVICE_ADDRESS_GND);
   pca9554_init(&hpca_hw_rev,PCA9554_ADDRESS_HW_REV, 0xFF);
 
-  uint8_t amb_address = 0x44<<1;
-  uint8_t amb_brightness_arr[] = {0, 0, 0, 0};
-  uint16_t amb_brightness = 0;
-  uint8_t amb_setup[] = {0x01, 0xC4, 0x10};
-  i2c_WriteBlocking(amb_address, amb_setup, sizeof(amb_setup));
-  uint8_t amb_dummy[] = {0x00};
-  i2c_WriteBlocking(amb_address, amb_dummy, sizeof(amb_dummy));
 
 
   /*
@@ -179,7 +178,9 @@ int main(void)
   hrtim_set_freq(HRTIM_CHANNEL_SEK, 150000);
   hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0.985);
 
+  hrtim_start_timer();
 
+  adc_configure_mode(STATEMACHINE_MODE_60V_OUT);
 
   /* USER CODE END 2 */
 

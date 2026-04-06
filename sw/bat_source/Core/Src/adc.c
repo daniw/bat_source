@@ -29,6 +29,10 @@ ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
 ADC_HandleTypeDef hadc4;
 ADC_HandleTypeDef hadc5;
+DMA_HandleTypeDef hdma_adc1;
+DMA_HandleTypeDef hdma_adc2;
+DMA_HandleTypeDef hdma_adc3;
+DMA_HandleTypeDef hdma_adc4;
 DMA_HandleTypeDef hdma_adc5;
 
 /* ADC1 init function */
@@ -61,7 +65,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -123,7 +127,7 @@ void MX_ADC2_Init(void)
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
   hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc2.Init.DMAContinuousRequests = DISABLE;
+  hadc2.Init.DMAContinuousRequests = ENABLE;
   hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc2.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc2) != HAL_OK)
@@ -176,9 +180,9 @@ void MX_ADC3_Init(void)
   hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.NbrOfConversion = 1;
   hadc3.Init.DiscontinuousConvMode = DISABLE;
-  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
+  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG2;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc3.Init.DMAContinuousRequests = DISABLE;
+  hadc3.Init.DMAContinuousRequests = ENABLE;
   hadc3.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc3.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
@@ -240,7 +244,7 @@ void MX_ADC4_Init(void)
   hadc4.Init.DiscontinuousConvMode = DISABLE;
   hadc4.Init.ExternalTrigConv = ADC_EXTERNALTRIG_HRTIM_TRG1;
   hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc4.Init.DMAContinuousRequests = DISABLE;
+  hadc4.Init.DMAContinuousRequests = ENABLE;
   hadc4.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc4.Init.OversamplingMode = DISABLE;
   if (HAL_ADC_Init(&hadc4) != HAL_OK)
@@ -274,6 +278,7 @@ void MX_ADC5_Init(void)
   /* USER CODE END ADC5_Init 0 */
 
   ADC_ChannelConfTypeDef sConfig = {0};
+  ADC_InjectionConfTypeDef sConfigInjected = {0};
 
   /* USER CODE BEGIN ADC5_Init 1 */
 
@@ -296,7 +301,11 @@ void MX_ADC5_Init(void)
   hadc5.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc5.Init.DMAContinuousRequests = ENABLE;
   hadc5.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc5.Init.OversamplingMode = DISABLE;
+  hadc5.Init.OversamplingMode = ENABLE;
+  hadc5.Init.Oversampling.Ratio = ADC_OVERSAMPLING_RATIO_256;
+  hadc5.Init.Oversampling.RightBitShift = ADC_RIGHTBITSHIFT_4;
+  hadc5.Init.Oversampling.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
+  hadc5.Init.Oversampling.OversamplingStopReset = ADC_REGOVERSAMPLING_CONTINUED_MODE;
   if (HAL_ADC_Init(&hadc5) != HAL_OK)
   {
     Error_Handler();
@@ -413,6 +422,26 @@ void MX_ADC5_Init(void)
   {
     Error_Handler();
   }
+
+  /** Configure Injected Channel
+  */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+  sConfigInjected.InjectedOffset = 0;
+  sConfigInjected.InjectedNbrOfConversion = 1;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.QueueInjectedContext = DISABLE;
+  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_HRTIM_TRG1;
+  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+  sConfigInjected.InjecOversamplingMode = DISABLE;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC5_Init 2 */
 
   /* USER CODE END ADC5_Init 2 */
@@ -457,6 +486,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(I_OUT_GPIO_Port, &GPIO_InitStruct);
 
+    /* ADC1 DMA Init */
+    /* ADC1 Init */
+    hdma_adc1.Instance = DMA1_Channel2;
+    hdma_adc1.Init.Request = DMA_REQUEST_ADC1;
+    hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc1.Init.Mode = DMA_CIRCULAR;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc1);
+
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
   /* USER CODE END ADC1_MspInit 1 */
@@ -491,6 +538,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(V_TERM_GPIO_Port, &GPIO_InitStruct);
 
+    /* ADC2 DMA Init */
+    /* ADC2 Init */
+    hdma_adc2.Instance = DMA1_Channel3;
+    hdma_adc2.Init.Request = DMA_REQUEST_ADC2;
+    hdma_adc2.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc2.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc2.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc2.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc2.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc2.Init.Mode = DMA_CIRCULAR;
+    hdma_adc2.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_adc2) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc2);
+
   /* USER CODE BEGIN ADC2_MspInit 1 */
 
   /* USER CODE END ADC2_MspInit 1 */
@@ -524,6 +589,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(V_IN_GPIO_Port, &GPIO_InitStruct);
+
+    /* ADC3 DMA Init */
+    /* ADC3 Init */
+    hdma_adc3.Instance = DMA1_Channel4;
+    hdma_adc3.Init.Request = DMA_REQUEST_ADC3;
+    hdma_adc3.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc3.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc3.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc3.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc3.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc3.Init.Mode = DMA_CIRCULAR;
+    hdma_adc3.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_adc3) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc3);
 
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -565,6 +648,24 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(V_HV_GPIO_Port, &GPIO_InitStruct);
+
+    /* ADC4 DMA Init */
+    /* ADC4 Init */
+    hdma_adc4.Instance = DMA1_Channel5;
+    hdma_adc4.Init.Request = DMA_REQUEST_ADC4;
+    hdma_adc4.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc4.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc4.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc4.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc4.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc4.Init.Mode = DMA_CIRCULAR;
+    hdma_adc4.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_adc4) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(adcHandle,DMA_Handle,hdma_adc4);
 
   /* USER CODE BEGIN ADC4_MspInit 1 */
 
@@ -666,6 +767,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     */
     HAL_GPIO_DeInit(I_OUT_GPIO_Port, I_OUT_Pin);
 
+    /* ADC1 DMA DeInit */
+    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC1_MspDeInit 1 */
 
   /* USER CODE END ADC1_MspDeInit 1 */
@@ -686,6 +789,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     */
     HAL_GPIO_DeInit(V_TERM_GPIO_Port, V_TERM_Pin);
 
+    /* ADC2 DMA DeInit */
+    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC2_MspDeInit 1 */
 
   /* USER CODE END ADC2_MspDeInit 1 */
@@ -706,6 +811,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     */
     HAL_GPIO_DeInit(V_IN_GPIO_Port, V_IN_Pin);
 
+    /* ADC3 DMA DeInit */
+    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC3_MspDeInit 1 */
 
   /* USER CODE END ADC3_MspDeInit 1 */
@@ -729,6 +836,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
     HAL_GPIO_DeInit(V_HV_GPIO_Port, V_HV_Pin);
 
+    /* ADC4 DMA DeInit */
+    HAL_DMA_DeInit(adcHandle->DMA_Handle);
   /* USER CODE BEGIN ADC4_MspDeInit 1 */
 
   /* USER CODE END ADC4_MspDeInit 1 */
@@ -789,6 +898,7 @@ void adc_init(int32_t* ext_adc_data)
 	  adc_data.v_term_offset = ADC_VTERM_OFFSET_MV;
 	  adc_data.v_hv_offset   = ADC_VHV_OFFSET_MV  ;
 	  adc_data.i_bat_offset  = ADC_IBAT_OFFSET_MA ;
+	  adc_data.i_out_offset = ADC_IOUT_OFFSET;
 
 }
 
@@ -799,17 +909,97 @@ void adc_start(void){
 	ADC345_COMMON->CCR |= ADC_CCR_VBATSEL;
 	ADC12_COMMON->CCR |= ADC_CCR_VBATSEL;
 	//HAL_ADCEx_InjectedStart_IT(&hadc1);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &adc_data.raw.i_out,1);
+	HAL_ADC_Start_DMA(&hadc2, (uint32_t*) &adc_data.raw.v_term,1);
+	HAL_ADC_Start_DMA(&hadc3, (uint32_t*) &adc_data.raw.v_in,1);
 
 }
 
+void adc_configure_mode(statemachine_modes_t mode) {
+
+	ADC_ChannelConfTypeDef sConfig = { 0 };
+	  ADC_InjectionConfTypeDef sConfigInjected = {0};
+
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+
+	switch (mode) {
+	case STATEMACHINE_MODE_60V_OUT:
+	case STATEMACHINE_MODE_RESISTANCE_1A:
+		HAL_ADC_Stop_DMA(&hadc4);
+		sConfig.Channel = ADC_CHANNEL_2;
+		if (HAL_ADC_ConfigChannel(&hadc4, &sConfig) != HAL_OK)
+			Error_Handler();
+		HAL_ADC_Start_DMA(&hadc4, (uint32_t*) &adc_data.raw.v_out, 1);
+		break;
+		//case STATEMACHINE_MODE_RESISTANCE_1mA: break;
+	case STATEMACHINE_MODE_ISOMETER:
+		HAL_ADC_Stop_DMA(&hadc4);
+		sConfig.Channel = ADC_CHANNEL_5;
+		if (HAL_ADC_ConfigChannel(&hadc4, &sConfig) != HAL_OK)
+			Error_Handler();
+
+
+		  sConfigInjected.InjectedChannel = ADC_CHANNEL_2;
+		  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+		  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+		  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+		  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+		  sConfigInjected.InjectedOffset = 0;
+		  sConfigInjected.InjectedNbrOfConversion = 1;
+		  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+		  sConfigInjected.AutoInjectedConv = DISABLE;
+		  sConfigInjected.QueueInjectedContext = DISABLE;
+		  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_HRTIM_TRG1;
+		  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+		  sConfigInjected.InjecOversamplingMode = DISABLE;
+		  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
+		  {
+		    Error_Handler();
+		  }
+		HAL_ADC_Start_DMA(&hadc4, (uint32_t*) &adc_data.raw.v_hv, 1);
+		break;
+	case STATEMACHINE_MODE_CHARGE:
+		  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+		  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+		  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+		  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
+		  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
+		  sConfigInjected.InjectedOffset = 0;
+		  sConfigInjected.InjectedNbrOfConversion = 1;
+		  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+		  sConfigInjected.AutoInjectedConv = DISABLE;
+		  sConfigInjected.QueueInjectedContext = DISABLE;
+		  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJEC_HRTIM_TRG1;
+		  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
+		  sConfigInjected.InjecOversamplingMode = DISABLE;
+		  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
+		  {
+		    Error_Handler();
+		  }
+		break;
+	case STATEMACHINE_MODE_10A_OUT:
+	case STATEMACHINE_MODE_VOLTMETER:
+	case STATEMACHINE_MODE_SETTINGS:
+	case STATEMACHINE_MODE_SHUTDOWN:
+	case STATEMACHINE_MODE_RESERVED:
+	case STATEMACHINE_IDLE:
+	default:
+		break;
+	}
+}
+
 void adc_convert_data(void){
-	//adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
-	////adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
-	//adc_data.v_term_mV = (adc_data.v_term_raw - adc_data.v_term_offset)* ADC_VTERM_GAIN_MV;
-	//adc_data.v_hv_mV   = (adc_data.v_hv_raw   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
-	////adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
-	// adc_data.i_out_mA = adc_data.i_out_raw - adc_data.i_out_offset * ADC_IOUT_GAIN_MA;
-	// adc_data.i_iso_mA = adc_data.i_iso_raw - adc_data.i_iso_offset * ADC_IISO_GAIN_MA;
+	adc_data.converted.v_in   = (adc_data.raw.v_in   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
+	adc_data.converted.v_out  = (adc_data.raw.v_out  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
+	adc_data.converted.v_term = (adc_data.raw.v_term - adc_data.v_term_offset)* ADC_VTERM_GAIN_MV;
+	adc_data.converted.v_hv   = (adc_data.raw.v_hv   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
+	adc_data.converted.i_bat  = (adc_data.raw.i_bat  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
+	adc_data.converted.i_out  = (adc_data.raw.i_out - adc_data.i_out_offset) * ADC_IOUT_GAIN_MA;
+	adc_data.converted.i_iso  = (adc_data.raw.i_iso - adc_data.i_iso_offset) * ADC_IISO_GAIN_MA;
     //
 
 	adc_data.v_sens_ext_uv = adc_data.ext_adc_data[1] * ADC_EXT_VSENS_GAIN_UV;
@@ -819,11 +1009,11 @@ void adc_convert_data(void){
 	adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
 
 	// Calculate / Estimate Temperatures
-	 adc_data.converted.temp_trafo   =  114 - 0.0378*adc_data.raw.temp_trafo;
-	 adc_data.converted.temp_current =  114 - 0.0378*adc_data.raw.temp_current;
-	 adc_data.converted.temp_prim    =  114 - 0.0378*adc_data.raw.temp_prim;
-	 adc_data.converted.temp_sec     =  114 - 0.0378*adc_data.raw.temp_sec;
-	 adc_data.converted.int_temp     =  30 + 2*(2500*adc_data.raw.int_temp/4096-760)/5;
+	 adc_data.converted.temp_trafo   =  114 - 0.0378F/16.0F*adc_data.raw.temp_trafo;
+	 adc_data.converted.temp_current =  114 - 0.0378F/16.0F*adc_data.raw.temp_current;
+	 adc_data.converted.temp_prim    =  114 - 0.0378F/16.0F*adc_data.raw.temp_prim;
+	 adc_data.converted.temp_sec     =  114 - 0.0378F/16.0F*adc_data.raw.temp_sec;
+	 adc_data.converted.int_temp     = __LL_ADC_CALC_TEMPERATURE(2500, (adc_data.raw.int_temp/16), LL_ADC_RESOLUTION_12B);
 
 	 adc_data.converted.v_3v3        = adc_data.raw.v_3v3     *   ADC_GAIN_V_3V3;
 	 adc_data.converted.v_3v3a       = adc_data.raw.v_3v3a    *   ADC_GAIN_V_3V3A;
@@ -831,26 +1021,10 @@ void adc_convert_data(void){
 	 adc_data.converted.v_vcc        = adc_data.raw.v_vcc     *   ADC_GAIN_V_VCC;
 	 adc_data.converted.v_5v         = adc_data.raw.v_5v      *   ADC_GAIN_V_5V;
 	 adc_data.converted.v_bat        = adc_data.raw.v_bat     *   ADC_GAIN_V_BAT;
-	 adc_data.converted.v_ref_int    = __LL_ADC_CALC_VREFANALOG_VOLTAGE( adc_data.raw.v_ref_int,LL_ADC_RESOLUTION_12B);
+	 adc_data.converted.v_ref_int    = __LL_ADC_CALC_VREFANALOG_VOLTAGE(( adc_data.raw.v_ref_int/16),LL_ADC_RESOLUTION_12B);
 
-
-
-
-
-
-
-
-
-
-
-
-	//HAL_ADC_Stop_DMA(&hadc1);
-	//HAL_ADC_Stop_DMA(&hadc2);
-    //
-	//HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-	//HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
-	//adc_start();
 }
+
 
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
