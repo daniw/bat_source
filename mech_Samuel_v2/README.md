@@ -195,8 +195,6 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 
 ## Weiteres Vorgehen in der Konstruktion:
 
-* Gehäuse nochmal neu machen. Wichtig: Rundungen unten außen machen zum besseren Anheben.
-
 * Dann die Füße für den Deckel machen und die Dichtung auf die Innenseite der Schrauben legen.
 
 * Zylinder-Röhren-Füße anpassen für Einschmelzgewinde für die Platine.
@@ -212,6 +210,68 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 * Überlegen, wie man ein Spiel in alle drei Raumrichtungen einbauen kann, siehe Diskussion mit Luise. Es dürfen keine Kräfte auf den Viel-Pin-Stecker ausgeübt werden. Und Fertigungstoleranzen müssen ausgeglichen werden können.
 
 * Reste der Dichtungen an der Fuse-Lid aufräumen. Dateien passend umbenennen.
+
+* Deckel zum Gehäuse soll auch ein Einschmelzgewinde bekommen. M3 sollte hier ausreichend sein.
+
+* Einschmelzgewinde von der Hauptplatine zum Gehäuse auf M4 vergroessern. Sub-Modell vom Einschmelzgewinde muss ausgetauscht werden. Röhre muss neu konstruiert werden.+
+
+* Schrauben raussuchen.
+	* M3 Schrauben fuer Deckel und Deckel ueber der Sicherung
+	* M4 Schrauben fuer Hauptplatine
+
+* Deckel der Sicherung anpassen. Halbkreis um die Bohrung der Schraube machen. Rahmen im Gehäuse vergroessern. 
+
+* Schrauben am Deckel der Sicherung muessen Senkkopf sein, damit das Gehäuse unten glatt abschliesst.
+
+* Schrauben von Deckel auf Gehäuse und Befestigung der Platinen köennen auch Innen-Sechskant-Schrauben sein. 
+
+## Einschmelzgewinde und Abmessungen
+
+Quelle: https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
+
+Gewindegröße | D1 <br> Großer Durchmesser | D2 <br> Kleiner Durchmesser | D3 <br> Bohrung im Bauteil | L (+1mm) <br> Gesamtlänge | W (mindestens) <br> Wandstärke im Bauteil
+----         | ----                       | ----                        | ----                       | ----                      | ----
+M3           | 4.6                        | 3.9                         | 4.0                        | 5.7                       | 1.6
+M4           | 6.3                        | 5.5                         | 5.6                        | 6.35                      | 2.1
+M5           | 7.1                        | 6.3                         | 6.4                        | 9.5                       | 2.6
+M6           | 8.7                        | 7.9                         | 8.0                        | 12.7                      | 3.3
+M8           | 10.24                      | 9.4                         | 9.6                        | 12.7                      | 4.5
+
+
+## Schrauben
+
+* Befestigung der Hauptplatine zum Gehäuse
+	* M4-Einschmelzgewinde
+	* M4x30 Innensechskant-Schraube
+	* Bohrungen im Zellenhalter und der Platine müssen vergrößert werden.
+
+* Befestigung Hauptplatine zum Zellenhalter
+	* M4-Schraube mit Einschmelzgewinde. Abmessungen TBD.
+
+* Schrauben M3 und M4 auf ebay.
+
+https://www.ebay.de/itm/126045092807?var=427017989133&_ul=DE&mkevt=1&mkcid=1&mkrid=707-53477-19255-0&campid=5338945591&toolid=10001&customid=eb%3Ab%3Avms%3Aeb%3Ap%3A126045092807-427017989133%3Be9014ba1acc01cbf56a22270a776a188&_trkparms=ispr%3D1&amdata=enc%3A1CRbKPau_QfaU0Mea5smEXw3&loc_physical_ms=129283&loc_interest_ms=&msclkid=e9014ba1acc01cbf56a22270a776a188
+
+* Schrauben bei bossard
+
+https://www.bossard.com/ch-de/eshop/schrauben-mit-innenantrieb/zylinderschrauben-mit-innensechskant-mit-schaft/p/4/
+
+* Innen-Sechskant-Schrauben bei Norelem
+
+https://norelem.de/de/Produkt%C3%BCbersicht/Flexibles-Normteilesystem/07000/Muttern-Schrauben-Unterlegscheiben-Sicherungselemente/Zylinderschrauben-mit-Innensechskant-DIN-EN-ISO-4762-erweitert-Stahl-oder-Edelstahl/p/agid.35797?q=%3A%3AallowedBaseStoresForProducts%3AN_3000_10_10_de%3AallowedCategoryPages%3A21366%3A908_672%3AM4%3A5%3AM3%3A6%3A000000000000000012%2523%252312
+
+* Senkschrauben mit Innen-Sechskant (für Fuse-Lid)
+
+https://norelem.de/de/Produkt%C3%BCbersicht/Flexibles-Normteilesystem/07000/Muttern-Schrauben-Unterlegscheiben-Sicherungselemente/Senkschrauben-mit-Innensechskant-DIN-EN-ISO-10642/p/agid.32115?q=%3A%3AallowedBaseStoresForProducts%3AN_3000_10_10_de%3AallowedCategoryPages%3A21366%3A908_672%3AM4
+
+* Befestigung der Zellenhalter und Platine mit Kunststoff-Schrauben, Typ K30.
+
+## Einschmelzgewinde
+
+Bild mit Abmessungen der Einschmelzgewinde:
+
+![Zeichnung](3djake-gewindeeinsaetze-50er-set-621566-de.jpg)
+
 
 ## Aufbau, Variante 2
 

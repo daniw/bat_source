@@ -1006,7 +1006,12 @@ void adc_convert_data(void){
 	adc_data.i_iso_ext_uA  = adc_data.ext_adc_data[2] * ADC_EXT_IISO_GAIN_UA;
     //
 	//// Calculate resistance
-	adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
+	if (adc_data.i_out_ext_mA != 0) {
+		adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
+	}
+	else {
+		adc_data.r_mOhmx10 = UINT16_MAX;
+	}
 
 	// Calculate / Estimate Temperatures
 	 adc_data.converted.temp_trafo   =  114 - 0.0378F/16.0F*adc_data.raw.temp_trafo;

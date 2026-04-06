@@ -139,8 +139,10 @@ bool readline(void) {
 			return line_buffer_index > 0;
 		}
 
-		if (line_buffer[line_buffer_index] == '\b')
-			line_buffer_index--;
+		if (line_buffer[line_buffer_index] == '\b') {
+			line_buffer[line_buffer_index--] = '0';
+			line_buffer[line_buffer_index--] = '0';
+		}
 
 		if (++line_buffer_index == LINE_BUF_SIZE) {
 			printf("Input String too long. Deleted.\r\n>");
