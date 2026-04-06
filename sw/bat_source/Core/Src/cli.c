@@ -19,8 +19,13 @@ char *arg_locs[MAX_NUM_ARGS];
 uint8_t number_of_args;
 uint8_t line_buffer_index;
 
-// Uart handling
-UART_HandleTypeDef *_huart;
+// ToDo Check why Index of Command gets wrong sime times.
+#define history_SIZE 5
+char history[history_SIZE][LINE_BUF_SIZE];
+int  history_count = 0;
+int  history_index = -1;
+
+
 extern BQ76905_handle bms;
 extern ADC_MEAS_DATA adc_data;
 extern HRTIM_HandleTypeDef hhrtim1;
@@ -29,6 +34,12 @@ extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
 extern opt3004_handle hamb;
 extern PCA9554_handle hpca_hw_rev;
+
+// Uart handling
+UART_HandleTypeDef *cli_huart;
+
+// Forward declarations
+static void cli_process_line(void);
 
 // Function declarations
 void cmd_help(void);
@@ -89,13 +100,16 @@ int num_commands = sizeof(cmd_str) / sizeof(char*);
  * Initialises the CLI
  */
 void cli_init(UART_HandleTypeDef *huart1) {
-	_huart = huart1;
+	cli_huart = huart1;
 	setbuf(stdin, NULL); //TO HANDLE INPUT BUFFER WHEN USING SCANF/COUT
 
 #ifdef CLI_ENABLED
 	line_buffer_index = 0;
 	number_of_args = 0;
 	memset(line_buffer, 0, LINE_BUF_SIZE);
+    memset(history, 0, sizeof(history));
+    history_count = 0;
+    history_index = -1;
 	printf("Serial Interface enabled.\r\n");
 	printf(">>\r\n");
 #endif
@@ -104,23 +118,16 @@ void cli_init(UART_HandleTypeDef *huart1) {
 #ifdef CLI_ENABLED
 
 
-int _write(int fd, char *ptr, int len) {
-	(void) fd;
-	HAL_UART_Transmit(_huart, (uint8_t*) ptr, len, 100);
-	return len;
-}
+void cli_printf(const char *fmt, ...) {
+  static char buffer[64];
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(buffer, sizeof(buffer), fmt, args);
+  va_end(args);
 
-//size_t _read(int fd, char *ptr, size_t len){
-//  (void)fd;
-//  size_t i;
-//  for(i=0;i<len;i++){
-//    *ptr++ = uart_read();
-//    uart_write(*ptr++);  //For Terminal Echo
-//
-//    HAL_UART_Receive(&_huart, ptr, len);
-//  }
-//  return i;
-//}
+  uint16_t len = strlen(buffer);
+  HAL_UART_Transmit(cli_huart,(uint8_t*)buffer, len, 100);
+}
 
 
 /**
@@ -128,29 +135,105 @@ int _write(int fd, char *ptr, int len) {
  *
  * @return Returns true if line is available in buffer.
  */
-bool readline(void) {
-	while (HAL_UART_Receive(_huart, (uint8_t*) &line_buffer[line_buffer_index],
-			1, 1) == 0) {
-		HAL_UART_Transmit(_huart, (uint8_t*) &line_buffer[line_buffer_index], 1,
-				1);
+bool cli_readline(void) {
+	char c;
+	bool ret = false;
+	// 0=normal, 1=ESC seen, 2='[' seen
+    static uint8_t esc_state = 0;
+	while (HAL_UART_Receive(cli_huart, (uint8_t*) &c,1, 1) == 0) {
+		ret = true;
+        // --- Handle escape sequences (arrow keys) ---
+        if (esc_state == 1) {
+            if (c == '[') { esc_state = 2; continue; }
+            esc_state = 0;
+        } else if (esc_state == 2) {
+            if (c == 'A') { // ↑ Up arrow
+                if (history_count > 0) {
+                    if (history_index > 0)
+                        history_index--;
+                    else
+                        history_index = 0;
 
-		if (line_buffer[line_buffer_index] == '\n') {
-			line_buffer[line_buffer_index] = 0;
-			return line_buffer_index > 0;
-		}
+                    strcpy(line_buffer, history[history_index]);
+                    line_buffer_index = strlen(line_buffer);
+                    cli_printf("\r> %s\x1B[K", line_buffer);
+                }
+            } else if (c == 'B') { // ↓ Down arrow
+                if (history_index < history_count - 1)
+                    history_index++;
+                else
+                    history_index = history_count;
 
-		if (line_buffer[line_buffer_index] == '\b') {
-			line_buffer[line_buffer_index--] = '0';
-			line_buffer[line_buffer_index--] = '0';
-		}
+                if (history_index < history_count)
+                    strcpy(line_buffer, history[history_index]);
+                else
+                    line_buffer[0] = '\0';
 
-		if (++line_buffer_index == LINE_BUF_SIZE) {
-			printf("Input String too long. Deleted.\r\n>");
-			line_buffer_index = 0;
-			memset(line_buffer, 0, LINE_BUF_SIZE);
-		}
-	}
-	return false;
+                line_buffer_index = strlen(line_buffer);
+                cli_printf("\r> %s\x1B[K", line_buffer);
+            }
+            esc_state = 0;
+            continue;
+        }
+
+        // ESC = start of escape sequence
+        if (c == 27) { esc_state = 1; continue; }
+
+        // --- Handle ENTER ---
+        if (c == '\r' || c == '\n') {
+            if (line_buffer_index > 0) {
+                line_buffer[line_buffer_index] = 0;
+                cli_printf("\r\n");
+                cli_process_line();
+                line_buffer_index = 0;
+                memset(line_buffer, 0, sizeof(line_buffer));
+                cli_printf("> ");
+            } else {
+            	cli_printf("\r\n> ");
+            }
+        }
+
+        else if (c == '\t') { // Tab key for autocomplete
+            char *current = line_buffer;
+            size_t len = strlen(current);
+
+            int matches = 0;
+            const char *match = NULL;
+
+            for (int i = 0; i < num_commands; i++) {
+                if (strncmp(cmd_str[i], current, len) == 0) {
+                    if (matches == 0)
+                        match = cmd_str[i];
+                    matches++;
+                }
+            }
+
+            if (matches == 1 && match) {
+                // Single match -> autocomplete
+                strcpy(line_buffer, match);
+                line_buffer_index = strlen(line_buffer);
+                cli_printf("\r> %s\x1B[K", line_buffer); // Update line
+            } else if (matches > 1) {
+                // Multiple matches -> show list
+            	cli_printf("\r\n");
+                for (int i = 0; i < num_commands; i++) {
+                    if (strncmp(cmd_str[i], current, len) == 0)
+                    	cli_printf("%s\r\n", cmd_str[i]);
+          }
+                cli_printf("> %s", line_buffer); // Reprint current input
+            }
+        }
+
+        else if ((c == '\b' || c == 127) && line_buffer_index > 0) {
+            line_buffer_index--;
+            cli_printf("\b \b");
+        }
+        else if (line_buffer_index < LINE_BUF_SIZE - 1 && c >= 32 && c <= 126) {
+            line_buffer[line_buffer_index++] = c;
+            cli_printf("%c", c);
+        }
+    }
+	return ret;
 }
 
 /**
@@ -158,33 +241,46 @@ bool readline(void) {
  *
  * @return Returns the number of available arguments
  */
-int parseline(void) {
-	number_of_args = 0;
+static void cli_process_line(void) {
+    number_of_args = 0;
+    line_buffer[strcspn(line_buffer, "\r\n")] = 0;
 
-	arg_locs[number_of_args] = strtok(line_buffer, " ");
-	while (arg_locs[number_of_args] != NULL) {
-		if (++number_of_args >= MAX_NUM_ARGS) {
-			printf("Input String contains too much arguments!\r\n>");
-			return 0;
-		}
-		arg_locs[number_of_args] = strtok(NULL, " ");
-	}
+    char full_line_copy[LINE_BUF_SIZE];
+    strncpy(full_line_copy, line_buffer, LINE_BUF_SIZE);
+    full_line_copy[LINE_BUF_SIZE - 1] = '\0';
 
-	return number_of_args;
-}
+    arg_locs[number_of_args] = strtok(line_buffer, " ");
+    while (arg_locs[number_of_args] != NULL && number_of_args < MAX_NUM_ARGS - 1) {
+        number_of_args++;
+        arg_locs[number_of_args] = strtok(NULL, " ");
+    }
 
-/**
- * Executes the Command according to first argument
- */
-void execute(void) {
-	for (int i = 0; i < num_commands; i++) {
-		if (strcmp(arg_locs[0], cmd_str[i]) == 0) {
-			(*cmd_func[i])();
-			return;
-		}
-	}
+    if (arg_locs[0] != NULL)
+        number_of_args++;
 
-	printf("Invalid Command.\r\n");
+    if (number_of_args == 0)
+        return;
+
+
+    for (int i = 0; i < num_commands; i++) {
+        if (strcmp(arg_locs[0], cmd_str[i]) == 0) {
+            // --- Store command line in history ---
+            if (strlen(full_line_copy) > 0) {
+                if (history_count < history_SIZE) {
+                    strcpy(history[history_count++], full_line_copy);
+                } else {
+                    for (int j = 1; j < history_SIZE; j++)
+                        strcpy(history[j - 1], history[j]);
+                    strcpy(history[history_SIZE - 1], full_line_copy);
+                }
+            }
+            history_index = history_count;
+            (*cmd_func[i])();;
+            return;
+        }
+    }
+
+    cli_printf("Invalid command.\r\n");
 }
 #endif
 
@@ -193,13 +289,8 @@ void execute(void) {
  */
 void cli_loop(void) {
 #ifdef CLI_ENABLED
-	if (!readline())
+	if (!cli_readline())
 		return;
-	if (!parseline())
-		return;
-	execute();
-	line_buffer_index = 0;
-	memset(line_buffer, 0, LINE_BUF_SIZE);
 #endif
 }
 
@@ -353,6 +444,15 @@ void cmd_printBMS(void){
 void cmd_printADC() {
 	//for(int i=0; i<10; i++){
 	adc_convert_data();
+	printf("Triggered ADC Measurements: \n");
+    printf(" 	 v_in    (ADC3_IN3 ) : %u \t: %d mV\n", adc_data.raw.v_in   , adc_data.converted.v_in  );
+    printf(" 	 v_out   (ADC4_IN2 ) : %u \t: %d mV\n", adc_data.raw.v_out  , adc_data.converted.v_out );
+    printf(" 	 v_term  (ADC2_IN2 ) : %u \t: %d mV\n", adc_data.raw.v_term , adc_data.converted.v_term);
+    printf(" 	 v_hv    (ADC4_IN5 ) : %u \t: %d mV\n", adc_data.raw.v_hv   , adc_data.converted.v_hv  );
+    printf(" 	 i_bat   (ADC5_IN1 ) : %u \t: %d mA\n", adc_data.raw.i_bat  , adc_data.converted.i_bat );
+    printf(" 	 i_out   (ADC1_IN1)  : %u \t: %d mA\n", adc_data.raw.i_out  , adc_data.converted.i_out );
+    printf(" 	 i_iso   (ADC5_IN2)  : %u \t: %d mA\n", adc_data.raw.i_iso  , adc_data.converted.i_iso );
+
     printf("ADC Measurements:\n");
     printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
     printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %u °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
@@ -363,7 +463,7 @@ void cmd_printADC() {
     printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
     printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
     printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
-    printf(" 		int_temp       (ADC5     ) : %u \t: %u °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
+    printf(" 		int_temp       (ADC5     ) : %u \t: %i °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
     printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
     printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
 
@@ -414,40 +514,17 @@ void cmd_PWM_en(void){
 
 void cmd_test_i2c(void){
 	uint64_t fw_version;
-	uint8_t buffer[2] = {0x68,2};
-	/*printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 2), i2c_handle->ErrorCode);
-	buffer[0] = 0x12;
-	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
-	printf("Test write 0x%x, 0x%x\r\n", i2c_WriteBlocking(bms.address, buffer, 1), i2c_handle->ErrorCode);
-		buffer[0] = 0;
-	buffer[1] = 0;
-	i2c_ReadBlocking(bms.address, buffer, 2);
-	printf("Test Read 0x%x\r\n", *((uint16_t*)&buffer));*/
-
-	printf("Read HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
+	printf("Read BMS HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
 	BQ76905_GetFWVersion(&bms, (uint8_t*)&fw_version);
-	printf("Read FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) fw_version>>32);
-	printf("Read Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
+	printf("Read BMS FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) fw_version>>32);
+	printf("Read BMS Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
 
 }
 
 void cmd_readLux(void){
 
-	printf("Read Optical Sensor: %d cLux\r\n", opt3004_readLux(&hamb));
+	printf("Read Optical Sensor: %ul cLux\r\n", opt3004_readLux(&hamb));
 }
 
 #endif
-
-/****************************** Redirect Std Out to UART **************************/
-
-//static void uart_write(uint8_t c){
-//	HAL_UART_Transmit(&_huart, &c, 1, 10);
-//}
-//
-//static char uart_read(){
-//	uint8_t c;
-//	HAL_UART_Receive(&_huart, &c, 1, 10);
-//	return (char)c;
-//
-//}
 
