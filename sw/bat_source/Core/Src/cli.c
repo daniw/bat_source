@@ -117,6 +117,11 @@ void cli_init(UART_HandleTypeDef *huart1) {
 
 #ifdef CLI_ENABLED
 
+int _write(int fd, char *ptr, int len) {
+	(void) fd;
+	HAL_UART_Transmit(cli_huart, (uint8_t*) ptr, len, 100);
+	return len;
+}
 
 void cli_printf(const char *fmt, ...) {
   static char buffer[64];
@@ -144,7 +149,10 @@ bool cli_readline(void) {
 		ret = true;
         // --- Handle escape sequences (arrow keys) ---
         if (esc_state == 1) {
-            if (c == '[') { esc_state = 2; continue; }
+            if (c == '[') {
+            	esc_state = 2;
+            	continue;
+            }
             esc_state = 0;
         } else if (esc_state == 2) {
             if (c == 'A') { // ↑ Up arrow
@@ -177,7 +185,10 @@ bool cli_readline(void) {
         }
 
         // ESC = start of escape sequence
-        if (c == 27) { esc_state = 1; continue; }
+        if (c == 27) {
+        	esc_state = 1;
+        	continue;
+        }
 
         // --- Handle ENTER ---
         if (c == '\r' || c == '\n') {
@@ -264,23 +275,25 @@ static void cli_process_line(void) {
 
     for (int i = 0; i < num_commands; i++) {
         if (strcmp(arg_locs[0], cmd_str[i]) == 0) {
+        	if ((history_count <= 0) || (strcmp(history[history_count-1], full_line_copy) != 0)){
             // --- Store command line in history ---
-            if (strlen(full_line_copy) > 0) {
-                if (history_count < history_SIZE) {
-                    strcpy(history[history_count++], full_line_copy);
-                } else {
-                    for (int j = 1; j < history_SIZE; j++)
-                        strcpy(history[j - 1], history[j]);
-                    strcpy(history[history_SIZE - 1], full_line_copy);
+                if (strlen(full_line_copy) > 0) {
+                    if (history_count < history_SIZE) {
+                        strcpy(history[history_count++], full_line_copy);
+                    } else {
+                        for (int j = 1; j < history_SIZE; j++)
+                            strcpy(history[j - 1], history[j]);
+                        strcpy(history[history_SIZE - 1], full_line_copy);
+                    }
                 }
+                history_index = history_count;
             }
-            history_index = history_count;
             (*cmd_func[i])();;
             return;
         }
     }
 
-    cli_printf("Invalid command.\r\n");
+    printf("Invalid command.\r\n");
 }
 #endif
 
@@ -354,17 +367,17 @@ void cmd_turnOff(void) {
 
 void cmd_printGPIO(void) {
 	printf("Input Pins: \n");
-	printf("Button Out: 	%d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
-	printf("Button OK: 		%d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
-	printf("Button ESC:	 	%d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
+	printf("Button Out:     %d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
+	printf("Button OK:      %d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
+	printf("Button ESC:     %d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
 
-	printf("I2C Alert: 		%d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
-	printf("ADC_DRDY: 		%d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
-	printf("UI Present: 	%d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
-	printf("OVP Pin Latch:	%d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
-	printf("OCP Pin Latch:	%d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
+	printf("I2C Alert:      %d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
+	printf("ADC_DRDY:       %d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
+	printf("UI Present:     %d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
+	printf("OVP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
+	printf("OCP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
-	printf("HW Revision: 	%d\n", pca9554_read_input(&hpca_hw_rev));
+	printf("HW Revision:    %d\n", pca9554_read_input(&hpca_hw_rev));
 }
 void cmd_setGPIO(void) {
 	uint8_t pin, value;
