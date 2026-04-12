@@ -5,32 +5,26 @@
  *      Author: Andreas
  */
 
-
 #include "aux_io_ctrl.h"
-#include "main.h"
+#include "driver_pca9554.h"
+#include "gpio.h"
 
+PCA9554_handle hpca_hw_rev;
 
-
-void aux_io_ctrl_GPIO_Init(void)
-{
-
+void aux_io_ctrl_GPIO_Init(void) {
+	pca9554_init(&hpca_hw_rev, PCA9554_ADDRESS_HW_REV, 0xFF);
 }
 
-/**
- * Prints all input pin states
- */
-void aux_io_ctrl_print_inputs(void){
-
+uint8_t aux_io_ctrl_readHW_Revision(void) {
+	return pca9554_read_input(&hpca_hw_rev);
 }
-
 
 /**
  * Function used to manually set the GPIOs from CLI
  * @param pin pin number as defined above
  * @param value value to set the pin (0,1)
  */
-void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value)
-{
+void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value) {
 	switch (pin) {
 	case GPIO_DISPLAY_WR:
 		HAL_GPIO_WritePin(DISPLAY_WR_GPIO_Port, DISPLAY_WR_Pin, value);
@@ -45,7 +39,8 @@ void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value)
 		HAL_GPIO_WritePin(OUT_SEL_ISO_GPIO_Port, OUT_SEL_ISO_Pin, value);
 		return;
 	case GPIO_BMS_CTRL_WAKEUP:
-		HAL_GPIO_WritePin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin,value);
+		HAL_GPIO_WritePin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin,
+				value);
 		return;
 	case GPIO_SHUNT_EN:
 		HAL_GPIO_WritePin(SHUNT_EN_GPIO_Port, SHUNT_EN_Pin, value);
@@ -66,12 +61,11 @@ void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value)
 		HAL_GPIO_WritePin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin, value);
 		return;
 	case GPIO_ADC_SYNC_RESET:
-		HAL_GPIO_WritePin(ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin, value);
+		HAL_GPIO_WritePin(ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin,
+				value);
 		return;
 	default:
-			return;
+		return;
 	}
 }
-
-
 

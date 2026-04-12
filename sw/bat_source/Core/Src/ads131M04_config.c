@@ -117,7 +117,7 @@ void ADS131M04_configureADC(ADS131M04_handle* handle) {
     for(uint8_t line = 0; line<sizeof(ads131m04_config_list)/sizeof(config_list_entry); line++)
     {
     	value = ADS131M04_readRegister(handle, ads131m04_config_list[line].address);
-    	printf("Write Register %X  Value: %X Read: %X\n", ads131m04_config_list[line].address,  ads131m04_config_list[line].value, value);
+    	//printf("Write Register %X  Value: %X Read: %X\n", ads131m04_config_list[line].address,  ads131m04_config_list[line].value, value);
     }
 
 

@@ -178,6 +178,8 @@ typedef struct{
     SPI_HandleTypeDef* hspi;
     GPIO_TypeDef* drdyPort;
     uint16_t drdyPin;
+    GPIO_TypeDef* rstPort;
+    uint16_t rstPin;
     uint8_t txBuffer[6*3];
     uint8_t rxBuffer[6*3];
     int32_t channelData[4];
@@ -187,7 +189,8 @@ typedef struct{
 /**
  * @brief Sets up the handle
  */
-void ADS131M04_init(ADS131M04_handle* handle, SPI_HandleTypeDef* hspi, GPIO_TypeDef* drdyPort, uint16_t drdyPin);
+void ADS131M04_init(ADS131M04_handle* handle, SPI_HandleTypeDef* _hspi, GPIO_TypeDef* _drdyPort, uint16_t _drdyPin,
+		 GPIO_TypeDef* _rstPort, uint16_t _rstPin);
 
 
 

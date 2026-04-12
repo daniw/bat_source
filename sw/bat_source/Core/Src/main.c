@@ -32,7 +32,26 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "i2c.h"
+#include "driver_pca9554.h"
+#include "aux_io_ctrl.h"
+#include "dac.h"
+#include "bq76905.h"
+#include "bq76905_config.h"
+#include "ADS131M04.h"
+#include "ctrl_main.h"
+#include "timer.h"
+#include "display.h"
+#include "opt3004.h"
+#include "lp581x.h"
+#include "hrtim.h"
+#include "ui_ctrl.h"
+#include "statemachine.h"
+#include "adc.h"
+#include "cli.h"
+#include <stdio.h>
+#include "stdint.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,12 +73,8 @@
 
 /* USER CODE BEGIN PV */
 BQ76905_handle bms;
-opt3004_handle hamb;
-lp581x_handle hled;
-lp581x_handle hbacklight;
 ADC_MEAS_DATA adc_data;
 ADS131M04_handle ext_adc;
-PCA9554_handle hpca_hw_rev;
 
 /* USER CODE END PV */
 
@@ -118,7 +133,14 @@ int main(void)
   MX_TIM16_Init();
   MX_USART2_UART_Init();
   MX_RTC_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+  /*
+   * Setup internal timer structure
+   */
+  //gpio_turnOn();
+  timer_init();
+
   /*
    * DAC test setup
    */
@@ -131,35 +153,19 @@ int main(void)
    */
   cli_init(&huart2);
 
-  /*
-   * LED test setup
-   */
-  uint8_t led_pwms[] = {0x18, 0xFF, 0xFF, 0xFF};
-
-  lp581x_init(&hled, LP5817_ADDRESS);
-  led_pwms[0] = 0xFF;
-  lp581x_setPWMDimming(&hled, led_pwms);
-  led_pwms[0] = 0x10;
-  led_pwms[1] = 0x10;
-  led_pwms[2] = 0x10;
-  led_pwms[2] = 0x10;
-  lp581x_setAnalogDimming(&hled, led_pwms);
-
-
-  lp581x_init(&hbacklight, LP5816_ADDRESS);
 
   /*
-   * Ambient light sensor test setup
+   * Init UI control (LEDs)
    */
-  opt3004_init(&hamb, OPT3004_DEVICE_ADDRESS_GND);
-  pca9554_init(&hpca_hw_rev,PCA9554_ADDRESS_HW_REV, 0xFF);
-
+  ui_ctrl_init();
 
 
   /*
    * ADC Init
    */
   adc_init(ext_adc.channelData);
+  ADS131M04_init(&ext_adc, &hspi3, SPI_CS_GPIO_Port, SPI_CS_Pin, ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin);
+  adc_configure_mode(STATEMACHINE_MODE_60V_OUT);
   adc_start();
   /*
    * Wakeup BMS and configure if necessary
@@ -179,9 +185,11 @@ int main(void)
   hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0.985);
 
   hrtim_start_timer();
+  timer_start();
 
-  adc_configure_mode(STATEMACHINE_MODE_60V_OUT);
+  gpio_turnOn();
 
+  LCD_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -249,6 +257,8 @@ int main(void)
 	   */
 	  HAL_Delay(1);
 
+	  LCD_Test();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -309,7 +319,24 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+/**
+ * External ADC finished SPI communication
+ */
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
+	ADS131M04_handleSPIComplete(&ext_adc);
+}
 
+
+/**
+ * Interrupt for external ADC
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == ADC_DRDY_N_Pin) {
+		ADS131M04_handleDRDYInterrupt(&ext_adc);
+	} else {
+		// __NOP();
+	}
+}
 /* USER CODE END 4 */
 
 /**

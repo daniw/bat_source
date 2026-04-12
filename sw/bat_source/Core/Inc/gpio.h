@@ -42,7 +42,6 @@ void MX_GPIO_Init(void);
 
 #define GPIO_SET_DISPLAY_WR(value) HAL_GPIO_WritePin(DISPLAY_WR_GPIO_Port, DISPLAY_WR_Pin,value)
 #define GPIO_SET_CONV_CTRL_EN(value) HAL_GPIO_WritePin(CONV_CTRL_EN_GPIO_Port, CONV_CTRL_EN_Pin,value)
-#define GPIO_SET_ON_REQ(value) HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,value)
 #define GPIO_SET_OUT_SEL_ISO(value) HAL_GPIO_WritePin(OUT_SEL_ISO_GPIO_Port, OUT_SEL_ISO_Pin,value)
 #define GPIO_SET_BMS_CTRL_WAKEUP(value) HAL_GPIO_WritePin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin,value)
 #define GPIO_SET_SHUNT_EN(value) HAL_GPIO_WritePin(SHUNT_EN_GPIO_Port, SHUNT_EN_Pin,value)
@@ -53,6 +52,21 @@ void MX_GPIO_Init(void);
 #define GPIO_SET_SHUNT_ISO_EN(value) HAL_GPIO_WritePin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin,value)
 #define GPIO_SET_ADC_SYNC_RESET(value) HAL_GPIO_WritePin(ADC_SYNC_RESET_GPIO_Port, ADC_SYNC_RESET_Pin,value)
 
+inline uint8_t gpio_readBtnOut(void) {
+	return HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin) == 0;
+}
+inline uint8_t gpio_readBtnEsc(void) {
+	return HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin) == 0;
+}
+inline uint8_t gpio_readBtnOk(void) {
+	return HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == 0;
+}
+
+inline void gpio_shutdown(void){
+	HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,0);
+}
+
+void gpio_turnOn(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

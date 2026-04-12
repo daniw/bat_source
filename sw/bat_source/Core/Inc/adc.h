@@ -29,6 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#include "statemachine.h"
 
 //#include "ctrl_main.h"
 
@@ -54,10 +55,10 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_IOUT_GAIN_MA   (2500*1000/43.33/4096) // ToDo: Calculate
 #define ADC_IISO_GAIN_MA   0 // ToDo: Calculate
 								// Empirical Value	// Calculated Value 	// Calculation
-#define ADC_EXT_VTERM_GAIN_MV 	0.144499515f 		//0.1373291015625 		//(1200/8388608 * 14400/15) (ADC * Resistor divider) Max Value 1152 V
-#define ADC_EXT_VSENS_GAIN_UV	0.7152557373046875f  //(1200/8388608 * 1 * 5)(ADC * ADC GAIN * Resistor divider) Max Value 6V
-#define ADC_EXT_IISO_GAIN_UA 	0.0014305114746093f  //(1200/8388608 * 1 * 0.01) (ADC * ADC Gain * mA/mV)
-#define ADC_EXT_IOUT_GAIN_mA 	0.001821494f			//0.00178813934326171875 	//(1200/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
+#define ADC_EXT_VTERM_GAIN_MV 	0.1431914341802f 		//0.1373291015625 		//(1200/8388608 * 14400/15) (ADC * Resistor divider) Max Value 1152 V
+#define ADC_EXT_VSENS_GAIN_UV	0.7152557f  //(1200/8388608 * 1 * 5)(ADC * ADC GAIN * Resistor divider) Max Value 6V
+#define ADC_EXT_IISO_GAIN_UA 	0.00143051f  //(1200/8388608 * 1 * 0.01) (ADC * ADC Gain * mA/mV)
+#define ADC_EXT_IOUT_GAIN_mA 	0.0014305114f			//0.00178813934326171875 	//(1200/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
 
 #define ADC_GAIN_V_3V3         2500*53/10/65536
 #define ADC_GAIN_V_3V3A        2500*53/10/65536
@@ -132,6 +133,11 @@ typedef struct {
 		int16_t int_temp;          // ADC5
 		uint16_t v_bat;             // ADC5
 		uint16_t v_ref_int;         // ADC5
+	    int32_t v_term_ext_mv;		// Extern ADC 1
+	    int32_t v_term_ext_mv_filt; // Extern ADC 1
+	    int32_t i_out_ext_mA;		// Extern ADC 2
+	    int32_t v_sens_ext_uv;      // Extern ADC 3
+	    int32_t i_iso_ext_uA;		// Extern ADC 4
 	} converted;
 
 
@@ -150,11 +156,6 @@ typedef struct {
     uint16_t temp_trafo_offset;
 
     int32_t* ext_adc_data;
-    int32_t v_term_ext_mv;
-    int32_t v_term_ext_mv_filt;
-    int32_t v_sens_ext_uv;
-    int32_t i_iso_ext_uA;
-    int32_t i_out_ext_mA;
 
     uint16_t reference_poti;
 
@@ -169,8 +170,7 @@ void adc_init(int32_t* ext_adc_data);
 void adc_start(void);
 void adc_convert_data(void);
 void adc_configure_mode(statemachine_modes_t mode);
-uint16_t adc_encoder_read(void);
-void adc_encoder_reset(uint8_t value);
+
 
 /* USER CODE END Prototypes */
 

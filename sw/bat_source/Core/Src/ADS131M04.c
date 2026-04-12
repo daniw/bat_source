@@ -1,11 +1,12 @@
 #include "ADS131M04.h"
 #include "stdio.h"
+#include "string.h"
 
 const int32_t adc_offset[4]={
-		-1361,
 		0,
 		0,
-		23328
+		0,
+		0
 };
 
 /**
@@ -21,17 +22,23 @@ void ADS131M04_configureSPI(ADS131M04_handle* handle);
 
 void ADS131M04_selftest(ADS131M04_handle* handle);
 
-void ADS131M04_init(ADS131M04_handle* handle, SPI_HandleTypeDef* _hspi, GPIO_TypeDef* _drdyPort, uint16_t _drdyPin){
-    handle->hspi = _hspi;
+void ADS131M04_init(ADS131M04_handle* handle, SPI_HandleTypeDef* _hspi, GPIO_TypeDef* _drdyPort, uint16_t _drdyPin,
+		 GPIO_TypeDef* _rstPort, uint16_t _rstPin){
+    uint16_t temp;
+	handle->hspi = _hspi;
     handle->drdyPort=_drdyPort;
     handle->drdyPin = _drdyPin;
+    handle->rstPort=_rstPort;
+    handle->rstPin = _rstPin;
 
+    HAL_GPIO_WritePin(handle->rstPort,  handle->rstPin, 1);
+    HAL_Delay(1);
     memset(handle->txBuffer,0,sizeof(handle->txBuffer));
     /* EXTI interrupt init*/
 
     //ADS131M04_configureSPI(handle);
     ADS131M04_sendCommand(handle, ADS131M04_CMD_RESET);
-    ADS131M04_readRegister(handle, ADS131M04_REG_ID);
+    temp = ADS131M04_readRegister(handle, ADS131M04_REG_ID);
 
 
     ADS131M04_configureADC(handle);
@@ -41,9 +48,11 @@ void ADS131M04_init(ADS131M04_handle* handle, SPI_HandleTypeDef* _hspi, GPIO_Typ
 	HAL_Delay(100);
 
     ADS131M04_selftest(handle);
-    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
+    HAL_NVIC_SetPriority(EXTI2_IRQn, 3, 0);
+    HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 }
+
+
 
 void ADS131M04_selftest(ADS131M04_handle *handle) {
 	uint32_t buffer[4];
@@ -121,9 +130,9 @@ void ADS131M04_configureSPI(ADS131M04_handle* handle) {
     handle->hspi->Init.Direction = SPI_DIRECTION_2LINES;
     handle->hspi->Init.DataSize = SPI_DATASIZE_8BIT;
     handle->hspi->Init.CLKPolarity = SPI_POLARITY_LOW;
-    handle->hspi->Init.CLKPhase = SPI_PHASE_1EDGE;
+    handle->hspi->Init.CLKPhase = SPI_PHASE_2EDGE;
     handle->hspi->Init.NSS = SPI_NSS_SOFT;
-    handle->hspi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+    handle->hspi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
     handle->hspi->Init.FirstBit = SPI_FIRSTBIT_MSB;
     handle->hspi->Init.TIMode = SPI_TIMODE_DISABLE;
     handle->hspi->Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;

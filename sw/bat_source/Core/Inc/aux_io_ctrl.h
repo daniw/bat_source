@@ -11,8 +11,6 @@
 #include "stdint.h"
 #include "main.h"
 #include "stdio.h"
-#include "driver_pca9554.h"
-#include "gpio.h"
 
 #define GPIO_DISPLAY_WR       0x00
 #define GPIO_CONV_CTRL_EN     0x01
@@ -42,15 +40,7 @@
 
 void aux_io_ctrl_GPIO_Init(void);
 
-/**
- * Prints all input pin states
- */
-void aux_io_ctrl_print_inputs(void);
-
-/**
- * Prints all output pin states
- */
-void aux_io_ctrl_print_Output(void);
+uint8_t aux_io_ctrl_readHW_Revision(void);
 
 /**
  * Function used to manually set the GPIOs from CLI
@@ -58,7 +48,6 @@ void aux_io_ctrl_print_Output(void);
  * @param value value to set the pin (0,1)
  */
 void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value);
-
 
 
 #endif /* SRC_AUX_IO_CTRL_H_ */

@@ -1002,12 +1002,19 @@ void adc_convert_data(void){
 	adc_data.converted.i_iso  = (adc_data.raw.i_iso - adc_data.i_iso_offset) * ADC_IISO_GAIN_MA;
     //
 
-	adc_data.v_sens_ext_uv = adc_data.ext_adc_data[1] * ADC_EXT_VSENS_GAIN_UV;
-	adc_data.i_iso_ext_uA  = adc_data.ext_adc_data[2] * ADC_EXT_IISO_GAIN_UA;
-    //
+
+
+
+
+	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0]  * ADC_EXT_VTERM_GAIN_MV;
+	adc_data.converted.i_out_ext_mA = adc_data.ext_adc_data[1]   * ADC_EXT_IOUT_GAIN_mA;
+	adc_data.converted.v_sens_ext_uv  = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
+	adc_data.converted.i_iso_ext_uA  = adc_data.ext_adc_data[3]  * ADC_EXT_IISO_GAIN_UA;
+
+
 	//// Calculate resistance
-	if (adc_data.i_out_ext_mA != 0) {
-		adc_data.r_mOhmx10 = 10*adc_data.v_sens_ext_uv / adc_data.i_out_ext_mA ;
+	if (adc_data.converted.i_out_ext_mA != 0) {
+		adc_data.r_mOhmx10 = 10*adc_data.converted.v_sens_ext_uv / adc_data.converted.i_out_ext_mA ;
 	}
 	else {
 		adc_data.r_mOhmx10 = UINT16_MAX;
@@ -1041,11 +1048,11 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
 	////adc_data.v_in_mV   = (adc_data.v_in_raw   - adc_data.v_in_offset  ) * ADC_VIN_GAIN_MV;
 	//adc_data.i_bat_mA  = (adc_data.i_bat_raw  - adc_data.i_bat_offset ) * ADC_IBAT_GAIN_MA;
 	//adc_data.v_out_mV  = (adc_data.v_out_raw  - adc_data.v_out_offset ) * ADC_VOUT_GAIN_MV;
-	adc_data.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
+	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
 	//adc_data.v_term_ext_mv_filt = 0.9f*adc_data.v_term_ext_mv_filt + 0.1f*adc_data.v_term_ext_mv;
-	adc_data.i_out_ext_mA  = adc_data.ext_adc_data[3] * ADC_EXT_IOUT_GAIN_mA;
+	adc_data.converted.i_out_ext_mA  = adc_data.ext_adc_data[1] * ADC_EXT_IOUT_GAIN_mA;
 
-	adc_data.reference_poti = adc_encoder_read();
+	//adc_data.reference_poti = tim_encoder_read();
 	//ctrl_main_ctrl_60v(0, adc_data.v_out_mV, adc_data.v_term_ext_mv, adc_data.i_bat_mA);
 }
 

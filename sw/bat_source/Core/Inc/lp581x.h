@@ -119,7 +119,7 @@ uint8_t lp581x_enableChannel(lp581x_handle *hlp581x, uint8_t channel);
  * @param hlp581x lp581x handle to the device.
  * @param channel channel number
  */
-uint8_t lp581xdisableChannel(lp581x_handle *hlp581x, uint8_t channel);
+uint8_t lp581x_disableChannel(lp581x_handle *hlp581x, uint8_t channel);
 
 /**
  * Set the analog Current value

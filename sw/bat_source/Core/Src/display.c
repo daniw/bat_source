@@ -9,8 +9,6 @@
 #include "ctrl_main.h"
 #include "statemachine.h"
 #include "bq76905.h"
-#include "ds1309/driver_ssd1309.h"
-#include "ds1309/driver_ssd1309_basic.h"
 #include "display_icons.h"
 #include "adc.h"
 #include "aux_io_ctrl.h"
@@ -198,11 +196,11 @@ void display_draw_measure_data(void) {
 	case STATEMACHINE_MODE_60V_OUT:
 
 		// I Out
-		sprintf(string, "%d", adc_data.i_out_ext_mA / 1000);
+		sprintf(string, "%d", adc_data.converted.i_out_ext_mA / 1000);
 		ssd1309_gram_write_string(&gs_handle, 31, 47, string, 1, 1,
 				SSD1309_FONT_16);
 
-		sprintf(string, "%d", (adc_data.i_out_ext_mA % 1000) / 100);
+		sprintf(string, "%d", (adc_data.converted.i_out_ext_mA % 1000) / 100);
 		ssd1309_gram_write_string(&gs_handle, 42, 47, string, 1, 1,
 				SSD1309_FONT_16);
 
@@ -215,10 +213,10 @@ void display_draw_measure_data(void) {
 		ssd1309_gram_write_string(&gs_handle, 106, 47, string, 2, 1,
 				SSD1309_FONT_16);
 		// Output Voltage
-		sprintf(string, "%*d", 2, adc_data.v_term_ext_mv_filt / 1000);
+		sprintf(string, "%*d", 2, adc_data.converted.v_term_ext_mv_filt / 1000);
 		ssd1309_gram_write_string(&gs_handle, 35, 15, string, 2, 1,
 				SSD1309_FONT_24);
-		sprintf(string, "%02d", (adc_data.v_term_ext_mv_filt % 1000) / 10);
+		sprintf(string, "%02d", (adc_data.converted.v_term_ext_mv_filt % 1000) / 10);
 		ssd1309_gram_write_string(&gs_handle, 63, 15, string, 2, 1,
 				SSD1309_FONT_24);
 
@@ -227,11 +225,11 @@ void display_draw_measure_data(void) {
 	case STATEMACHINE_MODE_10A_OUT:
 
 		// I Out
-		sprintf(string, "%d", adc_data.v_term_ext_mv_filt / 1000);
+		sprintf(string, "%d", adc_data.converted.v_term_ext_mv_filt / 1000);
 		ssd1309_gram_write_string(&gs_handle, 31, 47, string, 1, 1,
 				SSD1309_FONT_16);
 
-		sprintf(string, "%d", (adc_data.v_term_ext_mv_filt % 1000) / 100);
+		sprintf(string, "%d", (adc_data.converted.v_term_ext_mv_filt % 1000) / 100);
 		ssd1309_gram_write_string(&gs_handle, 42, 47, string, 1, 1,
 				SSD1309_FONT_16);
 
@@ -244,10 +242,10 @@ void display_draw_measure_data(void) {
 		ssd1309_gram_write_string(&gs_handle, 106, 47, string, 2, 1,
 				SSD1309_FONT_16);
 		// Output Voltage
-		sprintf(string, "%*d", 2, adc_data.i_out_ext_mA / 1000);
+		sprintf(string, "%*d", 2, adc_data.converted.i_out_ext_mA / 1000);
 		ssd1309_gram_write_string(&gs_handle, 35, 15, string, 2, 1,
 				SSD1309_FONT_24);
-		sprintf(string, "%02d", (adc_data.i_out_ext_mA % 1000) / 10);
+		sprintf(string, "%02d", (adc_data.converted.i_out_ext_mA % 1000) / 10);
 		ssd1309_gram_write_string(&gs_handle, 63, 15, string, 2, 1,
 				SSD1309_FONT_24);
 

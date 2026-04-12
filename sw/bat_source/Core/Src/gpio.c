@@ -73,12 +73,15 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, SHUNT_ISO_EN_Pin|ADC_SYNC_RESET_N_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : DISPLAY_WR_Pin CONV_CTRL_EN_Pin ON_REQ_Pin OUT_SEL_ISO_Pin */
-  GPIO_InitStruct.Pin = DISPLAY_WR_Pin|CONV_CTRL_EN_Pin|ON_REQ_Pin|OUT_SEL_ISO_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : DISPLAY_WR_Pin */
+  GPIO_InitStruct.Pin = DISPLAY_WR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(DISPLAY_WR_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : RESTRICT__No_toggle_Pin */
   GPIO_InitStruct.Pin = RESTRICT__No_toggle_Pin;
@@ -113,18 +116,25 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(HV_CTRL_EN_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : CONV_CTRL_EN_Pin ON_REQ_Pin OUT_SEL_ISO_Pin */
+  GPIO_InitStruct.Pin = CONV_CTRL_EN_Pin|ON_REQ_Pin|OUT_SEL_ISO_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
   /*Configure GPIO pins : RESTRICT__No_toggleB10_Pin RESTRICT__No_toggleB11_Pin RESTRICT__No_toggleB13_Pin RESTRICT__No_toggleB14_Pin */
   GPIO_InitStruct.Pin = RESTRICT__No_toggleB10_Pin|RESTRICT__No_toggleB11_Pin|RESTRICT__No_toggleB13_Pin|RESTRICT__No_toggleB14_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SHUNT_ISO_EN_Pin ADC_SYNC_RESET_N_Pin */
-  GPIO_InitStruct.Pin = SHUNT_ISO_EN_Pin|ADC_SYNC_RESET_N_Pin;
+  /*Configure GPIO pin : SHUNT_ISO_EN_Pin */
+  GPIO_InitStruct.Pin = SHUNT_ISO_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+  HAL_GPIO_Init(SHUNT_ISO_EN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : RESTRICT__No_toggleD14_Pin */
   GPIO_InitStruct.Pin = RESTRICT__No_toggleD14_Pin;
@@ -132,11 +142,31 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RESTRICT__No_toggleD14_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : I2C_ALERT_Pin ADC_DRDY_N_Pin BUTTON_ESC_Pin */
-  GPIO_InitStruct.Pin = I2C_ALERT_Pin|ADC_DRDY_N_Pin|BUTTON_ESC_Pin;
+  /*Configure GPIO pins : I2C_ALERT_Pin BUTTON_ESC_Pin */
+  GPIO_InitStruct.Pin = I2C_ALERT_Pin|BUTTON_ESC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SPI_CS_Pin */
+  GPIO_InitStruct.Pin = SPI_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(SPI_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ADC_SYNC_RESET_N_Pin */
+  GPIO_InitStruct.Pin = ADC_SYNC_RESET_N_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(ADC_SYNC_RESET_N_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ADC_DRDY_N_Pin */
+  GPIO_InitStruct.Pin = ADC_DRDY_N_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ADC_DRDY_N_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : UI_PRESENT_Pin BOOT0_Pin BUTTON_OUT_Pin */
   GPIO_InitStruct.Pin = UI_PRESENT_Pin|BOOT0_Pin|BUTTON_OUT_Pin;
@@ -150,8 +180,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(BUTTON_OK_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+
 }
 
 /* USER CODE BEGIN 2 */
-
+void gpio_turnOn(void){
+	HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,1);
+}
 /* USER CODE END 2 */

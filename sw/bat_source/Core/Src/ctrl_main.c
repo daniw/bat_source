@@ -14,6 +14,9 @@ ctrl_main_t ctrl_main_handle;
 PID_controller_t ctrl_pi_voltage;
 PID_controller_t ctrl_pi_current;
 
+PID_controller_t ctrl_pi_flyback_voltage;
+PID_controller_t ctrl_pi_flyback_current;
+
 const uint16_t ctrl_main_iso_values[4] = { 125, 250, 500, 1000 };
 
 /******************* Function Prototypes **************************/
@@ -33,6 +36,8 @@ void ctrl_main_init(void) {
 	CTRL_PARAM_CURRENT_I, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
 	CTRL_PARAM_CURRENT_DUTY_SAT_LOW);
 
+	//ctrl_PID_controller_init(&ctrl_pi_flyback_voltage, CTRL_PARAM_HV_KP, CTRL_PARAM_BH_KI, 0, 0.5, 0);
+	//ctrl_PID_controller_init(&ctrl_pi_flyback_current, kp, ki, kd, sat_high, sat_low)
 	ctrl_main_handle.ramp = 0.0F;
 
 }
@@ -55,7 +60,7 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 
 		break;
 	case CTRL_MODE_ISOMETER:
-		// ToDo: Implement
+		//ctrl_main_ctrl_hv(adc_data->)
 		break;
 
 	case CTRL_MODE_OFF:
@@ -106,6 +111,28 @@ void ctrl_main_ctrl_60v(uint16_t voltage_meas_mV, uint16_t voltage_meas_accurate
 	// Startup Ramp
 	if (ctrl_main_handle.ramp > 1.0F) {
 		ctrl_pi_voltage.ref = ctrl_main_handle.voltage_60v_reference_mV / 1000.0F;
+		ctrl_main_handle.ramp = 1.1F;
+	}
+
+	else {
+		ctrl_main_handle.ramp += (10.0F / CTRL_FREQ);
+		ctrl_pi_voltage.ref = (ctrl_main_handle.voltage_60v_reference_mV / 1000.0F) * ctrl_main_handle.ramp;
+	}
+
+	ctrl_PID_controller_execute(&ctrl_pi_voltage, voltage_meas_mV / 1000.0F, voltage_meas_mV / 1000.0F, 0);
+
+	ctrl_pi_current.ref = ctrl_pi_voltage.action;
+	ctrl_PID_controller_execute(&ctrl_pi_current, current_meas_mA / 1000.0F, current_meas_mA / 1000.0F, 0);
+	// Apply Duty
+	//hrtim_set_duty_pri(ctrl_pi_current.action);
+}
+
+
+void ctrl_main_ctrl_hv(int32_t voltage_meas_mV, int16_t current_meas_mA) {
+
+	// Startup Ramp
+	if (ctrl_main_handle.ramp > 1.0F) {
+		ctrl_pi_flyback_voltage.ref = ctrl_main_handle.voltage_iso_reference_V / 1000.0F;
 		ctrl_main_handle.ramp = 1.1F;
 	}
 

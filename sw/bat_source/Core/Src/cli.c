@@ -48,7 +48,6 @@ extern HRTIM_HandleTypeDef hhrtim1;
 extern ADS131M04_handle ext_adc;
 extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
-extern PCA9554_handle hpca_hw_rev;
 
 // Uart handling
 UART_HandleTypeDef *cli_huart;
@@ -281,8 +280,8 @@ static void cli_process_line(void) {
         arg_locs[number_of_args] = strtok(NULL, " ");
     }
 
-    if (arg_locs[0] != NULL)
-        number_of_args++;
+    //if (arg_locs[0] != NULL)
+        //number_of_args++;
 
     if (number_of_args == 0)
         return;
@@ -393,7 +392,7 @@ void cmd_printGPIO(void) {
 	printf("OCP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
 
-	printf("HW Revision: 	%d\n", pca9554_read_input(&hpca_hw_rev));
+	printf("HW Revision: 	%d\n", aux_io_ctrl_readHW_Revision);
 
 	printf("Encoder State:  %d\n", tim_encoder_read());
 }
@@ -498,11 +497,11 @@ void cmd_printADC() {
     printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
     printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
 
-    //printf("  Ext V_Term : %i : %i mV\n", ext_adc.channelData[0], adc_data.v_term_ext_mv);
-    //printf("  Ext V_Sns  : %i : %i uV\n", ext_adc.channelData[1], adc_data.v_sens_ext_uv);
-    //printf("  Ext I_Iso  : %i : %i uA\n", ext_adc.channelData[2], adc_data.i_iso_ext_uA );
-    //printf("  Ext I_Out  : %i : %i mA\n", ext_adc.channelData[3], adc_data.i_out_ext_mA );
-//}
+    printf("  Ext V_Term : %li : %li mV\n", ext_adc.channelData[0], adc_data.converted.v_term_ext_mv);
+    printf("  Ext I_Out  : %li : %li mA\n", ext_adc.channelData[1], adc_data.converted.i_out_ext_mA );
+    printf("  Ext V_Sns  : %li : %li uV\n", ext_adc.channelData[2], adc_data.converted.v_sens_ext_uv);
+    printf("  Ext I_Iso  : %li : %li uA\n", ext_adc.channelData[3], adc_data.converted.i_iso_ext_uA );
+
 }
 
 

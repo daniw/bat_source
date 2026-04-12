@@ -35,7 +35,6 @@ typedef struct
 } timer_handle_t;
 
 timer_handle_t timer_handle;
-TIM_HandleTypeDef htim2;
 
 /**
  * Callback from the timer interrupt. Rises the timer events.
@@ -72,41 +71,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	//event_Give();
 }
 
-/**
- * Initializes a timer instance.
- * @param timer pointer to the timer instance.
- * @param id id of the timer.
- * @param frq frequency of the timer in MHz.
- * @return the initialization error code and 0 when there was no error
- */
-void timer_init_hw(timer_handle_t* timer, uint32_t frq)
-{
-	  list_Init(&(timer->liststr), (void**) timer->list, timer->subs, sizeof(TIMER_SUB), TIMER_SUB_COUNT);
-	  timer->frq=frq;
-	  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-	  TIM_MasterConfigTypeDef sMasterConfig = {0};
-	  timer->instance->Instance = TIM2;
-	  timer->instance->Init.Prescaler = 16000;
-	  timer->instance->Init.CounterMode = TIM_COUNTERMODE_UP;
-	  timer->instance->Init.Period = 4000/frq;
-	  timer->instance->Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-	  timer->instance->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-	  if (HAL_TIM_Base_Init(timer->instance) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-	  if (HAL_TIM_ConfigClockSource(timer->instance, &sClockSourceConfig) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-	  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	  if (HAL_TIMEx_MasterConfigSynchronization(timer->instance, &sMasterConfig) != HAL_OK)
-	  {
-	    Error_Handler();
-	  }
-}
+
 
 /**
  * Initializes all three timers.
@@ -114,8 +79,9 @@ void timer_init_hw(timer_handle_t* timer, uint32_t frq)
  */
 void timer_init(void)
 {
-	timer_handle.instance = &htim2;
-	timer_init_hw(&timer_handle,TIMER_FREQ);
+	list_Init(&(timer_handle.liststr), (void**) timer_handle.list, timer_handle.subs, sizeof(TIMER_SUB), TIMER_SUB_COUNT);
+	timer_handle.frq = TIMER_FREQ;
+	//timer_init_hw(&timer_handle,TIMER_FREQ);
 }
 
 /**

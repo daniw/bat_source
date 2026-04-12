@@ -29,8 +29,10 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "stdint.h"
 /* USER CODE END Includes */
+
+extern TIM_HandleTypeDef htim2;
 
 extern TIM_HandleTypeDef htim4;
 
@@ -40,12 +42,21 @@ extern TIM_HandleTypeDef htim16;
 
 /* USER CODE END Private defines */
 
+void MX_TIM2_Init(void);
 void MX_TIM4_Init(void);
 void MX_TIM16_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
+
+static inline uint16_t tim_encoder_read(void){
+	 return(htim4.Instance->CNT & 0xffff);
+}
+
+static inline void tim_encoder_reset(uint8_t value) {
+	htim4.Instance->CNT =value;
+}
 
 /* USER CODE END Prototypes */
 

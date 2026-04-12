@@ -31,25 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ds1309/driver_ssd1309_basic.h"
-#include "statemachine.h"
-#include "cli.h"
-#include <stdio.h>
-#include "stdint.h"
-#include "i2c.h"
-#include "driver_pca9554.h"
-#include "aux_io_ctrl.h"
-#include "dac.h"
-#include "bq76905.h"
-#include "bq76905_config.h"
-#include "adc.h"
-#include "ADS131M04.h"
-#include "ctrl_main.h"
-#include "timer.h"
-#include "display.h"
-#include "opt3004.h"
-#include "lp581x.h"
-#include "hrtim.h"
+
+
 
 /* USER CODE END Includes */
 
@@ -204,6 +187,7 @@ void Error_Handler(void);
 #define ADC_SYNC_RESET_N_GPIO_Port GPIOD
 #define ADC_DRDY_N_Pin GPIO_PIN_2
 #define ADC_DRDY_N_GPIO_Port GPIOD
+#define ADC_DRDY_N_EXTI_IRQn EXTI2_IRQn
 #define BUTTON_ESC_Pin GPIO_PIN_4
 #define BUTTON_ESC_GPIO_Port GPIOD
 #define UART_TX_Pin GPIO_PIN_5
