@@ -12,6 +12,22 @@
 #include "cli.h"
 #include "ctrl_main.h"
 
+#include "stdio.h"
+#include "stdlib.h"
+#include <string.h>
+#include "stdbool.h"
+#include "event.h"
+#include "error.h"
+#include "aux_io_ctrl.h"
+#include "bq76905.h"
+#include "adc.h"
+#include "ADS131M04.h"
+#include "bq76905.h"
+#include <stdarg.h>
+#include "tim.h"
+#include "hrtim.h"
+#include "ui_ctrl.h"
+
 #ifdef CLI_ENABLED
 
 char line_buffer[LINE_BUF_SIZE];
@@ -32,7 +48,6 @@ extern HRTIM_HandleTypeDef hhrtim1;
 extern ADS131M04_handle ext_adc;
 extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
-extern opt3004_handle hamb;
 extern PCA9554_handle hpca_hw_rev;
 
 // Uart handling
@@ -365,6 +380,8 @@ void cmd_printGPIO(void) {
 	printf("OCP Pin Latch:	%d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
 	printf("HW Revision: 	%d\n", pca9554_read_input(&hpca_hw_rev));
+
+	printf("Encoder State:  %d\n", tim_encoder_read());
 }
 void cmd_setGPIO(void) {
 	uint8_t pin, value;
@@ -516,15 +533,27 @@ void cmd_test_i2c(void){
 	uint64_t fw_version;
 	printf("Read BMS HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
 	BQ76905_GetFWVersion(&bms, (uint8_t*)&fw_version);
-	printf("Read BMS FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) fw_version>>32);
+	printf("Read BMS FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) (fw_version>>32));
 	printf("Read BMS Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
 
 }
 
 void cmd_readLux(void){
 
-	printf("Read Optical Sensor: %ul cLux\r\n", opt3004_readLux(&hamb));
+	printf("Read Optical Sensor: %ul cLux\r\n", ui_ctrl_readBrightness());
 }
+
+
+void cmd_change_state(void){
+	uint8_t  newstate;
+	if (number_of_args != 2)
+		return;
+
+	char *end;
+	newstate = strtol(arg_locs[1], &end, 10);
+	//statemachine_step();
+}
+
 
 #endif
 
