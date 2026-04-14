@@ -1,0 +1,12 @@
+f1ps1-1b-basis_1_asm.stp		Sicherung
+f2ps1-1b-basis_1_asm.stp		Halterung
+sicherung_asm.stp				Zusammenbau von Sicherung und Halterung
+
+
+HTMP/N 3576
+KEYSTONE
+SMTP/N 3574
+
+4.01320
+
+
