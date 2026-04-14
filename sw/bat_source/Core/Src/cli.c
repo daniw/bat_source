@@ -276,16 +276,16 @@ static void cli_process_line(void) {
 
     arg_locs[number_of_args] = strtok(line_buffer, " ");
     while (arg_locs[number_of_args] != NULL && number_of_args < MAX_NUM_ARGS - 1) {
-        number_of_args++;
-        arg_locs[number_of_args] = strtok(NULL, " ");
+        arg_locs[++number_of_args] = strtok(NULL, " ");
     }
 
-    //if (arg_locs[0] != NULL)
-        //number_of_args++;
+
 
     if (number_of_args == 0)
         return;
 
+    if (arg_locs[0] != NULL)
+        number_of_args--;
 
     for (int i = 0; i < num_commands; i++) {
         if (strcmp(arg_locs[0], cmd_str[i]) == 0) {
@@ -396,10 +396,14 @@ void cmd_printGPIO(void) {
 
 	printf("Encoder State:  %d\n", tim_encoder_read());
 }
+
 void cmd_setGPIO(void) {
 	uint8_t pin, value;
-	if (number_of_args != 3)
+	if (number_of_args != 2)
+	{
+		printf("Insufficient number of arguments\n");
 		return;
+	}
 
 	char *end;
 	pin = strtol(arg_locs[1], &end, 10);
@@ -408,12 +412,14 @@ void cmd_setGPIO(void) {
 	aux_io_ctrl_manual_set_io(pin, value);
 }
 
-
 void cmd_setDAC(void) {
 	uint8_t  pin;
 	uint16_t value;
-	if (number_of_args != 3)
+	if (number_of_args != 2)
+	{
+		printf("Insufficient number of arguments\n");
 		return;
+	}
 
 	char *end;
 	pin = strtol(arg_locs[1], &end, 10);
@@ -426,8 +432,11 @@ void cmd_setDAC(void) {
 
 void cmd_setRef(void){
 		uint8_t value;
-		if (number_of_args != 2)
+		if (number_of_args != 1)
+		{
+			printf("Insufficient number of arguments\n");
 			return;
+		}
 
 		char *end;
 		ctrl_main_handle.poti_reference = strtol(arg_locs[1], &end, 10);
@@ -509,8 +518,11 @@ void cmd_printADC() {
 void cmd_setDuty(void){
 	uint8_t  channel;
 	float value;
-	if (number_of_args != 3)
+	if (number_of_args != 2)
+	{
+		printf("Insufficient number of arguments\n");
 		return;
+	}
 
 	char *end;
 	channel = strtol(arg_locs[1], &end, 10);
@@ -530,8 +542,11 @@ void cmd_setDuty(void){
 void cmd_PWM_en(void){
 	uint8_t  channel;
 	uint16_t value;
-	if (number_of_args != 3)
+	if (number_of_args != 2)
+	{
+		printf("Insufficient number of arguments\n");
 		return;
+	}
 
 	char *end;
 	channel = strtol(arg_locs[1], &end, 10);
@@ -559,8 +574,11 @@ void cmd_readLux(void){
 
 void cmd_change_state(void){
 	uint8_t  newstate;
-	if (number_of_args != 2)
+	if (number_of_args != 1)
+	{
+		printf("Insufficient number of arguments\n");
 		return;
+	}
 
 	char *end;
 	newstate = strtol(arg_locs[1], &end, 10);
