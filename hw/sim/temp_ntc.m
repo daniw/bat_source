@@ -205,7 +205,7 @@ if (CODE_GENERATION)
     for (adc_code = adc_range_code(1:end-1))
         fprintf(f_source, ['     ' num2str(adc_code) ',\n']);
     end;
-    fprintf(f_source, ['     ' num2str(adc_code) '\n']);
+    fprintf(f_source, ['     ' num2str(adc_range_code(end)) '\n']);
     fprintf(f_source, ['};\n']);
     fprintf(f_source, ['\n']);
     fprintf(f_source, ['const float lookup_temp[' num2str(numel(temp_range_code)) '] = \n']);
@@ -213,7 +213,7 @@ if (CODE_GENERATION)
     for (temp_code = temp_range_code(1:end-1))
         fprintf(f_source, ['     ' num2str(temp_code) ',\n']);
     end;
-    fprintf(f_source, ['     ' num2str(temp_code(end)) '\n']);
+    fprintf(f_source, ['     ' num2str(temp_range_code(end)) '\n']);
     fprintf(f_source, ['};\n']);
     for code_output_type = {'int', 'float'}
         fprintf(f_source, ['\n']);
