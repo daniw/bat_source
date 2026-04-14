@@ -1021,10 +1021,10 @@ void adc_convert_data(void){
 	}
 
 	// Calculate / Estimate Temperatures
-	 adc_data.converted.temp_trafo   =  114 - 0.0378F/16.0F*adc_data.raw.temp_trafo;
-	 adc_data.converted.temp_current =  114 - 0.0378F/16.0F*adc_data.raw.temp_current;
-	 adc_data.converted.temp_prim    =  114 - 0.0378F/16.0F*adc_data.raw.temp_prim;
-	 adc_data.converted.temp_sec     =  114 - 0.0378F/16.0F*adc_data.raw.temp_sec;
+	 adc_data.converted.temp_trafo   =  temp_deg_int(adc_data.raw.temp_trafo   >> 4);
+	 adc_data.converted.temp_current =  temp_deg_int(adc_data.raw.temp_current >> 4);
+	 adc_data.converted.temp_prim    =  temp_deg_int(adc_data.raw.temp_prim    >> 4);
+	 adc_data.converted.temp_sec     =  temp_deg_int(adc_data.raw.temp_sec     >> 4);
 	 adc_data.converted.int_temp     = __LL_ADC_CALC_TEMPERATURE(2500, (adc_data.raw.int_temp/16), LL_ADC_RESOLUTION_12B);
 
 	 adc_data.converted.v_3v3        = adc_data.raw.v_3v3     *   ADC_GAIN_V_3V3;

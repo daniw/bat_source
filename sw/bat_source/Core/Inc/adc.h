@@ -30,6 +30,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include "statemachine.h"
+#include "temp_conv.h"
 
 //#include "ctrl_main.h"
 
@@ -122,11 +123,11 @@ typedef struct {
 		uint16_t i_bat;             // ADC5_IN1
 
 		uint16_t v_3v3; 		    // ADC5_IN6
-		uint16_t temp_sec;      	// ADC5_IN7
+		int16_t temp_sec;      	// ADC5_IN7
 		uint16_t v_3v3a;           	// ADC5_IN8
-		uint16_t temp_trafo;   		// ADC5_IN9
-		uint16_t temp_current;      // ADC5_IN12
-		uint16_t temp_prim;         // ADC5_IN13
+		int16_t temp_trafo;   		// ADC5_IN9
+		int16_t temp_current;      // ADC5_IN12
+		int16_t temp_prim;         // ADC5_IN13
 		uint16_t v_15v;             // ADC5_IN14
 		uint16_t v_vcc;             // ADC5_IN15
 		uint16_t v_5v;              // ADC5_IN16

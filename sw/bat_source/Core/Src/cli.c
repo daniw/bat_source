@@ -485,11 +485,11 @@ void cmd_printADC() {
 
     printf("ADC Measurements:\n");
     printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
-    printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %u °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
+    printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %i °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
     printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
-    printf(" 		temp_trafo     (ADC5_IN9 ) : %u \t: %u °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
-    printf(" 		temp_current   (ADC5_IN12) : %u \t: %u °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
-    printf(" 		temp_prim      (ADC5_IN13) : %u \t: %u °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
+    printf(" 		temp_inductor  (ADC5_IN9 ) : %u \t: %i °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
+    printf(" 		temp_current   (ADC5_IN12) : %u \t: %i °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
+    printf(" 		temp_prim      (ADC5_IN13) : %u \t: %i °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
     printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
     printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
     printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
