@@ -30,6 +30,11 @@
 
 #ifdef CLI_ENABLED
 
+#define CLI_CHECK_ARG_CNT(nof_args)                 if (number_of_args != nof_args)                             {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_MIN(nof_args)             if (number_of_args < nof_args)                              {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_MAX(nof_args)             if (number_of_args > nof_args)                              {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_RANGE(min_args, max_args) if (number_of_args < min_args || number_of_args > max_args) {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+
 char line_buffer[LINE_BUF_SIZE];
 char *arg_locs[MAX_NUM_ARGS];
 uint8_t number_of_args;
@@ -399,11 +404,7 @@ void cmd_printGPIO(void) {
 
 void cmd_setGPIO(void) {
 	uint8_t pin, value;
-	if (number_of_args != 2)
-	{
-		printf("Insufficient number of arguments\n");
-		return;
-	}
+	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
 	pin = strtol(arg_locs[1], &end, 10);
@@ -415,11 +416,7 @@ void cmd_setGPIO(void) {
 void cmd_setDAC(void) {
 	uint8_t  pin;
 	uint16_t value;
-	if (number_of_args != 2)
-	{
-		printf("Insufficient number of arguments\n");
-		return;
-	}
+	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
 	pin = strtol(arg_locs[1], &end, 10);
@@ -432,15 +429,10 @@ void cmd_setDAC(void) {
 
 void cmd_setRef(void){
 		uint8_t value;
-		if (number_of_args != 1)
-		{
-			printf("Insufficient number of arguments\n");
-			return;
-		}
+		CLI_CHECK_ARG_CNT(1);
 
 		char *end;
 		ctrl_main_handle.poti_reference = strtol(arg_locs[1], &end, 10);
-
 }
 
 
@@ -518,11 +510,7 @@ void cmd_printADC() {
 void cmd_setDuty(void){
 	uint8_t  channel;
 	float value;
-	if (number_of_args != 2)
-	{
-		printf("Insufficient number of arguments\n");
-		return;
-	}
+	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
 	channel = strtol(arg_locs[1], &end, 10);
@@ -542,11 +530,7 @@ void cmd_setDuty(void){
 void cmd_PWM_en(void){
 	uint8_t  channel;
 	uint16_t value;
-	if (number_of_args != 2)
-	{
-		printf("Insufficient number of arguments\n");
-		return;
-	}
+	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
 	channel = strtol(arg_locs[1], &end, 10);
@@ -574,11 +558,7 @@ void cmd_readLux(void){
 
 void cmd_change_state(void){
 	uint8_t  newstate;
-	if (number_of_args != 1)
-	{
-		printf("Insufficient number of arguments\n");
-		return;
-	}
+	CLI_CHECK_ARG_CNT(1);
 
 	char *end;
 	newstate = strtol(arg_locs[1], &end, 10);
