@@ -431,20 +431,34 @@ void cmd_turnOff(void) {
 
 void cmd_printGPIO(void) {
 	printf("Input Pins: \n");
-	printf("Button Out:     %d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
-	printf("Button OK:      %d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
-	printf("Button ESC:     %d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
+	printf("Button Out:         %d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
+	printf("Button OK:          %d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
+	printf("Button ESC:         %d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
 
-	printf("I2C Alert:      %d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
-	printf("ADC_DRDY:       %d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
-	printf("UI Present:     %d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
-	printf("OVP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
-	printf("OCP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
+	printf("I2C Alert:          %d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
+	printf("ADC_DRDY:           %d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
+	printf("UI Present:         %d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
+	printf("OVP Pin Latch:      %d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
+	printf("OCP Pin Latch:      %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
+	printf("HW Revision: 	    %d\n", aux_io_ctrl_readHW_Revision());
 
-	printf("HW Revision: 	%d\n", aux_io_ctrl_readHW_Revision());
+	printf("Encoder State:      %d\n", tim_encoder_read());
+	printf("\n");
 
-	printf("Encoder State:  %d\n", tim_encoder_read());
+	printf("Output Pins: \n");
+	printf("DISPLAY_WR:         %d\n", HAL_GPIO_ReadPin(DISPLAY_WR_GPIO_Port, DISPLAY_WR_Pin));
+	printf("CONV_CTRL_EN:       %d\n", HAL_GPIO_ReadPin(CONV_CTRL_EN_GPIO_Port, CONV_CTRL_EN_Pin));
+	printf("ON_REQ:             %d\n", HAL_GPIO_ReadPin(ON_REQ_GPIO_Port, ON_REQ_Pin));
+	printf("OUT_SEL_ISO:        %d\n", HAL_GPIO_ReadPin(OUT_SEL_ISO_GPIO_Port, OUT_SEL_ISO_Pin));
+	printf("BMS_CTRL_WAKEUP:    %d\n", HAL_GPIO_ReadPin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin));
+	printf("SHUNT_EN:           %d\n", HAL_GPIO_ReadPin(SHUNT_EN_GPIO_Port, SHUNT_EN_Pin));
+	printf("OUT_SEL_HV:         %d\n", HAL_GPIO_ReadPin(OUT_SEL_HV_GPIO_Port, OUT_SEL_HV_Pin));
+	printf("OVP_RESET:          %d\n", HAL_GPIO_ReadPin(OVP_RESET_GPIO_Port, OVP_RESET_Pin));
+	printf("DISCHARGE:          %d\n", HAL_GPIO_ReadPin(DISCHARGE_N_GPIO_Port, DISCHARGE_N_Pin));
+	printf("HV_CTRL_EN:         %d\n", HAL_GPIO_ReadPin(HV_CTRL_EN_GPIO_Port, HV_CTRL_EN_Pin));
+	printf("SHUNT_ISO_EN:       %d\n", HAL_GPIO_ReadPin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin));
+	printf("ADC_SYNC_RESET:     %d\n", HAL_GPIO_ReadPin(ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin));
 }
 
 void cmd_setGPIO(void) {
