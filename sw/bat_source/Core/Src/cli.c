@@ -113,6 +113,26 @@ const char *cmd_str[] = {
 		"readLux"
 };
 
+// List of command names including arguments
+const char *cmd_arg_str[] = {
+		"help {command}",
+		"saveEEPROM",
+		"readEEPROM",
+		"turnOff" ,
+		"pGPIO",
+		"setGPIO [pin] [value]",
+		"setDAC [pin] [value]",
+		"pBMS",
+		"pADC {loops}",
+		"setDuty [channel] [duty]",
+		"enPWM [channel] [0 disable | 1 enable]",
+		"setRef [value]",
+		"test_i2c",
+		"readLux"
+};
+
+int cmd_index;
+
 int num_commands = sizeof(cmd_str) / sizeof(char*);
 #endif
 
@@ -308,6 +328,7 @@ static void cli_process_line(void) {
                 }
                 history_index = history_count;
             }
+        	cmd_index = i;
             (*cmd_func[i])();;
             return;
         }
@@ -332,9 +353,22 @@ void cli_loop(void) {
  * Print Help Message
  */
 void cmd_help(void) {
+	CLI_CHECK_ARG_CNT_MAX(1);
+
+	if (number_of_args == 1) {
+		for (int i = 0; i < num_commands; i++) {
+			if (strcmp(arg_locs[1], cmd_str[i]) == 0) {
+				printf("Usage: \r\n");
+				printf("  %s\n", cmd_arg_str[i]);
+				return;
+			}
+		}
+		printf("Invalid command\r\n");
+	}
 	printf("Simple Interface for configuration only.\r\n");
-	for (int i = 0; i < num_commands; i++)
-		printf("\t%s\n", cmd_str[i]);
+	for (int i = 0; i < num_commands; i++){
+		printf("\t%s\n", cmd_arg_str[i]);
+	}
 }
 
 /*********************** Functions ************************************/
