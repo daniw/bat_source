@@ -186,7 +186,18 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+
+/*
+ * Sends on-request signal to on/off controller
+ */
 void gpio_turnOn(void){
 	HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,1);
+}
+
+/*
+ * Sends turn-off signal to on/off controller
+ */
+void gpio_turnOff(void){
+	HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,0);
 }
 /* USER CODE END 2 */

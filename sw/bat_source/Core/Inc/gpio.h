@@ -67,6 +67,7 @@ inline void gpio_shutdown(void){
 }
 
 void gpio_turnOn(void);
+void gpio_turnOff(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
