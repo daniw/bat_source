@@ -442,7 +442,7 @@ void cmd_printGPIO(void) {
 	printf("OCP Pin Latch:  %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
 
-	printf("HW Revision: 	%d\n", aux_io_ctrl_readHW_Revision);
+	printf("HW Revision: 	%d\n", aux_io_ctrl_readHW_Revision());
 
 	printf("Encoder State:  %d\n", tim_encoder_read());
 }
@@ -493,19 +493,19 @@ void cmd_printBMS(void){
 	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u mV\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
 	  }
 	  printf("\n");
-	  printf("VoltageRegisters.Reg18Voltage        = %u\n", bms.VoltageRegisters.Reg18Voltage);
-	  printf("VoltageRegisters.VssVoltage          = %u\n", bms.VoltageRegisters.VssVoltage);
+	  printf("VoltageRegisters.Reg18Voltage        = %u\n",    bms.VoltageRegisters.Reg18Voltage);
+	  printf("VoltageRegisters.VssVoltage          = %u\n",    bms.VoltageRegisters.VssVoltage);
 	  printf("VoltageRegisters.StackVoltage        = %u mV\n", bms.VoltageRegisters.StackVoltage);
-	  printf("VoltageRegisters.IntTemp             = %u\n", bms.VoltageRegisters.IntTemp);
-	  printf("VoltageRegisters.TSTemp              = %u\n", bms.VoltageRegisters.TSTemp);
+	  printf("VoltageRegisters.IntTemp             = %u\n",    bms.VoltageRegisters.IntTemp);
+	  printf("VoltageRegisters.TSTemp              = %u\n",    bms.VoltageRegisters.TSTemp);
 	  printf("\n");
-	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\n", (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
-	  printf("CurrentRegisters.CC2Current          = %d mA\n", bms.CurrentRegisters.CC2Current);
-	  printf("CurrentRegisters.CC1Current          = %d mA\n", bms.CurrentRegisters.CC1Current);
-	  printf("Passed Charge                        = %lld mAs\n",  bms.Accumulator.accumulatedCharge);
-	  printf("Passed Charge                        = %ld mAs\n",  (int32_t)(bms.Accumulator.accumulatedCharge&0xFFFFFFFF));
-	  printf("Passed Charge                        = %ld mAs\n",  (int32_t)(bms.Accumulator.accumulatedCharge>>32));
-	  printf("Passed Time                          = %ld s\n",    bms.Accumulator.passedTime/4);
+	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\n",  (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
+	  printf("CurrentRegisters.CC2Current          = %d mA\n",       bms.CurrentRegisters.CC2Current);
+	  printf("CurrentRegisters.CC1Current          = %d mA\n",       bms.CurrentRegisters.CC1Current);
+	  printf("Passed Charge                        = %ld mAs\n",     bms.Accumulator.accumulatedCharge);
+	  printf("Passed Charge (low bytes)            = %ld mAs\n",     (int32_t)(bms.Accumulator.accumulatedCharge&0xFFFFFFFF));
+	  printf("Passed Charge (high bytes)           = %ld mAs\n",     (int32_t)(bms.Accumulator.accumulatedCharge>>32));
+	  printf("Passed Time                          = %ld s\n",       bms.Accumulator.passedTime/4);
 	  printf("\n");
 	  printf("SystemCtrl.AlarmStatus               = 0x%04X\n", bms.SystemCtrl.AlarmStatus);
 	  printf("SystemCtrl.AlarmRawStatus            = 0x%04X\n", bms.SystemCtrl.AlarmRawStatus);
@@ -518,36 +518,42 @@ void cmd_printBMS(void){
 
 
 void cmd_printADC() {
-	//for(int i=0; i<10; i++){
-	adc_convert_data();
-	printf("Triggered ADC Measurements: \n");
-    printf(" 	 v_in    (ADC3_IN3 ) : %u \t: %d mV\n", adc_data.raw.v_in   , adc_data.converted.v_in  );
-    printf(" 	 v_out   (ADC4_IN2 ) : %u \t: %d mV\n", adc_data.raw.v_out  , adc_data.converted.v_out );
-    printf(" 	 v_term  (ADC2_IN2 ) : %u \t: %d mV\n", adc_data.raw.v_term , adc_data.converted.v_term);
-    printf(" 	 v_hv    (ADC4_IN5 ) : %u \t: %d mV\n", adc_data.raw.v_hv   , adc_data.converted.v_hv  );
-    printf(" 	 i_bat   (ADC5_IN1 ) : %u \t: %d mA\n", adc_data.raw.i_bat  , adc_data.converted.i_bat );
-    printf(" 	 i_out   (ADC1_IN1)  : %u \t: %d mA\n", adc_data.raw.i_out  , adc_data.converted.i_out );
-    printf(" 	 i_iso   (ADC5_IN2)  : %u \t: %d mA\n", adc_data.raw.i_iso  , adc_data.converted.i_iso );
+	uint16_t loopcount = 1;
+	CLI_CHECK_ARG_CNT_MAX(1);
+	if (number_of_args == 1) {
+		char *end;
+		loopcount = strtol(arg_locs[1], &end, 10);
+	}
+	for(int i=0; i<loopcount; i++)	{
+		adc_convert_data();
+		printf("Triggered ADC Measurements: \n");
+		printf(" 	 v_in    (ADC3_IN3 ) : %u \t: %d mV\n",  adc_data.raw.v_in   , adc_data.converted.v_in  );
+		printf(" 	 v_out   (ADC4_IN2 ) : %u \t: %ld mV\n", adc_data.raw.v_out  , adc_data.converted.v_out );
+		printf(" 	 v_term  (ADC2_IN2 ) : %u \t: %ld mV\n", adc_data.raw.v_term , adc_data.converted.v_term);
+		printf(" 	 v_hv    (ADC4_IN5 ) : %u \t: %ld mV\n", adc_data.raw.v_hv   , adc_data.converted.v_hv  );
+		printf(" 	 i_bat   (ADC5_IN1 ) : %u \t: %d mA\n",  adc_data.raw.i_bat  , adc_data.converted.i_bat );
+		printf(" 	 i_out   (ADC1_IN1)  : %u \t: %d mA\n",  adc_data.raw.i_out  , adc_data.converted.i_out );
+		printf(" 	 i_iso   (ADC5_IN2)  : %u \t: %d mA\n",  adc_data.raw.i_iso  , adc_data.converted.i_iso );
 
-    printf("ADC Measurements:\n");
-    printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
-    printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %i °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
-    printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
-    printf(" 		temp_inductor  (ADC5_IN9 ) : %u \t: %i °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
-    printf(" 		temp_current   (ADC5_IN12) : %u \t: %i °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
-    printf(" 		temp_prim      (ADC5_IN13) : %u \t: %i °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
-    printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
-    printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
-    printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
-    printf(" 		int_temp       (ADC5     ) : %u \t: %i °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
-    printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
-    printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
+		printf("ADC Measurements:\n");
+		printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
+		printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %i °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
+		printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
+		printf(" 		temp_inductor  (ADC5_IN9 ) : %u \t: %i °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
+		printf(" 		temp_current   (ADC5_IN12) : %u \t: %i °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
+		printf(" 		temp_prim      (ADC5_IN13) : %u \t: %i °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
+		printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
+		printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
+		printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
+		printf(" 		int_temp       (ADC5     ) : %u \t: %i °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
+		printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
+		printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
 
-    printf("  Ext V_Term : %li : %li mV\n", ext_adc.channelData[0], adc_data.converted.v_term_ext_mv);
-    printf("  Ext I_Out  : %li : %li mA\n", ext_adc.channelData[1], adc_data.converted.i_out_ext_mA );
-    printf("  Ext V_Sns  : %li : %li uV\n", ext_adc.channelData[2], adc_data.converted.v_sens_ext_uv);
-    printf("  Ext I_Iso  : %li : %li uA\n", ext_adc.channelData[3], adc_data.converted.i_iso_ext_uA );
-
+		printf("  Ext V_Term : %li : %li mV\n", ext_adc.channelData[0], adc_data.converted.v_term_ext_mv);
+		printf("  Ext I_Out  : %li : %li mA\n", ext_adc.channelData[1], adc_data.converted.i_out_ext_mA );
+		printf("  Ext V_Sns  : %li : %li uV\n", ext_adc.channelData[2], adc_data.converted.v_sens_ext_uv);
+		printf("  Ext I_Iso  : %li : %li uA\n", ext_adc.channelData[3], adc_data.converted.i_iso_ext_uA );
+	}
 }
 
 
@@ -597,7 +603,7 @@ void cmd_test_i2c(void){
 
 void cmd_readLux(void){
 
-	printf("Read Optical Sensor: %ul cLux\r\n", ui_ctrl_readBrightness());
+	printf("Read Optical Sensor: %lu cLux\r\n", ui_ctrl_readBrightness());
 }
 
 

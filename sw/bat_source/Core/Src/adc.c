@@ -1006,10 +1006,10 @@ void adc_convert_data(void){
 
 
 
-	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0]  * ADC_EXT_VTERM_GAIN_MV;
-	adc_data.converted.i_out_ext_mA = adc_data.ext_adc_data[1]   * ADC_EXT_IOUT_GAIN_mA;
-	adc_data.converted.v_sens_ext_uv  = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
-	adc_data.converted.i_iso_ext_uA  = adc_data.ext_adc_data[3]  * ADC_EXT_IISO_GAIN_UA;
+	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
+	adc_data.converted.i_out_ext_mA  = adc_data.ext_adc_data[1] * ADC_EXT_IOUT_GAIN_mA;
+	adc_data.converted.v_sens_ext_uv = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
+	adc_data.converted.i_iso_ext_uA  = adc_data.ext_adc_data[3] * ADC_EXT_IISO_GAIN_UA;
 
 
 	//// Calculate resistance
