@@ -261,12 +261,26 @@ The temperature of the inductor and the two half bridges are measured with the \
 \end{align}
 \begin{align}
     V_{NTC} 
-    = V_{Ref} \cdot \dfrac{R_{NTC}}{R + R_{NTC}}
+    = V_{Ref} \cdot \dfrac{R_{NTC}}{R_{pullup} + R_{NTC}}
     = V_{Ref} \cdot \dfrac{R_{NTC}}{\qty{10}{\kilo\ohm} + R_{NTC}}
+\end{align}
+\begin{align}
+    \dfrac{V_{NTC}}{V_{Ref}}
+    = \dfrac{R_{NTC}}{R_{pullup} + R_{NTC}}
+    = \dfrac{1}{\dfrac{R_{pullup}}{R_{NTC}} + 1}
+\end{align}
+\begin{align}
+    \dfrac{V_{Ref}}{V_{NTC}} - 1
+    = \dfrac{R_{pullup}}{R_{NTC}}
+\end{align}
+\begin{align}
+    R_{NTC}
+    = \dfrac{R_{pullup}}{\dfrac{V_{Ref}}{V_{NTC}} - 1}
 \end{align}
 \begin{align}
     \vartheta
     = \dfrac{1}{\dfrac{1}{\vartheta_{N}} + \dfrac{ln\left(\dfrac{R_{NTC}}{R_{N}}\right)}{B}}
+    = \dfrac{1}{\dfrac{1}{\vartheta_{N}} + \dfrac{ln\left(\dfrac{R_{pullup}}{\left(\dfrac{V_{Ref}}{V_{NTC}} - 1\right) \cdot {R_{N}}}\right)}{B}}
 \end{align}
 
 \begin{figure}[h!]
