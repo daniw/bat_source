@@ -15,6 +15,7 @@
 typedef struct {
 	uint8_t address;
 	uint8_t config1;
+	uint8_t channels;
 } lp581x_handle;
 
 // LP581X I2C Address
@@ -23,6 +24,11 @@ typedef struct {
 #define LP5816_ADDRESS (0x2C <<1)
 #define LP5817_ADDRESS (0x2D <<1)
 
+// LP581X number of channels
+#define LP5814_CHANNELS 4
+#define LP5815_CHANNELS 3
+#define LP5816_CHANNELS 4
+#define LP5817_CHANNELS 3
 
 // LP581X Commands
 #define LP581X_REG_CMD_SHUTDOWN 0x0D
@@ -87,7 +93,7 @@ typedef struct {
  * @param hlp581x lp581x handle to the device. 
  * @param address i2c device address
  */
-uint8_t lp581x_init(lp581x_handle *hlp581x, uint8_t address);
+uint8_t lp581x_init(lp581x_handle *hlp581x, uint8_t address, uint8_t channels);
 
 /**
  * Makes the modified config values take effect.
@@ -165,6 +171,18 @@ uint8_t lp581x_configureFading(lp581x_handle *hlp581x, uint16_t fade_time_ms, ui
  * @param mask exponential dimming channel mask 
  */
 uint8_t lp581x_configureExpDimming(lp581x_handle *hlp581x, uint8_t mask);
+
+/**
+ * Sets the maximum output current to 25.5mA
+ * @param hlp581x lp581x handle to the device.
+ */
+uint8_t lp581x_setMaxCurrent25mA5(lp581x_handle *hlp581x);
+
+/**
+ * Sets the maximum output current to 51mA
+ * @param hlp581x lp581x handle to the device.
+ */
+uint8_t lp581x_setMaxCurrent51mA(lp581x_handle *hlp581x);
 
 /**
  * Set the maximum current

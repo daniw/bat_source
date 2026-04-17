@@ -17,17 +17,19 @@ void ui_ctrl_init(void) {
 	/*
 	 * LED test setup
 	 */
-	uint8_t led_pwms[] = { 0xFF, 0xFF, 0xFF, 0xFF };
-	uint8_t led_current[] = { 0x00, 0x00, 0x00, 0x00 };
-	lp581x_init(&hled, LP5817_ADDRESS);
+	uint8_t led_pwms[] = { 0xFF, 0xFF, 0xFF};
+	uint8_t led_current[] = { 0x00, 0x00, 0x00};
+	lp581x_init(&hled, LP5817_ADDRESS, LP5817_CHANNELS);
 	lp581x_setPWMDimming(&hled, led_pwms);
 	lp581x_setAnalogDimming(&hled, led_current);
+	lp581x_setMaxCurrent25mA5(&hled);
 
-	uint8_t backlight_current[] = { 0xFF, 0xFF, 0xFF, 0xFF };
-	lp581x_init(&hbacklight, LP5816_ADDRESS);
-	lp581x_setPWMDimming(&hbacklight, led_pwms);
+	uint8_t backlight_pwms[] = { 0xFF, 0xFF, 0xFF, 0xFF };
+	uint8_t backlight_current[] = { 0x00, 0x00, 0x00, 0x00 };
+	lp581x_init(&hbacklight, LP5816_ADDRESS, LP5816_CHANNELS);
+	lp581x_setPWMDimming(&hbacklight, backlight_pwms);
 	lp581x_setAnalogDimming(&hbacklight, backlight_current);
-
+	lp581x_setMaxCurrent51mA(&hbacklight);
 
 	/*
 	 * Ambient light sensor test setup
@@ -41,6 +43,5 @@ void ui_ctrl_Dim(void){
 	// ToDo: Implement dimming here
 	uint8_t led_current[] = { 0x10, 0x10, 0x10, 0x10 };
 	lp581x_setAnalogDimming(&hled, led_current);
-
 }
 

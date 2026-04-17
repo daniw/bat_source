@@ -75,6 +75,8 @@ void cmd_setDuty(void);
 void cmd_PWM_en(void);
 void cmd_setRef(void);
 void cmd_test_i2c(void);
+void cmd_setLED(void);
+void cmd_setBacklight(void);
 void cmd_readLux(void);
 
 // List of functions pointers corresponding to each command
@@ -92,6 +94,8 @@ void (*cmd_func[])(void) = {
 	cmd_PWM_en,
 	cmd_setRef,
 	cmd_test_i2c,
+	cmd_setLED,
+	cmd_setBacklight,
 	cmd_readLux
 };
 
@@ -110,6 +114,8 @@ const char *cmd_str[] = {
 		"enPWM",
 		"setRef",
 		"test_i2c",
+		"setLED",
+		"setBacklight",
 		"readLux"
 };
 
@@ -128,6 +134,8 @@ const char *cmd_arg_str[] = {
 		"enPWM [channel] [0 disable | 1 enable]",
 		"setRef [value]",
 		"test_i2c",
+		"setLED [current]",
+		"setBacklight [current]",
 		"readLux"
 };
 
@@ -570,8 +578,6 @@ void cmd_printADC() {
 	}
 }
 
-
-
 void cmd_setDuty(void){
 	uint8_t  channel;
 	float value;
@@ -588,9 +594,7 @@ void cmd_setDuty(void){
 	case 2: hrtim_set_duty(HRTIM_CHANNEL_HV, value);
 	return;
 	}
-
 }
-
 
 void cmd_PWM_en(void){
 	uint8_t  channel;
@@ -610,16 +614,67 @@ void cmd_test_i2c(void){
 	uint64_t fw_version;
 	printf("Read BMS HW Version: 0x%04X\r\n", BQ76905_GetHWVersion(&bms));
 	BQ76905_GetFWVersion(&bms, (uint8_t*)&fw_version);
-	printf("Read BMS FW Version: 0x%08x%08x\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) (fw_version>>32));
+	printf("Read BMS FW Version: 0x%08lx%08lx\r\n", (uint32_t) fw_version&0xFFFFFFFF, (uint32_t) (fw_version>>32));
 	printf("Read BMS Device Number: 0x%04X\r\n", BQ76905_GetDeviceNumber(&bms));
+}
 
+void cmd_setLED(void){
+    uint8_t led_current;
+	uint8_t led_currents[3];
+    CLI_CHECK_ARG_CNT_RANGE(1, 3);
+
+	if (number_of_args == 3) {
+		char *end;
+		for (uint8_t i = 0; i < 3; i++){
+			led_currents[i] = strtol(arg_locs[i+1], &end, 10);
+			if (led_currents[i] > 200) {
+				led_currents[i] = 200;
+				printf("LED current limited to 20mA\r\n");
+			}
+		}
+	}
+	else{
+		char *end;
+		led_current = strtol(arg_locs[1], &end, 10);
+		if (led_current > 200) {
+			led_current = 200;
+			printf("LED current limited to 20mA\r\n");
+		}
+		led_currents[0] = led_current;
+		led_currents[1] = led_current/2;
+		led_currents[2] = led_current/2;
+	}
+	lp581x_setAnalogDimming(&hled, led_currents);
+	//lp581x_setAnalogDimmingChannel(&hled, 0, led_currents[0]);
+	//lp581x_setAnalogDimmingChannel(&hled, 1, led_currents[1]);
+	//lp581x_setAnalogDimmingChannel(&hled, 2, led_currents[2]);
+}
+
+void cmd_setBacklight(void){
+    uint16_t led_current;
+	uint8_t led_currents[4];
+	CLI_CHECK_ARG_CNT(1);
+
+	char *end;
+	led_current = strtol(arg_locs[1], &end, 10);
+	if (led_current > 400) {
+		led_current = 400;
+		printf("LED current limited to 40mA\r\n");
+	}
+	for (uint8_t i = 0; i < 4; i++){
+		led_currents[i] = (uint8_t) (led_current/2);
+	}
+	lp581x_setAnalogDimming(&hbacklight, led_currents);
+	//lp581x_setAnalogDimmingChannel(&hbacklight, 0, (uint8_t) led_current/2);
+	//lp581x_setAnalogDimmingChannel(&hbacklight, 1, (uint8_t) led_current/2);
+	//lp581x_setAnalogDimmingChannel(&hbacklight, 2, (uint8_t) led_current/2);
+	//lp581x_setAnalogDimmingChannel(&hbacklight, 3, (uint8_t) led_current/2);
 }
 
 void cmd_readLux(void){
 
 	printf("Read Optical Sensor: %lu cLux\r\n", ui_ctrl_readBrightness());
 }
-
 
 void cmd_change_state(void){
 	uint8_t  newstate;

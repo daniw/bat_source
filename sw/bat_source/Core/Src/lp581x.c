@@ -20,8 +20,9 @@ LP581X_FLAG_DEV_CONFIG3_OUT_EXP_EN_ALL };
  * @param hlp581x lp581x handle to the device. 
  * @param address i2c device address
  */
-uint8_t lp581x_init(lp581x_handle *hlp581x, uint8_t address) {
+uint8_t lp581x_init(lp581x_handle *hlp581x, uint8_t address, uint8_t channels) {
 	hlp581x->address = address;
+	hlp581x->channels = channels;
 	i2c_WriteBlocking(hlp581x->address, default_config, sizeof(default_config));
 	return lp581x_updateConfig(hlp581x);
 }
@@ -78,15 +79,40 @@ uint8_t lp581x_disableChannel(lp581x_handle *hlp581x, uint8_t channel) {
 }
 
 /**
+ * Sets the maximum output current to 25.5mA
+ * @param hlp581x lp581x handle to the device.
+ */
+uint8_t lp581x_setMaxCurrent25mA5(lp581x_handle *hlp581x) {
+	uint8_t buf[] = { LP581X_REG_DEV_CONFIG0, LP581X_FLAG_DEV_CONFIG0_25MA5 };
+	i2c_WriteBlocking(hlp581x->address, buf, 2);
+	return lp581x_updateConfig(hlp581x);
+}
+
+/**
+ * Sets the maximum output current to 51mA
+ * @param hlp581x lp581x handle to the device.
+ */
+uint8_t lp581x_setMaxCurrent51mA(lp581x_handle *hlp581x) {
+	uint8_t buf[] = { LP581X_REG_DEV_CONFIG0, LP581X_FLAG_DEV_CONFIG0_51MA };
+	i2c_WriteBlocking(hlp581x->address, buf, 2);
+	return lp581x_updateConfig(hlp581x);
+}
+
+/**
  * Set the analog Current value
  * @param hlp581x lp581x handle to the device. 
  * @param values pointer to 8bit 4 element array containing all Analog Values
  */
 uint8_t lp581x_setAnalogDimming(lp581x_handle *hlp581x, uint8_t* value) {
-	uint8_t buf[] = { LP581X_REG_OUT0_DC, value[0], value[1], value[2], value[3] };
-	return i2c_WriteBlocking(hlp581x->address, buf, 5);
+	uint8_t buf[hlp581x->channels+1];
+	buf[0] = LP581X_REG_OUT0_DC;
+	for (uint8_t i = 0; i < hlp581x->channels; i++) {
+		buf[i+1] = value[i];
+	}
+	return i2c_WriteBlocking(hlp581x->address, buf, hlp581x->channels+1);
+	//uint8_t buf[] = { LP581X_REG_OUT0_DC, value[0], value[1], value[2], value[3] };
+	//return i2c_WriteBlocking(hlp581x->address, buf, 5);
 }
-
 
 /**
  * Set the analog Current value
@@ -101,23 +127,29 @@ uint8_t lp581x_setAnalogDimmingChannel(lp581x_handle *hlp581x, uint8_t channel, 
 
 /**
  * Set the digital PWM value
- * @param hlp581x lp581x handle to the device. 
- * @param channel channel number 
- * @param value 8-bit pwm dimming value
+ * @param hlp581x lp581x handle to the device.
+ * @param values pointer to 8bit 4 element array containing all PWM Values
  */
-uint8_t lp581x_setPWMDimmingChannel(lp581x_handle *hlp581x, uint8_t channel, uint8_t value) {
-	uint8_t buf[] = { LP581X_REG_OUT0_PWM + channel, value };
-	return i2c_WriteBlocking(hlp581x->address, buf, 2);
+uint8_t lp581x_setPWMDimming(lp581x_handle *hlp581x, uint8_t* value) {
+	uint8_t buf[hlp581x->channels+1];
+	buf[0] = LP581X_REG_OUT0_PWM;
+	for (uint8_t i = 0; i < hlp581x->channels; i++) {
+		buf[i+1] = value[i];
+	}
+	return i2c_WriteBlocking(hlp581x->address, buf, hlp581x->channels+1);
+	//uint8_t buf[] = { LP581X_REG_OUT0_PWM, value[0], value[1], value[2], value[3] };
+	//return i2c_WriteBlocking(hlp581x->address, buf, 5);
 }
 
 /**
  * Set the digital PWM value
  * @param hlp581x lp581x handle to the device.
- * @param values pointer to 8bit 4 element array containing all PWM Values
+ * @param channel channel number
+ * @param value 8-bit pwm dimming value
  */
-uint8_t lp581x_setPWMDimming(lp581x_handle *hlp581x, uint8_t* value) {
-	uint8_t buf[] = { LP581X_REG_OUT0_PWM, value[0], value[1], value[2], value[3] };
-	return i2c_WriteBlocking(hlp581x->address, buf, 5);
+uint8_t lp581x_setPWMDimmingChannel(lp581x_handle *hlp581x, uint8_t channel, uint8_t value) {
+	uint8_t buf[] = { LP581X_REG_OUT0_PWM + channel, value };
+	return i2c_WriteBlocking(hlp581x->address, buf, 2);
 }
 
 /**
