@@ -769,19 +769,6 @@ void cmd_printFlashID(void){
 	if (status == HAL_OK){
 		printf("Status register after write disable: 0x%02X\r\n", reg_status.reg);
 	}
-	// Read bad block look up table test
-	printf("\r\n= Read bad block look up table test: \r\n");
-	if (status == HAL_OK){
-		status = w25n01gv_read_badblock(&flash);
-	}
-	if (status == HAL_OK){
-		printf("Bad block LUT: \r\n");
-		printf("ID | Logic  | Physical\r\n");
-		printf("---+--------+---------\r\n");
-		for (uint8_t i = 0; i < W25N01GV_BADBLOCK_LUT_SIZE; i++) {
-			printf("%2d | 0x%04X | 0x%04X\r\n", i, flash.badblock_lut[i].addr.logic_block_addr, flash.badblock_lut[i].addr.phys_block_addr);
-		}
-	}
 	// Read block test
 	printf("\r\n= Read block test: \r\n");
 	uint16_t test_read_block_nof_bytes = 16;
@@ -810,9 +797,9 @@ void cmd_printFlashID(void){
 			printf("\r\n");
 		}
 	}
-	// Read OTP test
-	printf("\r\n= Read OTP test: \r\n");
-	test_read_block_nof_bytes = 512;
+	// Read OTP block test
+	printf("\r\n= Read OTP block test: \r\n");
+	test_read_block_nof_bytes = 256;
 	if (status == HAL_OK){
 		reg_conf.fields.otp_enter = 1;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
@@ -843,35 +830,48 @@ void cmd_printFlashID(void){
 		reg_conf.fields.otp_enter = 0;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
+	// Read bad block look up table test
+	printf("\r\n= Read bad block look up table test: \r\n");
+	if (status == HAL_OK){
+		status = w25n01gv_read_badblock(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Bad block LUT: \r\n");
+		printf("ID | Logic  | Physical\r\n");
+		printf("---+--------+---------\r\n");
+		for (uint8_t i = 0; i < W25N01GV_BADBLOCK_LUT_SIZE; i++) {
+			printf("%2d | 0x%04X | 0x%04X\r\n", i, flash.badblock_lut[i].addr.logic_block_addr, flash.badblock_lut[i].addr.phys_block_addr);
+		}
+	}
 	// Bad block test
 	printf("\r\n= Bad block test: \r\n");
-	uint8_t bad_block_present = 0;
+	uint16_t bad_block_present = 0;
+	uint16_t bb_loop_count = 0;
+	uint8_t data_page;
+	uint8_t data_spare;
 	test_read_block_nof_bytes = 1;
-	for (uint16_t page_addr = 0; page_addr < 2048; page_addr++) {
+	for (uint32_t page_addr = 0; page_addr < 0xffff; page_addr+=0x40) {
+		bb_loop_count++;
 		if (status == HAL_OK){
-			status = w25n01gv_page_read(&flash, page_addr);
+			status = w25n01gv_page_read(&flash, (uint16_t) page_addr);
 		}
 		do {
 			status = w25n01gv_read_reg_status(&flash, &reg_status);
 		} while(status == HAL_OK && reg_status.fields.busy != 0);
-		uint8_t data[test_read_block_nof_bytes];
 		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, data, 0x00, test_read_block_nof_bytes);
+			status = w25n01gv_read(&flash, &data_page, 0x00, 1);
 		}
 		if (status == HAL_OK){
-			if (data[0] != 0xFF) {
+			status = w25n01gv_read(&flash, &data_spare, 0x800, 1);
+		}
+		if (status == HAL_OK){
+			if ((data_page != 0xFF) || (data_spare != 0xFF)) {
 				bad_block_present = 1;
-				printf("Bad block on page %4d:", page_addr);
-				for (uint16_t i = 0; i < test_read_block_nof_bytes; i++) {
-					if ((i % 16 == 0) && (i > 0)) {
-						printf("\r\n                ");
-					}
-					printf(" 0x%02X", data[i]);
-				}
-				printf("\r\n");
+				printf("Bad block on page %4d, Page: 0x%02X  Spare: 0x%02X\r\n", (uint16_t) (page_addr / 0x40), data_page, data_spare);
 			}
 		}
 	}
+	printf("%d blocks scanned\r\n", bb_loop_count);
 	if (bad_block_present == 0) {
 		printf("No bad blocks\r\n");
 	}
