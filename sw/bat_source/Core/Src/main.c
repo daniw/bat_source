@@ -254,7 +254,7 @@ int main(void)
 	  uint8_t led_currents[] = {0x14, led_current, led_current/2, led_current/2};
 	  lp581x_setAnalogDimming(&hled, 0, led_current);
 	  lp581x_setAnalogDimming(&hled, 0, led_current/2);
-	  lp581x_setAnalogDimming&(hled, 0, led_current/2);
+	  lp581x_setAnalogDimming(&hled, 0, led_current/2);
 
 	  i2c_WriteBlocking(led_address, led_currents, sizeof(led_currents));*/
 

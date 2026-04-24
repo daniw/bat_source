@@ -632,18 +632,18 @@ void cmd_setLED(void){
 	if (number_of_args == 3) {
 		char *end;
 		for (uint8_t i = 0; i < 3; i++){
-			led_currents[i] = strtol(arg_locs[i+1], &end, 10);
-			if (led_currents[i] > 200) {
-				led_currents[i] = 200;
-				printf("LED current limited to 20mA\r\n");
+			led_currents[i] = strtol(arg_locs[i+1], &end, 10)/2;
+			if (led_currents[i] > 150) {
+				led_currents[i] = 150;
+				printf("LED current limited to 30mA\r\n");
 			}
 		}
 	}
 	else{
 		char *end;
-		led_current = strtol(arg_locs[1], &end, 10);
-		if (led_current > 200) {
-			led_current = 200;
+		led_current = strtol(arg_locs[1], &end, 10)/2;
+		if (led_current > 150) {
+			led_current = 150;
 			printf("LED current limited to 20mA\r\n");
 		}
 		led_currents[0] = led_current;
