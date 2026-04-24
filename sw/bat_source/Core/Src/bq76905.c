@@ -63,6 +63,9 @@ void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	if((handle->CellVoltageRegisters.BatteryStatus & 0x80) || (handle->CellVoltageRegisters.BatteryStatus == 0x0)){
 		BQ76905_resetDevice(handle);
 		BQ76905_configure(handle);
+	}else if (handle->CellVoltageRegisters.BatteryStatus & 0x8000){
+		printf("Skipped BMS reconfiguration, disable sleep mode: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
+		BQ76905_SleepDisable(handle);
 	}else{
 		printf("Skipped BMS reconfiguration: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
 	}
