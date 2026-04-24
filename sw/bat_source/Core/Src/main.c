@@ -52,6 +52,7 @@
 #include <stdio.h>
 #include "stdint.h"
 #include "lcd.h"
+#include "w25n01gv.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,6 +76,7 @@
 BQ76905_handle bms;
 ADC_MEAS_DATA adc_data;
 ADS131M04_handle ext_adc;
+w25n01gv_handle flash;
 
 /* USER CODE END PV */
 
@@ -179,13 +181,17 @@ int main(void)
   /*
    * PWM Init
    */
-
   hrtim_set_freq(HRTIM_CHANNEL_PRIM, 50000);
   hrtim_set_freq(HRTIM_CHANNEL_SEK, 150000);
   hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0.985);
 
   hrtim_start_timer();
   timer_start();
+
+  /*
+   * QSPI flash memory init
+   */
+  w25n01gv_init(&flash, &hqspi1, 1000);
 
   gpio_turnOn();
 
