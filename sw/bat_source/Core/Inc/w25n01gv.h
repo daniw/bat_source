@@ -18,7 +18,22 @@
 
 #include "quadspi.h"
 
+#define W25N01GV_FAST_READ								1
+#define W25N01GV_READ_ADDR_LINES						4
+#define W25N01GV_READ_DATA_LINES						4
+#define W25N01GV_READ_4_BYTE_ADDR						0 // Not recommended, due to higher dummy clock count
+
+#define W25N01GV_WRITE_DATA_LINES						1
+
 #define W25N01GV_TEST_UNION_STRUCT
+
+#define W25N01GV_PAGE_SIZE								(2048)
+#define W25N01GV_PAGES_PER_BLOCK						(64) // Number of pages in a block
+#define W25N01GV_NOF_BLOCKS								(1024)
+#define W25N01GV_NOF_PAGES								(W25N01GV_PAGES_PER_BLOCK * W25N01GV_NOF_BLOCKS)
+#define W25N01GV_PAGE_MASK								(W25N01GV_PAGE_SIZE-1)
+#define W25N01GV_ADDR_TO_COLUMN_ADDR(addr)				((uint16_t) (addr & W25N01GV_PAGE_MASK))
+#define W25N01GV_ADDR_TO_PAGE_ADDR(addr)				((uint16_t) ((address >> 11) & 0xFFFF)) // Todo: Compute mask and shift width from paramaters
 
 #define W25N01GV_MANUF_ID								(0xEF)
 #define W25N01GV_DEVICE_ID								(0xAA21)
@@ -127,6 +142,21 @@
 
 #define W25N01GV_BADBLOCK_LUT_SIZE						(20)
 
+#define W25N01GV_PROT_NONE								(0x0)
+#define W25N01GV_PROT_1_512								(0x1)
+#define W25N01GV_PROT_1_256								(0x2)
+#define W25N01GV_PROT_1_128								(0x3)
+#define W25N01GV_PROT_1_64								(0x4)
+#define W25N01GV_PROT_1_32								(0x5)
+#define W25N01GV_PROT_1_16								(0x6)
+#define W25N01GV_PROT_1_8								(0x7)
+#define W25N01GV_PROT_1_4								(0x8)
+#define W25N01GV_PROT_1_2								(0x9)
+#define W25N01GV_PROT_ALL								(0xF)
+
+#define W25N01GV_PROT_UPPER								(0x0)
+#define W25N01GV_PROT_LOWER								(0x1)
+
 #ifdef W25N01GV_TEST_UNION_STRUCT
 /*! \union test_bitfield_t
  *  \brief Type for testing the implementation of bitfields in the current compiler
@@ -220,6 +250,7 @@ typedef struct {
 } w25n01gv_reg_t;
 
 typedef union {
+	uint32_t word;
 	struct {
 		uint16_t phys_block_addr;
 		uint16_t logic_block_addr;
@@ -250,11 +281,11 @@ HAL_StatusTypeDef w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id);
 
 HAL_StatusTypeDef w25n01gv_read_reg(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_prot_reg_t *reg);
+HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_conf_reg_t *reg);
+HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg);
+HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv);
 
 HAL_StatusTypeDef w25n01gv_write_reg(w25n01gv_handle *hw25n01gvm, w25n01gv_reg_t *regs);
 
@@ -264,11 +295,31 @@ HAL_StatusTypeDef w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_c
 
 HAL_StatusTypeDef w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg);
 
+HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_prot, uint8_t upper_lower);
+
+HAL_StatusTypeDef w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv);
+
+HAL_StatusTypeDef w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv);
+
+HAL_StatusTypeDef w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv);
+
 HAL_StatusTypeDef w25n01gv_write_enable(w25n01gv_handle *hw25n01gv);
 
 HAL_StatusTypeDef w25n01gv_write_disable(w25n01gv_handle *hw25n01gv);
 
+HAL_StatusTypeDef w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n01gv_badblock_t badblock);
+
 HAL_StatusTypeDef w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv);
+
+HAL_StatusTypeDef w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t *page_addr);
+
+HAL_StatusTypeDef w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+
+HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len);
+
+HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len);
+
+HAL_StatusTypeDef w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
 
 HAL_StatusTypeDef w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
 

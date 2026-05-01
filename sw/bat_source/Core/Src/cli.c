@@ -32,17 +32,18 @@
 
 #ifdef CLI_ENABLED
 
-#define CLI_CHECK_ARG_CNT(nof_args)                 if (number_of_args != nof_args)                             {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
-#define CLI_CHECK_ARG_CNT_MIN(nof_args)             if (number_of_args < nof_args)                              {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
-#define CLI_CHECK_ARG_CNT_MAX(nof_args)             if (number_of_args > nof_args)                              {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
-#define CLI_CHECK_ARG_CNT_RANGE(min_args, max_args) if (number_of_args < min_args || number_of_args > max_args) {printf("Insufficient number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT(nof_args)                 if (number_of_args != nof_args)                             {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_MIN(nof_args)             if (number_of_args < nof_args)                              {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_MAX(nof_args)             if (number_of_args > nof_args)                              {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_RANGE(min_args, max_args) if (number_of_args < min_args || number_of_args > max_args) {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
+#define CLI_CHECK_ARG_CNT_NONE(nof_args)            if (number_of_args != nof_args && number_of_args != 0)      {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
 
 char line_buffer[LINE_BUF_SIZE];
 char *arg_locs[MAX_NUM_ARGS];
 uint8_t number_of_args;
 uint8_t line_buffer_index;
 
-// ToDo Check why Index of Command gets wrong sime times.
+// ToDo Check why Index of Command gets wrong some times.
 #define history_SIZE 5
 char history[history_SIZE][LINE_BUF_SIZE];
 int  history_count = 0;
@@ -81,6 +82,10 @@ void cmd_setLED(void);
 void cmd_setBacklight(void);
 void cmd_readLux(void);
 void cmd_printFlashID(void);
+void cmd_readFlash(void);
+void cmd_eraseFlash(void);
+void cmd_writeFlash(void);
+void cmd_testFlash(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -100,7 +105,11 @@ void (*cmd_func[])(void) = {
 	cmd_setLED,
 	cmd_setBacklight,
 	cmd_readLux,
-	cmd_printFlashID
+	cmd_printFlashID,
+	cmd_readFlash,
+	cmd_eraseFlash,
+	cmd_writeFlash,
+	cmd_testFlash
 };
 
 // List of command names
@@ -121,7 +130,11 @@ const char *cmd_str[] = {
 		"setLED",
 		"setBacklight",
 		"readLux",
-		"pFlashID"
+		"pFlashID",
+		"readFlash",
+		"eraseFlash",
+		"writeFlash",
+		"testFlash"
 };
 
 // List of command names including arguments
@@ -142,7 +155,11 @@ const char *cmd_arg_str[] = {
 		"setLED [current]",
 		"setBacklight [current]",
 		"readLux",
-		"pFlashID"
+		"pFlashID",
+		"readFlash [address] [size]",
+		"eraseFlash [address / \"Full\"] {number of blocks}",
+		"writeFlash [address] [size] [data]",
+		"testFlash"
 };
 
 int cmd_index;
@@ -187,7 +204,6 @@ void cli_printf(const char *fmt, ...) {
   uint16_t len = strlen(buffer);
   HAL_UART_Transmit(cli_huart,(uint8_t*)buffer, len, 100);
 }
-
 
 /**
  * Read the line from the buffer
@@ -694,41 +710,369 @@ void cmd_printFlashID(void){
 		printf("Error: Unable to read flash JEDEC ID. \r\n");
 		return;
 	}
-	// Status register read test
-	printf("\r\n= Flash status register read test: \r\n");
-	w25n01gv_prot_reg_t reg_prot = {0};
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_prot(&flash, &reg_prot);
-	}
-	if (status == HAL_OK){
-		printf("Flash protection register:    0x%02X\r\n", reg_prot.reg);
-	}
-	else{
-		printf("Error: Unable to read flash protection register. \r\n");
-		return;
-	}
+}
+
+void cmd_readFlash(void){
+	uint32_t address;
+	uint16_t page_addr;
+	uint16_t column_addr;
+	uint16_t size;
 	w25n01gv_conf_reg_t reg_conf = {0};
+	HAL_StatusTypeDef status = HAL_OK;
+	CLI_CHECK_ARG_CNT(2);
+
+	char *end;
+	address = strtoul(arg_locs[1], &end, 10);
+	size = strtol(arg_locs[2], &end, 10);
+
+	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
+	if (size > 8192) {
+		size = 8192;
+	}
+	printf("Page address:   0x%04X\r\nColumn address: 0x%04X\r\nSize:           %d Bytes\r\n", page_addr, column_addr, size);
+
+#if CLI_FLASH_READ_OTP == 1
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
+	}
+	if (status == HAL_OK){
+		reg_conf.fields.otp_enter = 1;
+		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
+	}
 	if (status == HAL_OK){
 		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
 	}
 	if (status == HAL_OK){
 		printf("Flash configuration register: 0x%02X\r\n", reg_conf.reg);
 	}
+#endif // CLI_FLASH_READ_OTP
+#if CLI_FLASH_READ_BUFFER_MODE_DIS == 1
+	if (status == HAL_OK){
+		status = w25n01gv_buffer_mode_disable(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	}
+#endif // CLI_FLASH_READ_BUFFER_MODE_DIS
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_page_read(&flash, page_addr);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	uint8_t data[size];
+	if (status == HAL_OK){
+		status = w25n01gv_read(&flash, data, column_addr, size);
+	}
+	if (status == HAL_OK){
+		for (uint16_t i = 0; i < size; i++) {
+#if CLI_FLASH_READ_SHOW_ASCII == 1
+			if ((i % CLI_FLASH_READ_ASCII_LINEWIDTH == 0) && (i > 0)) {
+				printf("\r\n");
+			}
+			printf("%c", data[i]);
+#else
+			if ((i % 16 == 0) && (i > 0)) {
+				printf("\r\n");
+			}
+			printf("0x%02X ", data[i]);
+#endif // CLI_FLASH_READ_SHOW_ASCII
+		}
+		printf("\r\n");
+	}
+#if CLI_FLASH_READ_BUFFER_MODE_DIS == 1
+	if (status == HAL_OK){
+		status = w25n01gv_buffer_mode_enable(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+		}
+#endif // CLI_FLASH_READ_BUFFER_MODE_DIS
+#if CLI_FLASH_READ_OTP == 1
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", reg_conf.reg);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		reg_conf.fields.otp_enter = 0;
+		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
+	}
+#endif // CLI_FLASH_READ_OTP
+	printf("Flash read not implemented\r\n");
+	return;
+}
+
+void cmd_eraseFlash(void){
+	uint8_t full_erase = 0;
+	uint32_t address;
+	uint16_t page_addr;
+	uint16_t nof_blocks;
+	HAL_StatusTypeDef status = HAL_OK;
+	CLI_CHECK_ARG_CNT_RANGE(1, 2);
+
+	char *end;
+	address = strtoul(arg_locs[1], &end, 10);
+	full_erase = strcmp(arg_locs[1], "Full") == 0;
+	if (full_erase == 1){
+		nof_blocks = W25N01GV_NOF_BLOCKS;
+	}
+	else {
+		if (number_of_args == 1) {
+			nof_blocks = 1;
+		}
+		else {
+			nof_blocks = strtol(arg_locs[2], &end, 10);
+			if (nof_blocks > W25N01GV_NOF_BLOCKS) {
+				nof_blocks = W25N01GV_NOF_BLOCKS;
+			}
+		}
+	}
+	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+	printf("Flash erase, starting address: 0x%04X\r\n", page_addr);
+	printf("Flash erase, number of blocks: %u\r\n", nof_blocks);
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
+	}
+	for (uint16_t i = 0; i < nof_blocks; i++) {
+		printf("  Erasing block at page address 0x%04X\r\n", page_addr);
+#if CLI_FLASH_ERASE_DISABLE == 0
+		if (status == HAL_OK) {
+			status = w25n01gv_wait_busy(&flash);
+		}
+		if (status == HAL_OK) {
+			status = w25n01gv_write_enable(&flash);
+		}
+		if (status == HAL_OK) {
+			status = w25n01gv_wait_busy(&flash);
+		}
+		if (status == HAL_OK){
+			status = w25n01gv_block_erase(&flash, page_addr);
+		}
+#else // CLI_FLASH_ERASE_DISABLE == 1
+		printf("  Flash erase disabled\r\n");
+#endif // CLI_FLASH_ERASE_DISABLE
+		page_addr += W25N01GV_PAGES_PER_BLOCK;
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_ALL, W25N01GV_PROT_LOWER);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+
+	printf("Flash erase not implemented\r\n");
+	return;
+}
+void cmd_writeFlash(void){
+	uint32_t address;
+	uint32_t size;
+	uint8_t data[2048] = {0};
+	uint8_t data_read[2048] = {0};
+	uint16_t page_addr;
+	uint16_t column_addr;
+	HAL_StatusTypeDef status = HAL_OK;
+	CLI_CHECK_ARG_CNT(3);
+
+	char *end;
+	address = strtoul(arg_locs[1], &end, 10);
+	size = strtoul(arg_locs[2], &end, 10);
+	//data = strto(arg_locs[3], &end, 10); // Todo: read data from input string
+
+	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
+
+	if (page_addr == 0){
+			char str[] = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus sit amet tortor gravida placerat. Integer sapien est, iaculis in, pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla. Curabitur auctor semper nulla. Donec varius orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else if (page_addr == 1) {
+			char str[] = "Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel, wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at, lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed accumsan bibendum, erat ligula aliquet magna, vitae ornare odio metus a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut massa. Cras nec ante. Pellentesque a nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum turpis. Pellentesque cursus luctus mauris. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else if (page_addr == 2) {
+			char str[] = "Nulla malesuada porttitor diam. Donec felis erat, congue non, volutpat at, tincidunt tristique, libero. Vivamus viverra fermentum felis. Donec nonummy pellentesque ante. Phasellus adipiscing semper elit. Proin fermentum massa ac quam. Sed diam turpis, molestie vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum ligula, eleifend at, accumsan nec, suscipit a, ipsum. Morbi blandit ligula feugiat magna. Nunc eleifend consequat lorem. Sed lacinia nulla vitae enim. Pellentesque tincidunt purus vel magna. Integer non enim. Praesent euismod nunc eu purus. Donec bibendum quam in tellus. Nullam cursus pulvinar lectus. Donec et mi. Nam vulputate metus eu enim. Vestibulum pellentesque felis eu massa. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else if (page_addr == 3) {
+			char str[] = "Quisque ullamcorper placerat ipsum. Cras nibh. Morbi vel justo vitae lacus tincidunt ultrices. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In hac habitasse platea dictumst. Integer tempus convallis augue. Etiam facilisis. Nunc elementum fermentum wisi. Aenean placerat. Ut imperdiet, enim sed gravida sollicitudin, felis odio placerat quam, ac pulvinar elit purus eget enim. Nunc vitae tortor. Proin tempus nibh sit amet nisl. Vivamus quis tortor vitae risus porta vehicula. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else if (page_addr == 4) {
+			char str[] = "Fusce mauris. Vestibulum luctus nibh at lectus. Sed bibendum, nulla a faucibus semper, leo velit ultricies tellus, ac venenatis arcu wisi vel nisl. Vestibulum diam. Aliquam pellentesque, augue quis sagittis posuere, turpis lacus congue quam, in hendrerit risus eros eget felis. Maecenas eget erat in sapien mattis porttitor. Vestibulum porttitor. Nulla facilisi. Sed a turpis eu lacus commodo facilisis. Morbi fringilla, wisi in dignissim interdum, justo lectus sagittis dui, et vehicula libero dui cursus dui. Mauris tempor ligula sed lacus. Duis cursus enim ut augue. Cras ac magna. Cras nulla. Nulla egestas. Curabitur a leo. Quisque egestas wisi eget nunc. Nam feugiat lacus vel est. Curabitur consectetuer. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else if (page_addr == 5) {
+			char str[] = "Suspendisse vel felis. Ut lorem lorem, interdum eu, tincidunt sit amet, laoreet vitae, arcu. Aenean faucibus pede eu ante. Praesent enim elit, rutrum at, molestie non, nonummy vel, nisl. Ut lectus eros, malesuada sit amet, fermentum eu, sodales cursus, magna. Donec eu purus. Quisque vehicula, urna sed ultricies auctor, pede lorem egestas dui, et convallis elit erat sed nulla. Donec luctus. Curabitur et nunc. Aliquam dolor odio, commodo pretium, ultricies non, pharetra in, velit. Integer arcu est, nonummy in, fermentum faucibus, egestas vel, odio. ";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+	else {
+			char str[] = "None";
+			for (uint16_t i = 0; i < sizeof(str); i++){
+				data[i] = (uint8_t) str[i];
+			}
+			size = sizeof(str);
+	}
+
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_page_read(&flash, page_addr);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_write_enable(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_prog_load(&flash, data, column_addr, size);
+	}
+#if CLI_FLASH_WRITE_EXEC == 1
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_write_enable(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_prog_exec(&flash, page_addr);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_ALL, W25N01GV_PROT_LOWER);
+	}
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_page_read(&flash, page_addr);
+	}
+#endif // CLI_FLASH_WRITE_EXEC
+	if (status == HAL_OK) {
+		status = w25n01gv_wait_busy(&flash);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read(&flash, data_read, column_addr, size);
+	}
+	printf("Written data:   %s\r\n", data);
+	printf("Read back data: %s\r\n", data_read);
+
+	w25n01gv_write_disable(&flash);
+
+	printf("Flash write not implemented\r\n");
+	return;
+}
+
+void cmd_testFlash(void){
+	uint8_t id[4];
+	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_prot_reg_t reg_prot = {0};
+	w25n01gv_conf_reg_t reg_conf = {0};
+	w25n01gv_status_reg_t reg_status = {0};
+	status = w25n01gv_read_id(&flash, id);
+	if (status == HAL_OK){
+		printf("Flash Manufacturer ID:        0x%02X\r\n", id[0]);
+		printf("Flash Device ID:              0x%02X%02X\r\n", id[1], id[2]);
+	}
+	else{
+		printf("Error: Unable to read flash JEDEC ID. \r\n");
+		return;
+	}
+#if CLI_FLASH_TEST_STATUS_REG_READ == 1
+	// Status register read test
+	printf("\r\n= Flash status register read test: \r\n");
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_prot(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash protection register:    0x%02X\r\n", flash.reg_prot.reg);
+	}
+	else{
+		printf("Error: Unable to read flash protection register. \r\n");
+		return;
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	}
 	else{
 		printf("Error: Unable to read flash configuration register. \r\n");
 		return;
 	}
-	w25n01gv_status_reg_t reg_status = {0};
 	if (status == HAL_OK){
-		status = w25n01gv_read_reg_status(&flash, &reg_status);
+		status = w25n01gv_read_reg_status(&flash);
 	}
 	if (status == HAL_OK){
-		printf("Flash status register:        0x%02X\r\n", reg_status.reg);
+		printf("Flash status register:        0x%02X\r\n", flash.reg_status.reg);
 	}
 	else{
 		printf("Error: Unable to read flash status register. \r\n");
 		return;
 	}
+#endif // CLI_FLASH_TEST_STATUS_REG_READ
+#if CLI_FLASH_TEST_STATUS_REG_WRITE == 1
 	// Status register write test
 	printf("\r\n= Flash status register write test: \r\n");
 	reg_conf.fields.buf_mode=0;
@@ -736,10 +1080,10 @@ void cmd_printFlashID(void){
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
 	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
+		status = w25n01gv_read_reg_conf(&flash);
 	}
 	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X (after writing)\r\n", reg_conf.reg);
+		printf("Flash configuration register: 0x%02X (after writing)\r\n", flash.reg_conf.reg);
 		reg_conf.fields.buf_mode=1;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
@@ -747,28 +1091,63 @@ void cmd_printFlashID(void){
 		printf("Error: Unable to read flash configuration register. \r\n");
 		return;
 	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X (after resetting)\r\n", flash.reg_conf.reg);
+	}
+#endif // CLI_FLASH_TEST_STATUS_REG_WRITE
+#if CLI_FLASH_TEST_BUF_EN_DIS == 1
+	// Buffer mode enable / disable test
+	printf("\r\n= Buffer mode enable / disable test: \r\n");
+	printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	if (status == HAL_OK){
+		status = w25n01gv_buffer_mode_disable(&flash);
+		printf("Disable buffer mode\r\n");
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_buffer_mode_enable(&flash);
+		printf("Enable buffer mode\r\n");
+	}
+	if (status == HAL_OK){
+		status = w25n01gv_read_reg_conf(&flash);
+	}
+	if (status == HAL_OK){
+		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
+	}
+#endif // CLI_FLASH_TEST_BUF_EN_DIS
+#if CLI_FLASH_TEST_WRITE_EN_DIS == 1
 	// Write enable and disable test
 	printf("\r\n= Flash write enable / disable test: \r\n");
 	if (status == HAL_OK){
-		status = w25n01gv_read_reg_status(&flash, &reg_status);
+		status = w25n01gv_read_reg_status(&flash);
 	}
 	if (status == HAL_OK){
-		printf("Status register before write enable: 0x%02X\r\n", reg_status.reg);
+		printf("Status register before write enable: 0x%02X\r\n", flash.reg_status.reg);
 		status = w25n01gv_write_enable(&flash);
 	}
 	if (status == HAL_OK){
-		status = w25n01gv_read_reg_status(&flash, &reg_status);
+		status = w25n01gv_read_reg_status(&flash);
 	}
 	if (status == HAL_OK){
-		printf("Status register after write enable:  0x%02X\r\n", reg_status.reg);
+		printf("Status register after write enable:  0x%02X\r\n", flash.reg_status.reg);
 		status = w25n01gv_write_disable(&flash);
 	}
 	if (status == HAL_OK){
-		status = w25n01gv_read_reg_status(&flash, &reg_status);
+		status = w25n01gv_read_reg_status(&flash);
 	}
 	if (status == HAL_OK){
-		printf("Status register after write disable: 0x%02X\r\n", reg_status.reg);
+		printf("Status register after write disable: 0x%02X\r\n", flash.reg_status.reg);
 	}
+#endif // CLI_FLASH_TEST_WRITE_EN_DIS
+#if CLI_FLASH_TEST_READ_BLOCK == 1
 	// Read block test
 	printf("\r\n= Read block test: \r\n");
 	uint16_t test_read_block_nof_bytes = 16;
@@ -776,9 +1155,9 @@ void cmd_printFlashID(void){
 		if (status == HAL_OK){
 			status = w25n01gv_page_read(&flash, page_addr);
 		}
-		do {
-			status = w25n01gv_read_reg_status(&flash, &reg_status);
-		} while(status == HAL_OK && reg_status.fields.busy != 0);
+		if (status == HAL_OK) {
+			status = w25n01gv_wait_busy(&flash);
+		}
 		uint8_t data[test_read_block_nof_bytes];
 		if (status == HAL_OK){
 			status = w25n01gv_read(&flash, data, 0x00, test_read_block_nof_bytes);
@@ -797,9 +1176,11 @@ void cmd_printFlashID(void){
 			printf("\r\n");
 		}
 	}
+#endif // CLI_FLASH_TEST_READ_BLOCK
+#if CLI_FLASH_TEST_READ_OTP_BLOCK == 1
 	// Read OTP block test
 	printf("\r\n= Read OTP block test: \r\n");
-	test_read_block_nof_bytes = 256;
+	uint16_t test_read_block_otp_nof_bytes = 256;
 	if (status == HAL_OK){
 		reg_conf.fields.otp_enter = 1;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
@@ -808,16 +1189,16 @@ void cmd_printFlashID(void){
 		if (status == HAL_OK){
 			status = w25n01gv_page_read(&flash, page_addr);
 		}
-		do {
-			status = w25n01gv_read_reg_status(&flash, &reg_status);
-		} while(status == HAL_OK && reg_status.fields.busy != 0);
-		uint8_t data[test_read_block_nof_bytes];
+		if (status == HAL_OK) {
+			status = w25n01gv_wait_busy(&flash);
+		}
+		uint8_t data[test_read_block_otp_nof_bytes];
 		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, data, 0x00, test_read_block_nof_bytes);
+			status = w25n01gv_read(&flash, data, 0x00, test_read_block_otp_nof_bytes);
 		}
 		if (status == HAL_OK){
 			printf("Page: %4d Data:", page_addr);
-			for (uint16_t i = 0; i < test_read_block_nof_bytes; i++) {
+			for (uint16_t i = 0; i < test_read_block_otp_nof_bytes; i++) {
 				if ((i % 16 == 0) && (i > 0)) {
 					printf("\r\n                ");
 				}
@@ -830,6 +1211,8 @@ void cmd_printFlashID(void){
 		reg_conf.fields.otp_enter = 0;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
+#endif // CLI_FLASH_TEST_READ_OTP_BLOCK
+#if CLI_FLASH_TEST_BAD_BLOCK_LUT == 1
 	// Read bad block look up table test
 	printf("\r\n= Read bad block look up table test: \r\n");
 	if (status == HAL_OK){
@@ -837,12 +1220,14 @@ void cmd_printFlashID(void){
 	}
 	if (status == HAL_OK){
 		printf("Bad block LUT: \r\n");
-		printf("ID | Logic  | Physical\r\n");
-		printf("---+--------+---------\r\n");
+		printf("ID | Logical | Physical\r\n");
+		printf("---+---------+---------\r\n");
 		for (uint8_t i = 0; i < W25N01GV_BADBLOCK_LUT_SIZE; i++) {
-			printf("%2d | 0x%04X | 0x%04X\r\n", i, flash.badblock_lut[i].addr.logic_block_addr, flash.badblock_lut[i].addr.phys_block_addr);
+			printf("%2d | 0x%04X  | 0x%04X\r\n", i, flash.badblock_lut[i].addr.logic_block_addr, flash.badblock_lut[i].addr.phys_block_addr);
 		}
 	}
+#endif // CLI_FLASH_TEST_BAD_BLOCK_LUT
+#if CLI_FLASH_TEST_BAD_BLOCK == 1
 	// Bad block test
 	printf("\r\n= Bad block test: \r\n");
 	uint16_t bad_block_present = 0;
@@ -856,8 +1241,8 @@ void cmd_printFlashID(void){
 			status = w25n01gv_page_read(&flash, (uint16_t) page_addr);
 		}
 		do {
-			status = w25n01gv_read_reg_status(&flash, &reg_status);
-		} while(status == HAL_OK && reg_status.fields.busy != 0);
+			status = w25n01gv_read_reg_status(&flash);
+		} while(status == HAL_OK && flash.reg_status.fields.busy != 0);
 		if (status == HAL_OK){
 			status = w25n01gv_read(&flash, &data_page, 0x00, 1);
 		}
@@ -875,6 +1260,18 @@ void cmd_printFlashID(void){
 	if (bad_block_present == 0) {
 		printf("No bad blocks\r\n");
 	}
+#endif // CLI_FLASH_TEST_BAD_BLOCK
+#if CLI_FLASH_TEST_LAST_ECC_FAIL == 1
+	// Last ECC failure page address test
+	printf("\r\n= Last ECC failure page address test: \r\n");
+	uint16_t ecc_fail_page_addr = 0xffff;
+	if (status == HAL_OK){
+		status = w25n01gv_last_ecc_failure(&flash, &ecc_fail_page_addr);
+	}
+	if (status == HAL_OK){
+		printf("Page address of last ECC failure: %X\r\n", ecc_fail_page_addr);
+	}
+#endif // CLI_FLASH_TEST_LAST_ECC_FAIL
 }
 
 void cmd_change_state(void){
