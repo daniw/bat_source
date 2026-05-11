@@ -1,5 +1,19 @@
 # Übersicht der Mechanik zur 60V-Quelle
 
+## Aufgabenliste
+
+* Doppelten mech-Ordner löschen
+
+* Die Tabelle der umzubenennden Dateien aufräumen.
+
+* Liste mit Anmerkungen, Kommentaren, etc überarbeiten. Vermutlich hat sich davon schon vieles erledigt.
+
+* Es muss noch ein Knob konstruiert werden, der fehlt bisher vollständig. Am bestehenden Modell aus Freecad orientieren.
+
+* Eine Datei, ein Modell für den Knob erstellen. Hier gibt es schon eine freecad-Datei. Daran orientieren und die nutzen.
+
+
+
 ## step-Dateien der PCBs
 
 Dateien von Dani bereitgestellt am 15.02.2026. Vereinfachte Modelle, für bessere Handhabung.
@@ -14,7 +28,7 @@ D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
 
-# Übersicht bestehender Mechanik-Teile
+## Übersicht bestehender Mechanik-Teile
 
 "D:\GIT_Projekte\bat_source\mech"
 
@@ -35,7 +49,7 @@ Lid_CSACTT004.FCStd               | FreeCAD-Datei für den Deckel
 Transformer_Spacer_0.5mm.FCStd    | FreeCAD-Datei für einen Spacer
 
 
-# Dateien umbenennen
+## Dateien umbenennen
 
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\00_main_assembly.asm"
 "D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_housing.prt"
@@ -120,7 +134,7 @@ flowchart TD
 	* Gehäuse: 01
 	* Deckel: 02
 
-* Übersicht allers Dateien und Ordner, die umbenannt werden müssen
+* Übersicht aller Dateien und Ordner, die umbenannt werden müssen
 Alter Dateiname                       | Neuer Dateiname                   | Status                                                                       | Baugruppe
 ----                                  | ----                              | ----                                                                         | ----
 01_Hauptplatine                       |                                   | noch_nicht_umbenannt                                                         | Baugruppe
@@ -187,7 +201,7 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 
 * Dichtung liegt mittig. Abstand zur Innenkante 0.75mm
 
-## Dichtunge Abmessungen IMD-Tester
+## Dichtung Abmessungen IMD-Tester
 
 * Box hat Nase, die die Dichtung im Deckel drückt. Kante hat Breite von 1.5mm. Ende sauber auf der Innenseite vom Gehäuse. Kante ist 1.5mm hoch.
 
@@ -271,6 +285,22 @@ https://norelem.de/de/Produkt%C3%BCbersicht/Flexibles-Normteilesystem/07000/Mutt
 Bild mit Abmessungen der Einschmelzgewinde:
 
 ![Zeichnung](3djake-gewindeeinsaetze-50er-set-621566-de.jpg)
+
+
+
+
+## Abmessungen der Sicherung (aus bestehender step-Datei ausgelesen).
+Sind notwendig, um die Sicherung zum Drucken nachbauen zu koennen.
+Sicherung:
+	43.0530 x 18.1356
+	39.9034 x 14.9860
+
+	Hoehe 17.5260
+
+	Wand rundung: D 3.14960
+	Wand rundung innen: 0.762000
+
+	Wanddicke 1.57480
 
 
 ## Aufbau, Variante 2
