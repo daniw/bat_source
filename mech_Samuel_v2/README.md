@@ -1,5 +1,45 @@
 # Übersicht der Mechanik zur 60V-Quelle
 
+
+
+## Anmerkungen zum Modell und zu druckende Dateien
+
+Für die Befestigung der Hauptplatine sind im Moment im Modell Abmessungen für M3-Einschmelzgewinde vorgesehen. Für einen M4-Schraube und Einschmelzgewinde müssen die Abmessungen im CAD geändert werden.
+
+Folgend eine Liste aller zu druckenden Dateien. Dateien liegen alle unter "C:\GIT_Projekte\bat_source\mech_Samuel_v2\80_step_m3f_files\"
+
+Es gibt nur zwei große 3mf-bambu-Dateien, "__TPU_Teile.3mf" und "__ABS_Teile.3mf".
+In den beiden Dateien sind erstmal nur die step-Dateien reingezogen, Material und Druckplatte sind noch nicht ausgewählt.
+
+Datei                        | Inhalt                             | Material | Kommentar
+-----------------------------|------------------------------------|----------|----------
+01_01_housing.stp            | Gehäuse-Hauptteil                  | ABS      | __ABS_Teile.3mf
+02_01_lid.stp                | Gehäusedeckel                      | ABS      | __ABS_Teile.3mf
+05_cell_holder_minusplus.stp | Zellenhalter                       | ABS      | __ABS_Teile.3mf; zweimal drucken
+90_knob_koerper.stp          | Knob für den Poti                  | ABS      | __ABS_Teile.3mf; Ursprüngliche Datei und Konstruktion; nichts dran geändert. 
+01_06_fuse_lid.stp           | Deckel Sicherung                   | ABS      | __ABS_Teile.3mf
+02_03_seal.stp               | Dichtung Gehäuse/Deckel            | TPU      | __TPU_Teile.3mf
+01_04_fuse_seal_b.stp        | Dichtung Gehäuse/Sicherungsdeckel  | TPU      | __TPU_Teile.3mf
+01_05_staeubli_plug_seal.stp | Dichtung Gehäuse Bananen-Plugs     | TPU      | __TPU_Teile.3mf
+
+
+
+
+## Montage und Zusammenbau
+
+- Die Knöpfe und "Regler" werden am Deckel verschraubt.
+- Danach wird die UI-Platine am Deckel und den Knöpfen verlötet.
+
+- Die Bananen-Plugs werden mit ihrer Dichtung in das Gehäuse geschraubt.
+- Dann wird die Hauptplatine ins Gehäuse gesetzt und mit den Bananen-Steckern verlötet.
+- Hauptplatine wird mit dem Gehäuse verschraubt.
+
+- Deckel wird auf das Gehäuse gesetzt, die Stiftleiste stellt dann zwischen der Hauptplatine und der UI-Platine die Verbindung her.
+- Deckel wird mit vier Schrauben mit dem Gehäuse verschraubt.
+
+
+
+
 ## step-Dateien der PCBs
 
 Dateien von Dani bereitgestellt am 15.02.2026. Vereinfachte Modelle, für bessere Handhabung.
@@ -10,11 +50,12 @@ Dateien von Dani bereitgestellt am 15.02.2026. Vereinfachte Modelle, für besser
 D:\GIT_Projekte\bat_source
 D:\GIT_Projekte\bat_source\mech_Samuel_v2
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine
+
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\Hauptplatine
 D:\GIT_Projekte\bat_source\mech_Samuel_v2\99_PCB_step_files_leer_geraeumt\UserInterface
 
-# Übersicht bestehender Mechanik-Teile
+## Übersicht bestehender Mechanik-Teile
 
 "D:\GIT_Projekte\bat_source\mech"
 
@@ -29,38 +70,11 @@ CBOX11004-Körper.step             | Gehäuse-Grundform. Hauptteil
 Holder_Banana_Plugs.FCStd         | FreeCAD-Datei für die banana-plug-Führungen. Hier schon mit den Bohrungen
 Holder_Banana_Plugs.stp           | Äußere Führung für die banana-plugs
 Holder_Banana_Plugs_Drill.stp     | Äußere Führung für die banana-plugs mit Bohrungen
-Knob.3mf                          | Druckdatei für irgendwelche knobs. Auf dem Poti??
-Knob.FCStd                        | FreeCAD-Datei für irgendeinen knob. Auf dem Poti??
+Knob.3mf / Knob.FCStd             | FreeCAD- und Druckdatei für den knob auf dem Poti.
 Lid_CSACTT004.FCStd               | FreeCAD-Datei für den Deckel
 Transformer_Spacer_0.5mm.FCStd    | FreeCAD-Datei für einen Spacer
 
 
-# Dateien umbenennen
-
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\00_main_assembly.asm"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_housing.prt"
-
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\banana_position_skeleton.prt"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\battery_holder-holder_cut.prt"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\cbox11004-körper.prt"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\config.pro"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\holder_banana_plugs_drill.prt"
-"D:\GIT_Projekte\bat_source\mech_Samuel_v2\pcb_assembly.asm"
-
-
-Länge Platine: 154mm beim Ausschnitt
-
-
-## Montage und Zusammenbau
-
-- Die Knöpfe und "Regler" werden am Deckel verschraubt.
-- Danach wird die UI-Platine am Deckel und den Knöpfen verlötet.
-
-- Die Bananen-Plugs werden in das Gehäuse geschraubt.
-- Dann wird die Hauptplatine ins Gehäuse gesetzt und mit den Bananen-Steckern verlötet.
-- Hauptplatine wird mit dem Gehäuse verschraubt.
-
-- Deckel wird auf das Gehäuse gesetzt, die Stiftleiste stellt dann zwischen der Hauptplatine und der UI-Platine die Verbindung her. Deckel wird mit vier Schrauben mit dem Gehäuse verschraubt.
 
 # Aufbau CAD-Modell
 
@@ -120,13 +134,13 @@ flowchart TD
 	* Gehäuse: 01
 	* Deckel: 02
 
-* Übersicht allers Dateien und Ordner, die umbenannt werden müssen
+* Übersicht aller Dateien und Ordner, die umbenannt werden müssen
 Alter Dateiname                       | Neuer Dateiname                   | Status                                                                       | Baugruppe
 ----                                  | ----                              | ----                                                                         | ----
-01_Hauptplatine                       |                                   | noch_nicht_umbenannt                                                         | Baugruppe
-02_UserInterface                      |                                   | noch_nicht_umbenannt                                                         | Baugruppe
-80_step_m3f_files                     |                                   | noch_nicht_umbenannt                                                         | Baugruppe
-99_PCB_step_files_leer_geraeumt       |                                   | noch_nicht_umbenannt                                                         | Baugruppe
+01_Hauptplatine                       |                                   | Fertig                                                         | Baugruppe
+02_UserInterface                      |                                   | Fertig                                                         | Baugruppe
+80_step_m3f_files                     |                                   | Fertig                                                         | Baugruppe
+99_PCB_step_files_leer_geraeumt       |                                   | Fertig                                                         | Baugruppe
 02_pcb_assembly.asm                   | 00_02_pcb_assembly.asm                                  | noch_nicht_umbenannt                                   | Baugruppe
 02b_banana_position_skeleton.prt      | 00_02b_banana_position_skeleton.prt                                  | noch_nicht_umbenannt                      | Baugruppe
 05_cell_holder.prt                    | 01_05_cell_holder.prt                                  | noch_nicht_umbenannt                                    | Baugruppe
@@ -157,7 +171,6 @@ Alter Dateiname                       | Neuer Dateiname                   | Stat
 
 * Dichtring mit 12mm-Innendurchmesser unter die Bananen-Stecker machen, damit die gedichtet sind.
 
-
 * Abmessungen der Taster und vom Poti
 
 	* Taster: Durchmesser 12mm; Breite zwischen den beiden Abflachungen: 11.19 (Länge Abflachung: 4.33404)
@@ -187,7 +200,7 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 
 * Dichtung liegt mittig. Abstand zur Innenkante 0.75mm
 
-## Dichtunge Abmessungen IMD-Tester
+## Dichtung Abmessungen IMD-Tester
 
 * Box hat Nase, die die Dichtung im Deckel drückt. Kante hat Breite von 1.5mm. Ende sauber auf der Innenseite vom Gehäuse. Kante ist 1.5mm hoch.
 
@@ -195,31 +208,16 @@ https://www.3djake.de/3djake/gewindeeinsaetze-50er-set?sai=9419
 
 ## Weiteres Vorgehen in der Konstruktion:
 
-* Dann die Füße für den Deckel machen und die Dichtung auf die Innenseite der Schrauben legen.
-
-* Zylinder-Röhren-Füße anpassen für Einschmelzgewinde für die Platine.
-
-* Bohrungen in den Zellenhaltern etwas größer machen, dass safe eine M3 durchgeht.
-
-* Bohrungen in die Zellenhalter machen, damit man die Hauptplatine und die Zellenhalter verschrauben kann.
-
-* Dichtung und Deckel für die Sicherung anpassen. 
 
 * Passende Schrauben suchen und als Modell einbauen.
 
 * Überlegen, wie man ein Spiel in alle drei Raumrichtungen einbauen kann, siehe Diskussion mit Luise. Es dürfen keine Kräfte auf den Viel-Pin-Stecker ausgeübt werden. Und Fertigungstoleranzen müssen ausgeglichen werden können.
-
-* Reste der Dichtungen an der Fuse-Lid aufräumen. Dateien passend umbenennen.
-
-* Deckel zum Gehäuse soll auch ein Einschmelzgewinde bekommen. M3 sollte hier ausreichend sein.
 
 * Einschmelzgewinde von der Hauptplatine zum Gehäuse auf M4 vergroessern. Sub-Modell vom Einschmelzgewinde muss ausgetauscht werden. Röhre muss neu konstruiert werden.+
 
 * Schrauben raussuchen.
 	* M3 Schrauben fuer Deckel und Deckel ueber der Sicherung
 	* M4 Schrauben fuer Hauptplatine
-
-* Deckel der Sicherung anpassen. Halbkreis um die Bohrung der Schraube machen. Rahmen im Gehäuse vergroessern. 
 
 * Schrauben am Deckel der Sicherung muessen Senkkopf sein, damit das Gehäuse unten glatt abschliesst.
 
@@ -273,6 +271,22 @@ Bild mit Abmessungen der Einschmelzgewinde:
 ![Zeichnung](3djake-gewindeeinsaetze-50er-set-621566-de.jpg)
 
 
+
+
+## Abmessungen der Sicherung (aus bestehender step-Datei ausgelesen).
+Sind notwendig, um die Sicherung zum Drucken nachbauen zu koennen.
+Sicherung:
+	43.0530 x 18.1356
+	39.9034 x 14.9860
+
+	Hoehe 17.5260
+
+	Wand rundung: D 3.14960
+	Wand rundung innen: 0.762000
+
+	Wanddicke 1.57480
+
+
 ## Aufbau, Variante 2
 
 
@@ -304,3 +318,15 @@ Kleinst-möglicher Abstand zwischen den beiden Platinen sind 9.5mm. Also etwas m
 * Relativer Suchpfad in die search-Datei einbauen, damit nicht verschiedene Pfad für Workstation und Laptop notwendig sind.
 
 * In der config-Datei die Ansicht von Ebenen, Achsen, Punkte, Koordinatensystemen, ... abschalten.
+
+
+
+## Aufgabenliste
+
+
+
+* Die Tabelle der umzubenennden Dateien aufräumen.
+
+* Liste mit Anmerkungen, Kommentaren, etc überarbeiten. Vermutlich hat sich davon schon vieles erledigt.
+
+
