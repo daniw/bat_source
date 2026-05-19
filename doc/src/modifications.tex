@@ -296,6 +296,20 @@
 {}
 {}
 
+\ModItemOpen
+{Current measurement noise}
+{The noise of the current measurement is aproximately \qty{100}{\milli\ampere}, which is caused by the input noise of the instrumentation amplifier. }
+{The instrumentation amplifier should be replaced by a current sense amplifier such as INA181. }
+{}
+{}
+
+\ModItemOpen
+{Unreliable QSPI operation}
+{The level of the pins QSPI.IO2 and QSPI.IO3 is undefined in single and dual SPI mode, which can lead to the flash entering hold or write protect mode. }
+{Pull- up resistors should be added to the QSPI.IO2 and QSPI.IO3 pins. }
+{}
+{}
+
 \end{ModTable}
 
 \FloatBarrier
@@ -364,6 +378,27 @@
 {Overcurrent protection always active}
 {The overcurrent protection is always active because the threshold does not account for the offset $\frac{VREF}{2}$ on the current mesurement. }
 {Change R105 to \qty{1}{\mega\ohm} and R106 to \qty{330}{\kilo\ohm}. }
+{}
+{}
+
+\ModItemOpen
+{Offset in isolation current measurement}
+{The isolation current measurement has an offset of \qty{129}{\micro\ampere} due to the current introduced by U14A. }
+{}
+{}
+{}
+
+\ModItemOpen
+{Current measurement noise}
+{The noise of the current measurement is aproximately \qty{100}{\milli\ampere}, which is caused by the input noise of the instrumentation amplifier. }
+{The instrumentation amplifier should be replaced by a current sense amplifier such as INA181. }
+{}
+{}
+
+\ModItemOpen
+{Unreliable QSPI operation}
+{The level of the pins QSPI.IO2 and QSPI.IO3 is undefined in single and dual SPI mode, which can lead to the flash entering hold or write protect mode. }
+{Pull- up resistors should be added to the QSPI.IO2 and QSPI.IO3 pins. }
 {}
 {}
 
@@ -444,16 +479,16 @@
 \begin{ModTable}
 
 \ModItemOpen
-{None so far}
-{No modification so far}
-{There is no modification so far. }
+{Unreliable ambient light sensor}
+{The ambient light sensor is partly unresponsive or responds on a differend \ac{I2C} address. }
+{}
 {}
 {}
 
 \ModItemOpen
-{Unreliable ambient light sensor}
-{The ambient light sensor is partly unresponsive or responds on a differend \ac{I2C} address. }
-{}
+{Display not working}
+{The IM1 and IM2 pins of the display have an internal \qty{10}{\kilo\ohm} pull-down resistor. The external pull-up resistors are \qty{10}{\kilo\ohm}, which is not low enough to set the communication mode of the display to 4-wire \ac{SPI}. }
+{The value of the pull-up resistors R30 and R31 should be reduced to \qty{1}{\kilo\ohm}. }
 {}
 {}
 
@@ -476,6 +511,27 @@
 {Hole size for breakouts}
 {The clearance between the holes of the pushbutton breakout and the tracks running between them is too low for manufacturing. }
 {The hole size or location must be adjusted. }
+{}
+{}
+
+\ModItemOpen
+{Unreliable ambient light sensor}
+{The ambient light sensor is partly unresponsive or responds on a differend \ac{I2C} address. }
+{}
+{}
+{}
+
+\ModItemOpen
+{Display not working}
+{The IM1 and IM2 pins of the display have an internal \qty{10}{\kilo\ohm} pull-down resistor. The external pull-up resistors are \qty{10}{\kilo\ohm}, which is not low enough to set the communication mode of the display to 4-wire \ac{SPI}. }
+{The value of the pull-up resistors R30 and R31 should be reduced to \qty{1}{\kilo\ohm}. }
+{}
+{}
+
+\ModItemOpen
+{Missmatched component size}
+{The size of the component 4U7/0805/16V/X7R does not mathc the footprint. The cause for this is an incorrect supplier link. }
+{The supplier link 3 of the component 4U7/0805/16V/X7R should be replaced with a component in 0805 size. }
 {}
 {}
 
