@@ -85,8 +85,8 @@ void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_P,
 		contr->sat_flag = 1;
 	} else {
 		contr->sat_flag = 0;
+		contr->prev_I_action = contr->I_action;
 	}
 
-	contr->prev_I_action = contr->I_action;
 	contr->I_action_out = contr->I_action;
 }

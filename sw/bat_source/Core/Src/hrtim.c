@@ -21,7 +21,7 @@
 #include "hrtim.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "stdio.h"
 /* USER CODE END 0 */
 
 HRTIM_HandleTypeDef hhrtim1;
@@ -66,7 +66,7 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_HRTIM_ADCPostScalerConfig(&hhrtim1, HRTIM_ADCTRIGGER_1, 0x28) != HAL_OK)
+  if (HAL_HRTIM_ADCPostScalerConfig(&hhrtim1, HRTIM_ADCTRIGGER_1, 19) != HAL_OK)
   {
     Error_Handler();
   }
@@ -86,11 +86,11 @@ void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_HRTIM_ADCPostScalerConfig(&hhrtim1, HRTIM_ADCTRIGGER_3, 0x28) != HAL_OK)
+  if (HAL_HRTIM_ADCPostScalerConfig(&hhrtim1, HRTIM_ADCTRIGGER_3, 19) != HAL_OK)
   {
     Error_Handler();
   }
-  pTimeBaseCfg.Period = 0x1400;
+  pTimeBaseCfg.Period = 51200;
   pTimeBaseCfg.RepetitionCounter = 0x00;
   pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL32;
   pTimeBaseCfg.Mode = HRTIM_MODE_CONTINUOUS;
@@ -121,7 +121,7 @@ void MX_HRTIM1_Init(void)
   pTimerCfg.StartOnSync = HRTIM_SYNCSTART_DISABLED;
   pTimerCfg.ResetOnSync = HRTIM_SYNCRESET_DISABLED;
   pTimerCfg.DACSynchro = HRTIM_DACSYNC_NONE;
-  pTimerCfg.PreloadEnable = HRTIM_PRELOAD_DISABLED;
+  pTimerCfg.PreloadEnable = HRTIM_PRELOAD_ENABLED;
   pTimerCfg.UpdateGating = HRTIM_UPDATEGATING_INDEPENDENT;
   pTimerCfg.BurstMode = HRTIM_TIMERBURSTMODE_MAINTAINCLOCK;
   pTimerCfg.RepetitionUpdate = HRTIM_UPDATEONREPETITION_DISABLED;
@@ -130,21 +130,29 @@ void MX_HRTIM1_Init(void)
   pTimerCfg.FaultLock = HRTIM_TIMFAULTLOCK_READWRITE;
   pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_ENABLED;
   pTimerCfg.DelayedProtectionMode = HRTIM_TIMER_A_B_C_DELAYEDPROTECTION_DISABLED;
-  pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_NONE;
+  pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_TIMER_B;
   pTimerCfg.ResetTrigger = HRTIM_TIMRESETTRIGGER_NONE;
-  pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_DISABLED;
-  pTimerCfg.ReSyncUpdate = HRTIM_TIMERESYNC_UPDATE_UNCONDITIONAL;
+  pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_ENABLED;
+  pTimerCfg.ReSyncUpdate = HRTIM_TIMERESYNC_UPDATE_CONDITIONAL;
   if (HAL_HRTIM_WaveformTimerConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_B, &pTimerCfg) != HAL_OK)
   {
     Error_Handler();
   }
+  pTimerCfg.PreloadEnable = HRTIM_PRELOAD_DISABLED;
   pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_DISABLED;
+  pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_NONE;
+  pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_DISABLED;
+  pTimerCfg.ReSyncUpdate = HRTIM_TIMERESYNC_UPDATE_UNCONDITIONAL;
   if (HAL_HRTIM_WaveformTimerConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, &pTimerCfg) != HAL_OK)
   {
     Error_Handler();
   }
+  pTimerCfg.PreloadEnable = HRTIM_PRELOAD_ENABLED;
   pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_ENABLED;
   pTimerCfg.DelayedProtectionMode = HRTIM_TIMER_D_E_DELAYEDPROTECTION_DISABLED;
+  pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_TIMER_E;
+  pTimerCfg.ResetUpdate = HRTIM_TIMUPDATEONRESET_ENABLED;
+  pTimerCfg.ReSyncUpdate = HRTIM_TIMERESYNC_UPDATE_CONDITIONAL;
   if (HAL_HRTIM_WaveformTimerConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_E, &pTimerCfg) != HAL_OK)
   {
     Error_Handler();
@@ -344,12 +352,12 @@ void hrtim_start_timer(void) {
  * @param freq Frequency to set in Hz.
  */
 void hrtim_set_freq(uint8_t channel, uint32_t freq) {
-	HRTIM1->sTimerxRegs[channel].PERxR = (0x7A120000 / freq);
-	HRTIM1->sTimerxRegs[channel].TIMxCR = (HRTIM1->sTimerxRegs[channel].TIMxCR & (~ HRTIM_PRESCALERRATIO_DIV4)) | HRTIM_PRESCALERRATIO_MUL32;
+	HRTIM1->sTimerxRegs[channel].PERxR = (0x98968000 / freq);
+	//HRTIM1->sTimerxRegs[channel].TIMxCR = (HRTIM1->sTimerxRegs[channel].TIMxCR & (~ HRTIM_PRESCALERRATIO_DIV4)) | HRTIM_PRESCALERRATIO_MUL32;
 }
 
 /**
- * Set the duty cacle for the specified channel
+ * Set the duty cycle for the specified channel
  * @param channel Channel for which to set the frequency.
  * @param value duty in pu from 0 to 1
  */
@@ -360,13 +368,15 @@ void hrtim_set_duty(uint8_t channel, float value) {
 		value = 0.0F;
 	else if (value > 1.0F)
 		value = 1.0F;
-	duty = (HRTIM1->sTimerxRegs[1].PERxR * value);
+	duty = (HRTIM1->sTimerxRegs[channel].PERxR * value);
 	// Enforce more strict limit imposed by HRTIM
 	if (duty < 0x60)
 		duty = 0x60;
 	else if (duty > 0xFFDF)
 		duty = 0xFFDF;
 	HRTIM1->sTimerxRegs[channel].CMP1xR = duty;
+
+
 }
 
 void hrtim_enable(uint8_t channel) {
@@ -384,6 +394,9 @@ void hrtim_enable(uint8_t channel) {
 }
 void hrtim_disable(uint8_t channel) {
 	switch (channel) {
+	case HRTIM_CHANNEL_ALL:
+		HRTIM1->sCommonRegs.ODISR = (HRTIM_OENR_TB1OEN | HRTIM_OENR_TB2OEN) | (HRTIM_OENR_TE1OEN | HRTIM_OENR_TE2OEN) | (HRTIM_OENR_TC1OEN | HRTIM_OENR_TC2OEN);
+		break;
 	case HRTIM_CHANNEL_PRIM:
 		HRTIM1->sCommonRegs.ODISR = (HRTIM_OENR_TB1OEN | HRTIM_OENR_TB2OEN);
 		break;

@@ -21,7 +21,7 @@
 #include "aux_io_ctrl.h"
 #include "bq76905.h"
 #include "adc.h"
-#include "ADS131M04.h"
+#include "ads131m04.h"
 #include "bq76905.h"
 #include <stdarg.h>
 #include "tim.h"
@@ -29,6 +29,8 @@
 #include "ui_ctrl.h"
 #include "gpio.h"
 #include "w25n01gv.h"
+
+#include "ctrl_param.h"
 
 #ifdef CLI_ENABLED
 
@@ -57,6 +59,8 @@ extern ADS131M04_handle ext_adc;
 extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
 extern w25n01gv_handle flash;
+extern PID_controller_t ctrl_pi_voltage;
+extern PID_controller_t ctrl_pi_current;
 
 // Uart handling
 UART_HandleTypeDef *cli_huart;
@@ -86,6 +90,8 @@ void cmd_readFlash(void);
 void cmd_eraseFlash(void);
 void cmd_writeFlash(void);
 void cmd_testFlash(void);
+void cmd_changeState(void);
+void cmd_setCtrlGain(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -109,7 +115,9 @@ void (*cmd_func[])(void) = {
 	cmd_readFlash,
 	cmd_eraseFlash,
 	cmd_writeFlash,
-	cmd_testFlash
+	cmd_testFlash,
+	cmd_changeState,
+	cmd_setCtrlGain
 };
 
 // List of command names
@@ -134,7 +142,9 @@ const char *cmd_str[] = {
 		"readFlash",
 		"eraseFlash",
 		"writeFlash",
-		"testFlash"
+		"testFlash",
+		"state",
+		"setPI"
 };
 
 // List of command names including arguments
@@ -159,7 +169,9 @@ const char *cmd_arg_str[] = {
 		"readFlash [address] [size]",
 		"eraseFlash [address / \"Full\"] {number of blocks}",
 		"writeFlash [address] [size] [data]",
-		"testFlash"
+		"testFlash",
+		"state [new state]",
+		"setPI [P Gain] [I Gain]"
 };
 
 int cmd_index;
@@ -389,7 +401,7 @@ void cmd_help(void) {
 		for (int i = 0; i < num_commands; i++) {
 			if (strcmp(arg_locs[1], cmd_str[i]) == 0) {
 				printf("Usage: \r\n");
-				printf("  %s\n", cmd_arg_str[i]);
+				printf("  %s\r\n", cmd_arg_str[i]);
 				return;
 			}
 		}
@@ -397,7 +409,7 @@ void cmd_help(void) {
 	}
 	printf("Simple Interface for configuration only.\r\n");
 	for (int i = 0; i < num_commands; i++){
-		printf("\t%s\n", cmd_arg_str[i]);
+		printf("\t%s\r\n", cmd_arg_str[i]);
 	}
 }
 
@@ -461,34 +473,34 @@ void cmd_turnOff(void) {
 
 void cmd_printGPIO(void) {
 	printf("Input Pins: \n");
-	printf("Button Out:         %d\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
-	printf("Button OK:          %d\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
-	printf("Button ESC:         %d\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
+	printf("Button Out:         %d\r\n", HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin));
+	printf("Button OK:          %d\r\n", HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin));
+	printf("Button ESC:         %d\r\n", HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin));
 
-	printf("I2C Alert:          %d\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
-	printf("ADC_DRDY:           %d\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
-	printf("UI Present:         %d\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
-	printf("OVP Pin Latch:      %d\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
-	printf("OCP Pin Latch:      %d\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
+	printf("I2C Alert:          %d\r\n", HAL_GPIO_ReadPin(I2C_ALERT_GPIO_Port, I2C_ALERT_Pin));
+	printf("ADC_DRDY:           %d\r\n", HAL_GPIO_ReadPin(ADC_DRDY_N_GPIO_Port, ADC_DRDY_N_Pin));
+	printf("UI Present:         %d\r\n", HAL_GPIO_ReadPin(UI_PRESENT_GPIO_Port, UI_PRESENT_Pin));
+	printf("OVP Pin Latch:      %d\r\n", HAL_GPIO_ReadPin(OVP_N_GPIO_Port, OVP_N_Pin));
+	printf("OCP Pin Latch:      %d\r\n", HAL_GPIO_ReadPin(OCP_N_GPIO_Port, OCP_N_Pin));
 
-	printf("HW Revision: 	    %d\n", aux_io_ctrl_readHW_Revision());
+	printf("HW Revision: 	    %d\r\n", aux_io_ctrl_readHW_Revision());
 
-	printf("Encoder State:      %d\n", tim_encoder_read());
+	printf("Encoder State:      %d\r\n", tim_encoder_read());
 	printf("\n");
 
 	printf("Output Pins: \n");
-	printf("DISPLAY_WR:         %d\n", HAL_GPIO_ReadPin(DISPLAY_WR_GPIO_Port, DISPLAY_WR_Pin));
-	printf("CONV_CTRL_EN:       %d\n", HAL_GPIO_ReadPin(CONV_CTRL_EN_GPIO_Port, CONV_CTRL_EN_Pin));
-	printf("ON_REQ:             %d\n", HAL_GPIO_ReadPin(ON_REQ_GPIO_Port, ON_REQ_Pin));
-	printf("OUT_SEL_ISO:        %d\n", HAL_GPIO_ReadPin(OUT_SEL_ISO_GPIO_Port, OUT_SEL_ISO_Pin));
-	printf("BMS_CTRL_WAKEUP:    %d\n", HAL_GPIO_ReadPin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin));
-	printf("SHUNT_EN:           %d\n", HAL_GPIO_ReadPin(SHUNT_EN_GPIO_Port, SHUNT_EN_Pin));
-	printf("OUT_SEL_HV:         %d\n", HAL_GPIO_ReadPin(OUT_SEL_HV_GPIO_Port, OUT_SEL_HV_Pin));
-	printf("OVP_RESET:          %d\n", HAL_GPIO_ReadPin(OVP_RESET_GPIO_Port, OVP_RESET_Pin));
-	printf("DISCHARGE:          %d\n", HAL_GPIO_ReadPin(DISCHARGE_N_GPIO_Port, DISCHARGE_N_Pin));
-	printf("HV_CTRL_EN:         %d\n", HAL_GPIO_ReadPin(HV_CTRL_EN_GPIO_Port, HV_CTRL_EN_Pin));
-	printf("SHUNT_ISO_EN:       %d\n", HAL_GPIO_ReadPin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin));
-	printf("ADC_SYNC_RESET:     %d\n", HAL_GPIO_ReadPin(ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin));
+	printf("DISPLAY_WR:         %d\r\n", HAL_GPIO_ReadPin(DISPLAY_WR_GPIO_Port, DISPLAY_WR_Pin));
+	printf("CONV_CTRL_EN:       %d\r\n", HAL_GPIO_ReadPin(CONV_CTRL_EN_GPIO_Port, CONV_CTRL_EN_Pin));
+	printf("ON_REQ:             %d\r\n", HAL_GPIO_ReadPin(ON_REQ_GPIO_Port, ON_REQ_Pin));
+	printf("OUT_SEL_ISO:        %d\r\n", HAL_GPIO_ReadPin(OUT_SEL_ISO_GPIO_Port, OUT_SEL_ISO_Pin));
+	printf("BMS_CTRL_WAKEUP:    %d\r\n", HAL_GPIO_ReadPin(BMS_CTRL_WAKEUP_GPIO_Port, BMS_CTRL_WAKEUP_Pin));
+	printf("SHUNT_EN:           %d\r\n", HAL_GPIO_ReadPin(SHUNT_EN_GPIO_Port, SHUNT_EN_Pin));
+	printf("OUT_SEL_HV:         %d\r\n", HAL_GPIO_ReadPin(OUT_SEL_HV_GPIO_Port, OUT_SEL_HV_Pin));
+	printf("OVP_RESET:          %d\r\n", HAL_GPIO_ReadPin(OVP_RESET_GPIO_Port, OVP_RESET_Pin));
+	printf("DISCHARGE:          %d\r\n", HAL_GPIO_ReadPin(DISCHARGE_N_GPIO_Port, DISCHARGE_N_Pin));
+	printf("HV_CTRL_EN:         %d\r\n", HAL_GPIO_ReadPin(HV_CTRL_EN_GPIO_Port, HV_CTRL_EN_Pin));
+	printf("SHUNT_ISO_EN:       %d\r\n", HAL_GPIO_ReadPin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin));
+	printf("ADC_SYNC_RESET:     %d\r\n", HAL_GPIO_ReadPin(ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin));
 }
 
 void cmd_setGPIO(void) {
@@ -522,6 +534,7 @@ void cmd_setRef(void){
 
 		char *end;
 		ctrl_main_handle.poti_reference = strtol(arg_locs[1], &end, 10);
+		printf("Set Reference to: %d\r\n", ctrl_main_handle.poti_reference);
 }
 
 
@@ -570,33 +583,33 @@ void cmd_printADC() {
 	}
 	for(int i=0; i<loopcount; i++)	{
 		adc_convert_data();
-		printf("Triggered ADC Measurements: \n");
-		printf(" 	 v_in    (ADC3_IN3 ) : %u \t: %d mV\n",  adc_data.raw.v_in   , adc_data.converted.v_in  );
-		printf(" 	 v_out   (ADC4_IN2 ) : %u \t: %ld mV\n", adc_data.raw.v_out  , adc_data.converted.v_out );
-		printf(" 	 v_term  (ADC2_IN2 ) : %u \t: %ld mV\n", adc_data.raw.v_term , adc_data.converted.v_term);
-		printf(" 	 v_hv    (ADC4_IN5 ) : %u \t: %ld mV\n", adc_data.raw.v_hv   , adc_data.converted.v_hv  );
-		printf(" 	 i_bat   (ADC5_IN1 ) : %u \t: %d mA\n",  adc_data.raw.i_bat  , adc_data.converted.i_bat );
-		printf(" 	 i_out   (ADC1_IN1)  : %u \t: %d mA\n",  adc_data.raw.i_out  , adc_data.converted.i_out );
-		printf(" 	 i_iso   (ADC5_IN2)  : %u \t: %d mA\n",  adc_data.raw.i_iso  , adc_data.converted.i_iso );
+		printf("Triggered ADC Measurements: \r\n");
+		printf(" 	 v_in    (ADC3_IN3 ) : %u \t: %d mV\r\n",  adc_data.raw.v_in   , adc_data.converted.v_in  );
+		printf(" 	 v_out   (ADC4_IN2 ) : %u \t: %ld mV\r\n", adc_data.raw.v_out  , adc_data.converted.v_out );
+		printf(" 	 v_term  (ADC2_IN2 ) : %u \t: %ld mV\r\n", adc_data.raw.v_term , adc_data.converted.v_term);
+		printf(" 	 v_hv    (ADC4_IN5 ) : %u \t: %ld mV\r\n", adc_data.raw.v_hv   , adc_data.converted.v_hv  );
+		printf(" 	 i_bat   (ADC5_IN1 ) : %u \t: %d mA\r\n",  adc_data.raw.i_bat  , adc_data.converted.i_bat );
+		printf(" 	 i_out   (ADC1_IN1)  : %u \t: %d mA\r\n",  adc_data.raw.i_out  , adc_data.converted.i_out );
+		printf(" 	 i_iso   (ADC5_IN2)  : %u \t: %d mA\r\n",  adc_data.raw.i_iso  , adc_data.converted.i_iso );
 
 		printf("ADC Measurements:\n");
-		printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
-		printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %i °C\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
-		printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
-		printf(" 		temp_inductor  (ADC5_IN9 ) : %u \t: %i °C\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
-		printf(" 		temp_current   (ADC5_IN12) : %u \t: %i °C\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
-		printf(" 		temp_prim      (ADC5_IN13) : %u \t: %i °C\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
-		printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
-		printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
-		printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
-		printf(" 		int_temp       (ADC5     ) : %u \t: %i °C\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
-		printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
-		printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
+		printf(" 		v_3v3          (ADC5_IN6 ) : %u \t: %u mV\r\n", adc_data.raw.v_3v3        , adc_data.converted.v_3v3       );
+		printf(" 		temp_sec       (ADC5_IN7 ) : %u \t: %i °C\r\n", adc_data.raw.temp_sec     , adc_data.converted.temp_sec    );
+		printf(" 		v_3v3a         (ADC5_IN8 ) : %u \t: %u mV\r\n", adc_data.raw.v_3v3a       , adc_data.converted.v_3v3a      );
+		printf(" 		temp_inductor  (ADC5_IN9 ) : %u \t: %i °C\r\n", adc_data.raw.temp_trafo   , adc_data.converted.temp_trafo  );
+		printf(" 		temp_current   (ADC5_IN12) : %u \t: %i °C\r\n", adc_data.raw.temp_current , adc_data.converted.temp_current);
+		printf(" 		temp_prim      (ADC5_IN13) : %u \t: %i °C\r\n", adc_data.raw.temp_prim    , adc_data.converted.temp_prim   );
+		printf(" 		v_15v          (ADC5_IN14) : %u \t: %u mV\r\n", adc_data.raw.v_15v        , adc_data.converted.v_15v       );
+		printf(" 		v_vcc          (ADC5_IN15) : %u \t: %u mV\r\n", adc_data.raw.v_vcc        , adc_data.converted.v_vcc       );
+		printf(" 		v_5v           (ADC5_IN16) : %u \t: %u mV\r\n", adc_data.raw.v_5v         , adc_data.converted.v_5v        );
+		printf(" 		int_temp       (ADC5     ) : %u \t: %i °C\r\n", adc_data.raw.int_temp     , adc_data.converted.int_temp    );
+		printf(" 		v_bat          (ADC5     ) : %u \t: %u mV\r\n", adc_data.raw.v_bat        , adc_data.converted.v_bat       );
+		printf(" 		v_ref_int      (ADC5     ) : %u \t: %u mV\r\n", adc_data.raw.v_ref_int    , adc_data.converted.v_ref_int   );
 
-		printf("  Ext V_Term : %li : %li mV\n", ext_adc.channelData[0], adc_data.converted.v_term_ext_mv);
-		printf("  Ext I_Out  : %li : %li mA\n", ext_adc.channelData[1], adc_data.converted.i_out_ext_mA );
-		printf("  Ext V_Sns  : %li : %li uV\n", ext_adc.channelData[2], adc_data.converted.v_sens_ext_uv);
-		printf("  Ext I_Iso  : %li : %li uA\n", ext_adc.channelData[3], adc_data.converted.i_iso_ext_uA );
+		printf("  Ext V_Term : %li : %li mV\r\n", ext_adc.channelData[0], adc_data.converted.v_term_ext_mv);
+		printf("  Ext I_Out  : %li : %li mA\r\n", ext_adc.channelData[1], adc_data.converted.i_out_ext_mA );
+		printf("  Ext V_Sns  : %li : %li uV\r\n", ext_adc.channelData[2], adc_data.converted.v_sens_ext_uv);
+		printf("  Ext I_Iso  : %li : %li uA\r\n", ext_adc.channelData[3], adc_data.converted.i_iso_ext_uA );
 	}
 }
 
@@ -1274,15 +1287,31 @@ void cmd_testFlash(void){
 #endif // CLI_FLASH_TEST_LAST_ECC_FAIL
 }
 
-void cmd_change_state(void){
+void cmd_changeState(void){
 	uint8_t  newstate;
 	CLI_CHECK_ARG_CNT(1);
 
 	char *end;
 	newstate = strtol(arg_locs[1], &end, 10);
-	//statemachine_step();
+	statemachine_switchfromIdle(newstate);
 }
 
+void cmd_setCtrlGain(void) {
+	float P, I;
+	uint8_t id;
+	char *end;
+	id = strtol(arg_locs[1], &end, 10);
+	P = strtof(arg_locs[2], &end);
+	I = strtof(arg_locs[3], &end);
+	if (id == 0) {
+		ctrl_pi_voltage.P_gain = P;
+		ctrl_pi_voltage.I_gain = I / CTRL_FREQ;
+	} else if (id == 1) {
+		ctrl_pi_current.P_gain = P;
+		ctrl_pi_current.I_gain = I / CTRL_FREQ;
+
+	}
+}
 
 #endif
 

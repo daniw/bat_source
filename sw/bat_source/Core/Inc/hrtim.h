@@ -35,6 +35,7 @@ extern "C" {
 extern HRTIM_HandleTypeDef hhrtim1;
 
 /* USER CODE BEGIN Private defines */
+#define HRTIM_CHANNEL_ALL 0
 #define HRTIM_CHANNEL_PRIM 1
 #define HRTIM_CHANNEL_SEK 4
 #define HRTIM_CHANNEL_HV 2

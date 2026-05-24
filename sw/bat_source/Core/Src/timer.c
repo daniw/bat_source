@@ -36,6 +36,8 @@ typedef struct
 
 timer_handle_t timer_handle;
 
+extern TIM_HandleTypeDef htim2;
+
 /**
  * Callback from the timer interrupt. Rises the timer events.
  * @param timer pointer to the timer instance.
@@ -81,7 +83,7 @@ void timer_init(void)
 {
 	list_Init(&(timer_handle.liststr), (void**) timer_handle.list, timer_handle.subs, sizeof(TIMER_SUB), TIMER_SUB_COUNT);
 	timer_handle.frq = TIMER_FREQ;
-	//timer_init_hw(&timer_handle,TIMER_FREQ);
+	timer_handle.instance = &htim2;
 }
 
 /**

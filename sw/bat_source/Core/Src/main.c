@@ -38,7 +38,6 @@
 #include "dac.h"
 #include "bq76905.h"
 #include "bq76905_config.h"
-#include "ADS131M04.h"
 #include "ctrl_main.h"
 #include "timer.h"
 #include "display.h"
@@ -53,6 +52,7 @@
 #include "stdint.h"
 #include "lcd.h"
 #include "w25n01gv.h"
+#include "ads131m04.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,7 +99,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	EVENT_STRUCT e;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -167,7 +167,7 @@ int main(void)
    */
   adc_init(ext_adc.channelData);
   ADS131M04_init(&ext_adc, &hspi3, SPI_CS_GPIO_Port, SPI_CS_Pin, ADC_SYNC_RESET_N_GPIO_Port, ADC_SYNC_RESET_N_Pin);
-  adc_configure_mode(STATEMACHINE_MODE_60V_OUT);
+  adc_configure_mode(STATEMACHINE_MODE_10A_OUT);
   adc_start();
   /*
    * Wakeup BMS and configure if necessary
@@ -196,6 +196,11 @@ int main(void)
   gpio_turnOn();
 
   LCD_init();
+
+  ctrl_main_init();
+  statemachine_init();
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -258,12 +263,41 @@ int main(void)
 
 	  i2c_WriteBlocking(led_address, led_currents, sizeof(led_currents));*/
 
+	  e = event_Get();
+	  switch(e.event){
+		case EVENT_VOID:
+		case EVENT_INIT:
+			break;
+		case EVENT_IIC_RX:
+		case EVENT_IIC_TX:
+			if(e.callback != 0)
+				e.callback(e.argument);
+			break;
+		case EVENT_IIC_ERROR:
+			break;
+		case EVENT_EEPROM_READ:
+			break;
+		case EVENT_EEPROM_TIMEOUT:
+			break;
+		case EVENT_SM_STEP:
+			statemachine_step();
+			break;
+		case EVENT_BMS_TIMER:
+			BQ76905_readAllValuesAsync(&bms);
+			break;
+		case EVENT_EVENT:
+		default:
+			break;
+
+	  }
+
+
 	  /*
 	   * Loop delay
 	   */
 	  HAL_Delay(1);
 
-	  LCD_Test();
+	  //LCD_Test();
 
     /* USER CODE END WHILE */
 

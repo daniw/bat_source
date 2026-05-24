@@ -18,7 +18,7 @@ typedef enum
 	  STATEMACHINE_MODE_60V_OUT,
 	  STATEMACHINE_MODE_10A_OUT,
 	  STATEMACHINE_MODE_RESISTANCE_1A,
-	  //STATEMACHINE_MODE_RESISTANCE_1mA,
+	  STATEMACHINE_MODE_RESISTANCE_1mA,
 	  STATEMACHINE_MODE_ISOMETER,
 	  STATEMACHINE_MODE_VOLTMETER,
 	  STATEMACHINE_MODE_SETTINGS,
@@ -45,5 +45,7 @@ typedef struct{
 
 void statemachine_init(void);
 void statemachine_step(void);
+
+void statemachine_switchfromIdle(statemachine_modes_t mode);
 
 #endif /* INC_STATEMACHINE_H_ */
