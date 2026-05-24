@@ -34,9 +34,10 @@ void ctrl_main_ctrl_current(int16_t current_meas_mA,
  */
 void ctrl_main_init(void) {
 
-	ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_P,
-	CTRL_PARAM_VOLTAGE_I, 0, CTRL_PARAM_VOLTAGE_DUTY_SAT_HIGH,
-	CTRL_PARAM_VOLTAGE_DUTY_SAT_LOW);
+
+	ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BUCK_P,
+	CTRL_PARAM_VOLTAGE_BUCK_I, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
+	CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_LOW);
 
 	ctrl_PID_controller_init(&ctrl_pi_current, CTRL_PARAM_CURRENT_P,
 	CTRL_PARAM_CURRENT_I, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
@@ -52,12 +53,18 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 	switch (mode) {
 
 	case CTRL_MODE_60V:
+		ctrl_pi_voltage.prev_I_action = 0.0;
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_LOW);
 		hrtim_set_freq(HRTIM_CHANNEL_SEK, CTRL_PARAM_SW_FREQ_HIGH);
-		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_HIGH);
+		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_LOW);
 		hrtim_set_duty(HRTIM_CHANNEL_SEK, CTRL_PARAM_CONST_DUTY_HIGH);
 		hrtim_enable(HRTIM_CHANNEL_PRIM);
 		hrtim_enable(HRTIM_CHANNEL_SEK);
+
+		ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BOOST_P,
+		CTRL_PARAM_VOLTAGE_BOOST_I, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
+		CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
+
 		break;
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
@@ -70,6 +77,10 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 		hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0);
 		hrtim_enable(HRTIM_CHANNEL_PRIM);
 		hrtim_enable(HRTIM_CHANNEL_SEK);
+
+		ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BUCK_P,
+		CTRL_PARAM_VOLTAGE_BUCK_I, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
+		CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_LOW);
 		break;
 	case CTRL_MODE_ISOMETER:
 		break;

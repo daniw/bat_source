@@ -106,7 +106,7 @@ void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   if (HAL_HRTIM_RollOverModeConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_B, HRTIM_TIM_FEROM_BOTH|HRTIM_TIM_BMROM_BOTH
-                              |HRTIM_TIM_ADROM_BOTH|HRTIM_TIM_OUTROM_BOTH
+                              |HRTIM_TIM_ADROM_CREST|HRTIM_TIM_OUTROM_BOTH
                               |HRTIM_TIM_ROM_BOTH) != HAL_OK)
   {
     Error_Handler();
@@ -220,7 +220,7 @@ void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   if (HAL_HRTIM_RollOverModeConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_TIM_FEROM_BOTH|HRTIM_TIM_BMROM_BOTH
-                              |HRTIM_TIM_ADROM_BOTH|HRTIM_TIM_OUTROM_BOTH
+                              |HRTIM_TIM_ADROM_CREST|HRTIM_TIM_OUTROM_BOTH
                               |HRTIM_TIM_ROM_BOTH) != HAL_OK)
   {
     Error_Handler();
@@ -231,7 +231,6 @@ void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   pTimeBaseCfg.Period = 0xC800;
-  pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL16;
   if (HAL_HRTIM_TimeBaseConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_E, &pTimeBaseCfg) != HAL_OK)
   {
     Error_Handler();
@@ -241,7 +240,7 @@ void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   if (HAL_HRTIM_RollOverModeConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_E, HRTIM_TIM_FEROM_BOTH|HRTIM_TIM_BMROM_BOTH
-                              |HRTIM_TIM_ADROM_BOTH|HRTIM_TIM_OUTROM_BOTH
+                              |HRTIM_TIM_ADROM_CREST|HRTIM_TIM_OUTROM_BOTH
                               |HRTIM_TIM_ROM_BOTH) != HAL_OK)
   {
     Error_Handler();
