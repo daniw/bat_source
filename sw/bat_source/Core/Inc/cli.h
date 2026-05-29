@@ -33,10 +33,11 @@
 #define CLI_FLASH_READ_BUFFER_MODE_DIS	1 // Disable buffer mode for reading flash memory
 #define CLI_FLASH_READ_SHOW_ASCII		1 // Show data read from memory as ascii string
 #define CLI_FLASH_READ_HEX_LINEWIDTH	16 // Number of characters printed on one line in ascii mode
-#define CLI_FLASH_READ_ASCII_LINEWIDTH	192 // Number of characters printed on one line in ascii mode
+#define CLI_FLASH_READ_ASCII_LINEWIDTH	128 // Number of characters printed on one line in ascii mode
 
 #define CLI_FLASH_ERASE_DISABLE			0 // Disable flash erase operation
 
+#define CLI_FLASH_WRITE_LIPSUM			0 // Write Lorem Ipsum sample data to
 #define CLI_FLASH_WRITE_EXEC			1 // enables program execute after loading buffer to write data to flash memory
 
 void cli_init(UART_HandleTypeDef * huart1);

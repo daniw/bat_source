@@ -700,9 +700,9 @@ void cmd_readLux(void){
 
 void cmd_printFlashID(void){
 	uint8_t id[4];
-	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_status_t status = W25N01GV_OK;
 	status = w25n01gv_read_id(&flash, id);
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash Manufacturer ID:        0x%02X\r\n", id[0]);
 		printf("Flash Device ID:              0x%02X%02X\r\n", id[1], id[2]);
 	}
@@ -717,8 +717,7 @@ void cmd_readFlash(void){
 	uint16_t page_addr;
 	uint16_t column_addr;
 	uint16_t size;
-	w25n01gv_conf_reg_t reg_conf = {0};
-	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_status_t status = W25N01GV_OK;
 	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
@@ -732,52 +731,9 @@ void cmd_readFlash(void){
 	}
 	printf("Page address:   0x%04X\r\nColumn address: 0x%04X\r\nSize:           %d Bytes\r\n", page_addr, column_addr, size);
 
-#if CLI_FLASH_READ_OTP == 1
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
-	}
-	if (status == HAL_OK){
-		reg_conf.fields.otp_enter = 1;
-		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
-	}
-	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X\r\n", reg_conf.reg);
-	}
-#endif // CLI_FLASH_READ_OTP
-#if CLI_FLASH_READ_BUFFER_MODE_DIS == 1
-	if (status == HAL_OK){
-		status = w25n01gv_buffer_mode_disable(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash);
-	}
-	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
-	}
-#endif // CLI_FLASH_READ_BUFFER_MODE_DIS
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash);
-	}
-	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_page_read(&flash, page_addr);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
 	uint8_t data[size];
-	if (status == HAL_OK){
-		status = w25n01gv_read(&flash, data, column_addr, size);
-	}
-	if (status == HAL_OK){
+	status = w25n01gv_read(&flash, data, address, size);
+	if (status == W25N01GV_OK){
 		for (uint16_t i = 0; i < size; i++) {
 #if CLI_FLASH_READ_SHOW_ASCII == 1
 			if ((i % CLI_FLASH_READ_ASCII_LINEWIDTH == 0) && (i > 0)) {
@@ -793,33 +749,6 @@ void cmd_readFlash(void){
 		}
 		printf("\r\n");
 	}
-#if CLI_FLASH_READ_BUFFER_MODE_DIS == 1
-	if (status == HAL_OK){
-		status = w25n01gv_buffer_mode_enable(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash);
-	}
-	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
-		}
-#endif // CLI_FLASH_READ_BUFFER_MODE_DIS
-#if CLI_FLASH_READ_OTP == 1
-	if (status == HAL_OK){
-		status = w25n01gv_read_reg_conf(&flash, &reg_conf);
-	}
-	if (status == HAL_OK){
-		printf("Flash configuration register: 0x%02X\r\n", reg_conf.reg);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		reg_conf.fields.otp_enter = 0;
-		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
-	}
-#endif // CLI_FLASH_READ_OTP
-	printf("Flash read not implemented\r\n");
 	return;
 }
 
@@ -828,7 +757,7 @@ void cmd_eraseFlash(void){
 	uint32_t address;
 	uint16_t page_addr;
 	uint16_t nof_blocks;
-	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_status_t status = W25N01GV_OK;
 	CLI_CHECK_ARG_CNT_RANGE(1, 2);
 
 	char *end;
@@ -851,186 +780,116 @@ void cmd_eraseFlash(void){
 	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
 	printf("Flash erase, starting address: 0x%04X\r\n", page_addr);
 	printf("Flash erase, number of blocks: %u\r\n", nof_blocks);
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
-	}
-	for (uint16_t i = 0; i < nof_blocks; i++) {
-		printf("  Erasing block at page address 0x%04X\r\n", page_addr);
-#if CLI_FLASH_ERASE_DISABLE == 0
-		if (status == HAL_OK) {
-			status = w25n01gv_wait_busy(&flash);
-		}
-		if (status == HAL_OK) {
-			status = w25n01gv_write_enable(&flash);
-		}
-		if (status == HAL_OK) {
-			status = w25n01gv_wait_busy(&flash);
-		}
-		if (status == HAL_OK){
-			status = w25n01gv_block_erase(&flash, page_addr);
-		}
-#else // CLI_FLASH_ERASE_DISABLE == 1
-		printf("  Flash erase disabled\r\n");
-#endif // CLI_FLASH_ERASE_DISABLE
-		page_addr += W25N01GV_PAGES_PER_BLOCK;
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_ALL, W25N01GV_PROT_LOWER);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
 
-	printf("Flash erase not implemented\r\n");
+	status = w25n01gv_erase(&flash, address, address + nof_blocks * W25N01GV_PAGE_SIZE * W25N01GV_PAGES_PER_BLOCK-1);
+	if (status != W25N01GV_OK) {
+		printf("Flash erase failed, error code: %d", status);
+	}
 	return;
 }
+
+
 void cmd_writeFlash(void){
 	uint32_t address;
 	uint32_t size;
-	uint8_t data[2048] = {0};
-	uint8_t data_read[2048] = {0};
-	uint16_t page_addr;
-	uint16_t column_addr;
-	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_status_t status = W25N01GV_OK;
+#if CLI_FLASH_WRITE_LIPSUM != 1
+	uint8_t data[LINE_BUF_SIZE] = {0};
 	CLI_CHECK_ARG_CNT(3);
+#else // CLI_FLASH_WRITE_LIPSUM == 1
+	uint8_t data[16384] = {0};
+	uint16_t page_addr;
+	CLI_CHECK_ARG_CNT_MIN(2);
+#endif // CLI_FLASH_WRITE_LIPSUM
 
 	char *end;
 	address = strtoul(arg_locs[1], &end, 10);
 	size = strtoul(arg_locs[2], &end, 10);
-	//data = strto(arg_locs[3], &end, 10); // Todo: read data from input string
 
+#if CLI_FLASH_WRITE_LIPSUM != 1
+	if (size > LINE_BUF_SIZE) {
+		size = LINE_BUF_SIZE;
+	}
+	for (uint16_t i = 0; i < size; i++) {
+		data[i] = arg_locs[3][i];
+	}
+#else // CLI_FLASH_WRITE_LIPSUM == 1
 	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
-	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
-
 	if (page_addr == 0){
-			char str[] = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus sit amet tortor gravida placerat. Integer sapien est, iaculis in, pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla. Curabitur auctor semper nulla. Donec varius orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut leo. Cras viverra metus rhoncus sem. Nulla et lectus vestibulum urna fringilla ultrices. Phasellus eu tellus sit amet tortor gravida placerat. Integer sapien est, iaculis in, pretium quis, viverra ac, nunc. Praesent eget sem vel leo ultrices bibendum. Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla. Curabitur auctor semper nulla. Donec varius orci eget risus. Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam. Duis eget orci sit amet orci dignissim rutrum. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
 	else if (page_addr == 1) {
-			char str[] = "Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel, wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at, lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed accumsan bibendum, erat ligula aliquet magna, vitae ornare odio metus a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut massa. Cras nec ante. Pellentesque a nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum turpis. Pellentesque cursus luctus mauris. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "Nam dui ligula, fringilla a, euismod sodales, sollicitudin vel, wisi. Morbi auctor lorem non justo. Nam lacus libero, pretium at, lobortis vitae, ultricies et, tellus. Donec aliquet, tortor sed accumsan bibendum, erat ligula aliquet magna, vitae ornare odio metus a mi. Morbi ac orci et nisl hendrerit mollis. Suspendisse ut massa. Cras nec ante. Pellentesque a nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam tincidunt urna. Nulla ullamcorper vestibulum turpis. Pellentesque cursus luctus mauris. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
 	else if (page_addr == 2) {
-			char str[] = "Nulla malesuada porttitor diam. Donec felis erat, congue non, volutpat at, tincidunt tristique, libero. Vivamus viverra fermentum felis. Donec nonummy pellentesque ante. Phasellus adipiscing semper elit. Proin fermentum massa ac quam. Sed diam turpis, molestie vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum ligula, eleifend at, accumsan nec, suscipit a, ipsum. Morbi blandit ligula feugiat magna. Nunc eleifend consequat lorem. Sed lacinia nulla vitae enim. Pellentesque tincidunt purus vel magna. Integer non enim. Praesent euismod nunc eu purus. Donec bibendum quam in tellus. Nullam cursus pulvinar lectus. Donec et mi. Nam vulputate metus eu enim. Vestibulum pellentesque felis eu massa. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "Nulla malesuada porttitor diam. Donec felis erat, congue non, volutpat at, tincidunt tristique, libero. Vivamus viverra fermentum felis. Donec nonummy pellentesque ante. Phasellus adipiscing semper elit. Proin fermentum massa ac quam. Sed diam turpis, molestie vitae, placerat a, molestie nec, leo. Maecenas lacinia. Nam ipsum ligula, eleifend at, accumsan nec, suscipit a, ipsum. Morbi blandit ligula feugiat magna. Nunc eleifend consequat lorem. Sed lacinia nulla vitae enim. Pellentesque tincidunt purus vel magna. Integer non enim. Praesent euismod nunc eu purus. Donec bibendum quam in tellus. Nullam cursus pulvinar lectus. Donec et mi. Nam vulputate metus eu enim. Vestibulum pellentesque felis eu massa. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
 	else if (page_addr == 3) {
-			char str[] = "Quisque ullamcorper placerat ipsum. Cras nibh. Morbi vel justo vitae lacus tincidunt ultrices. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In hac habitasse platea dictumst. Integer tempus convallis augue. Etiam facilisis. Nunc elementum fermentum wisi. Aenean placerat. Ut imperdiet, enim sed gravida sollicitudin, felis odio placerat quam, ac pulvinar elit purus eget enim. Nunc vitae tortor. Proin tempus nibh sit amet nisl. Vivamus quis tortor vitae risus porta vehicula. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "Quisque ullamcorper placerat ipsum. Cras nibh. Morbi vel justo vitae lacus tincidunt ultrices. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In hac habitasse platea dictumst. Integer tempus convallis augue. Etiam facilisis. Nunc elementum fermentum wisi. Aenean placerat. Ut imperdiet, enim sed gravida sollicitudin, felis odio placerat quam, ac pulvinar elit purus eget enim. Nunc vitae tortor. Proin tempus nibh sit amet nisl. Vivamus quis tortor vitae risus porta vehicula. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
 	else if (page_addr == 4) {
-			char str[] = "Fusce mauris. Vestibulum luctus nibh at lectus. Sed bibendum, nulla a faucibus semper, leo velit ultricies tellus, ac venenatis arcu wisi vel nisl. Vestibulum diam. Aliquam pellentesque, augue quis sagittis posuere, turpis lacus congue quam, in hendrerit risus eros eget felis. Maecenas eget erat in sapien mattis porttitor. Vestibulum porttitor. Nulla facilisi. Sed a turpis eu lacus commodo facilisis. Morbi fringilla, wisi in dignissim interdum, justo lectus sagittis dui, et vehicula libero dui cursus dui. Mauris tempor ligula sed lacus. Duis cursus enim ut augue. Cras ac magna. Cras nulla. Nulla egestas. Curabitur a leo. Quisque egestas wisi eget nunc. Nam feugiat lacus vel est. Curabitur consectetuer. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "Fusce mauris. Vestibulum luctus nibh at lectus. Sed bibendum, nulla a faucibus semper, leo velit ultricies tellus, ac venenatis arcu wisi vel nisl. Vestibulum diam. Aliquam pellentesque, augue quis sagittis posuere, turpis lacus congue quam, in hendrerit risus eros eget felis. Maecenas eget erat in sapien mattis porttitor. Vestibulum porttitor. Nulla facilisi. Sed a turpis eu lacus commodo facilisis. Morbi fringilla, wisi in dignissim interdum, justo lectus sagittis dui, et vehicula libero dui cursus dui. Mauris tempor ligula sed lacus. Duis cursus enim ut augue. Cras ac magna. Cras nulla. Nulla egestas. Curabitur a leo. Quisque egestas wisi eget nunc. Nam feugiat lacus vel est. Curabitur consectetuer. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
 	else if (page_addr == 5) {
-			char str[] = "Suspendisse vel felis. Ut lorem lorem, interdum eu, tincidunt sit amet, laoreet vitae, arcu. Aenean faucibus pede eu ante. Praesent enim elit, rutrum at, molestie non, nonummy vel, nisl. Ut lectus eros, malesuada sit amet, fermentum eu, sodales cursus, magna. Donec eu purus. Quisque vehicula, urna sed ultricies auctor, pede lorem egestas dui, et convallis elit erat sed nulla. Donec luctus. Curabitur et nunc. Aliquam dolor odio, commodo pretium, ultricies non, pharetra in, velit. Integer arcu est, nonummy in, fermentum faucibus, egestas vel, odio. ";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
+		char str[] = "Suspendisse vel felis. Ut lorem lorem, interdum eu, tincidunt sit amet, laoreet vitae, arcu. Aenean faucibus pede eu ante. Praesent enim elit, rutrum at, molestie non, nonummy vel, nisl. Ut lectus eros, malesuada sit amet, fermentum eu, sodales cursus, magna. Donec eu purus. Quisque vehicula, urna sed ultricies auctor, pede lorem egestas dui, et convallis elit erat sed nulla. Donec luctus. Curabitur et nunc. Aliquam dolor odio, commodo pretium, ultricies non, pharetra in, velit. Integer arcu est, nonummy in, fermentum faucibus, egestas vel, odio. ";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
+	}
+	else if (page_addr == 63) {
+		char str[] = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789_123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789#";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		if (size > sizeof(str)) {
 			size = sizeof(str);
+		}
 	}
 	else {
-			char str[] = "None";
-			for (uint16_t i = 0; i < sizeof(str); i++){
-				data[i] = (uint8_t) str[i];
-			}
-			size = sizeof(str);
+		char str[] = "None";
+		for (uint16_t i = 0; i < sizeof(str); i++){
+			data[i] = (uint8_t) str[i];
+		}
+		size = sizeof(str);
 	}
+#endif // CLI_FLASH_WRITE_LIPSUM
 
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
+	status = w25n01gv_write(&flash, data, address, size);
+	if (status != W25N01GV_OK) {
+		printf("Unable to write flash memory. \r\n");
 	}
-	if (status == HAL_OK){
-		status = w25n01gv_page_read(&flash, page_addr);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_write_enable(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_prog_load(&flash, data, column_addr, size);
-	}
-#if CLI_FLASH_WRITE_EXEC == 1
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_write_enable(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_prog_exec(&flash, page_addr);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_set_prot(&flash, W25N01GV_PROT_ALL, W25N01GV_PROT_LOWER);
-	}
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_page_read(&flash, page_addr);
-	}
-#endif // CLI_FLASH_WRITE_EXEC
-	if (status == HAL_OK) {
-		status = w25n01gv_wait_busy(&flash);
-	}
-	if (status == HAL_OK){
-		status = w25n01gv_read(&flash, data_read, column_addr, size);
-	}
-	printf("Written data:   %s\r\n", data);
-	printf("Read back data: %s\r\n", data_read);
-
-	w25n01gv_write_disable(&flash);
-
-	printf("Flash write not implemented\r\n");
 	return;
 }
 
 void cmd_testFlash(void){
 	uint8_t id[4];
-	HAL_StatusTypeDef status = HAL_OK;
+	w25n01gv_status_t status = W25N01GV_OK;
 	w25n01gv_prot_reg_t reg_prot = {0};
 	w25n01gv_conf_reg_t reg_conf = {0};
 	w25n01gv_status_reg_t reg_status = {0};
 	status = w25n01gv_read_id(&flash, id);
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash Manufacturer ID:        0x%02X\r\n", id[0]);
 		printf("Flash Device ID:              0x%02X%02X\r\n", id[1], id[2]);
 	}
@@ -1041,30 +900,30 @@ void cmd_testFlash(void){
 #if CLI_FLASH_TEST_STATUS_REG_READ == 1
 	// Status register read test
 	printf("\r\n= Flash status register read test: \r\n");
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_prot(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash protection register:    0x%02X\r\n", flash.reg_prot.reg);
 	}
 	else{
 		printf("Error: Unable to read flash protection register. \r\n");
 		return;
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_conf(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
 	}
 	else{
 		printf("Error: Unable to read flash configuration register. \r\n");
 		return;
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_status(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash status register:        0x%02X\r\n", flash.reg_status.reg);
 	}
 	else{
@@ -1076,13 +935,13 @@ void cmd_testFlash(void){
 	// Status register write test
 	printf("\r\n= Flash status register write test: \r\n");
 	reg_conf.fields.buf_mode=0;
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_conf(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash configuration register: 0x%02X (after writing)\r\n", flash.reg_conf.reg);
 		reg_conf.fields.buf_mode=1;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
@@ -1091,10 +950,10 @@ void cmd_testFlash(void){
 		printf("Error: Unable to read flash configuration register. \r\n");
 		return;
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_conf(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash configuration register: 0x%02X (after resetting)\r\n", flash.reg_conf.reg);
 	}
 #endif // CLI_FLASH_TEST_STATUS_REG_WRITE
@@ -1102,48 +961,48 @@ void cmd_testFlash(void){
 	// Buffer mode enable / disable test
 	printf("\r\n= Buffer mode enable / disable test: \r\n");
 	printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_buffer_mode_disable(&flash);
 		printf("Disable buffer mode\r\n");
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_conf(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_buffer_mode_enable(&flash);
 		printf("Enable buffer mode\r\n");
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_conf(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Flash configuration register: 0x%02X\r\n", flash.reg_conf.reg);
 	}
 #endif // CLI_FLASH_TEST_BUF_EN_DIS
 #if CLI_FLASH_TEST_WRITE_EN_DIS == 1
 	// Write enable and disable test
 	printf("\r\n= Flash write enable / disable test: \r\n");
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_status(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Status register before write enable: 0x%02X\r\n", flash.reg_status.reg);
 		status = w25n01gv_write_enable(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_status(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Status register after write enable:  0x%02X\r\n", flash.reg_status.reg);
 		status = w25n01gv_write_disable(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_reg_status(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Status register after write disable: 0x%02X\r\n", flash.reg_status.reg);
 	}
 #endif // CLI_FLASH_TEST_WRITE_EN_DIS
@@ -1152,17 +1011,17 @@ void cmd_testFlash(void){
 	printf("\r\n= Read block test: \r\n");
 	uint16_t test_read_block_nof_bytes = 16;
 	for (uint16_t page_addr = 0; page_addr < 16; page_addr++) {
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			status = w25n01gv_page_read(&flash, page_addr);
 		}
-		if (status == HAL_OK) {
+		if (status == W25N01GV_OK) {
 			status = w25n01gv_wait_busy(&flash);
 		}
 		uint8_t data[test_read_block_nof_bytes];
-		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, data, 0x00, test_read_block_nof_bytes);
+		if (status == W25N01GV_OK){
+			status = w25n01gv_read_data(&flash, data, 0x00, test_read_block_nof_bytes);
 		}
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			printf("Page: %4d Data:", page_addr);
 			for (uint16_t i = 0; i < test_read_block_nof_bytes; i++) {
 				if ((i % 16 == 0) && (i > 0)) {
@@ -1181,22 +1040,22 @@ void cmd_testFlash(void){
 	// Read OTP block test
 	printf("\r\n= Read OTP block test: \r\n");
 	uint16_t test_read_block_otp_nof_bytes = 256;
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		reg_conf.fields.otp_enter = 1;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
 	for (uint16_t page_addr = 0; page_addr < 3; page_addr++) {
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			status = w25n01gv_page_read(&flash, page_addr);
 		}
-		if (status == HAL_OK) {
+		if (status == W25N01GV_OK) {
 			status = w25n01gv_wait_busy(&flash);
 		}
 		uint8_t data[test_read_block_otp_nof_bytes];
-		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, data, 0x00, test_read_block_otp_nof_bytes);
+		if (status == W25N01GV_OK){
+			status = w25n01gv_read_data(&flash, data, 0x00, test_read_block_otp_nof_bytes);
 		}
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			printf("Page: %4d Data:", page_addr);
 			for (uint16_t i = 0; i < test_read_block_otp_nof_bytes; i++) {
 				if ((i % 16 == 0) && (i > 0)) {
@@ -1207,7 +1066,7 @@ void cmd_testFlash(void){
 			printf("\r\n");
 		}
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		reg_conf.fields.otp_enter = 0;
 		status = w25n01gv_write_reg_conf(&flash, &reg_conf);
 	}
@@ -1215,10 +1074,10 @@ void cmd_testFlash(void){
 #if CLI_FLASH_TEST_BAD_BLOCK_LUT == 1
 	// Read bad block look up table test
 	printf("\r\n= Read bad block look up table test: \r\n");
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_read_badblock(&flash);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Bad block LUT: \r\n");
 		printf("ID | Logical | Physical\r\n");
 		printf("---+---------+---------\r\n");
@@ -1237,19 +1096,19 @@ void cmd_testFlash(void){
 	test_read_block_nof_bytes = 1;
 	for (uint32_t page_addr = 0; page_addr < 0xffff; page_addr+=0x40) {
 		bb_loop_count++;
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			status = w25n01gv_page_read(&flash, (uint16_t) page_addr);
 		}
 		do {
 			status = w25n01gv_read_reg_status(&flash);
-		} while(status == HAL_OK && flash.reg_status.fields.busy != 0);
-		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, &data_page, 0x00, 1);
+		} while(status == W25N01GV_OK && flash.reg_status.fields.busy != 0);
+		if (status == W25N01GV_OK){
+			status = w25n01gv_read_data(&flash, &data_page, 0x00, 1);
 		}
-		if (status == HAL_OK){
-			status = w25n01gv_read(&flash, &data_spare, 0x800, 1);
+		if (status == W25N01GV_OK){
+			status = w25n01gv_read_data(&flash, &data_spare, 0x800, 1);
 		}
-		if (status == HAL_OK){
+		if (status == W25N01GV_OK){
 			if ((data_page != 0xFF) || (data_spare != 0xFF)) {
 				bad_block_present = 1;
 				printf("Bad block on page %4d, Page: 0x%02X  Spare: 0x%02X\r\n", (uint16_t) (page_addr / 0x40), data_page, data_spare);
@@ -1265,10 +1124,10 @@ void cmd_testFlash(void){
 	// Last ECC failure page address test
 	printf("\r\n= Last ECC failure page address test: \r\n");
 	uint16_t ecc_fail_page_addr = 0xffff;
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		status = w25n01gv_last_ecc_failure(&flash, &ecc_fail_page_addr);
 	}
-	if (status == HAL_OK){
+	if (status == W25N01GV_OK){
 		printf("Page address of last ECC failure: %X\r\n", ecc_fail_page_addr);
 	}
 #endif // CLI_FLASH_TEST_LAST_ECC_FAIL
