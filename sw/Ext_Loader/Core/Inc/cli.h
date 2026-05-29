@@ -1,0 +1,28 @@
+/*******************************************************************************/
+/* 
+ * File: cli.c
+ * Author: Andreas Horat
+ */
+/*******************************************************************************/
+/*
+ * This file contains a very simple command line interface.
+ */
+/*******************************************************************************/
+#ifndef CLI_H
+#define CLI_H
+
+#include "main.h"
+
+
+#define LINE_BUF_SIZE 4
+#define MAX_NUM_ARGS 2
+
+#define CLI_HAS_HISTORY 0
+#define history_SIZE 2
+
+#define CLI_ENABLED
+
+void cli_init(UART_HandleTypeDef * huart1);
+void cli_loop(void);
+
+#endif
