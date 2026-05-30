@@ -268,13 +268,19 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
 
 static void LCD_ReadCmd(uint8_t cmd, uint8_t *data, uint8_t count)
 {
-  setSPI_Size(mode_8bit);
-  //LCD_PIN(LCD_CS,RESET);
+	uint8_t rx_data[2];
+	uint8_t tx_data[2] = {0x00,0x00};
+	tx_data[1] = cmd;
+
+  setSPI_Size(mode_16bit);
   LCD_PIN(LCD_DC,RESET);
-  HAL_SPI_Transmit(&LCD_HANDLE, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  LCD_PIN(LCD_CS,RESET);
+  HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+  //HAL_SPI_Receive(&LCD_HANDLE, data, count, HAL_MAX_DELAY);
+  LCD_PIN(LCD_CS,SET);
   LCD_PIN(LCD_DC,SET);
-  HAL_SPI_Receive(&LCD_HANDLE, data, count, HAL_MAX_DELAY);
-  //LCD_PIN(LCD_CS,SET);
+  data[0] = rx_data[1];
+
 }
 
 /**
@@ -648,7 +654,10 @@ void LCD_init(void)
 #endif
   UG_FontSetHSpace(0);
   UG_FontSetVSpace(0);
-  LCD_ReadCmd(0x04, read_init, 5);
+  LCD_ReadCmd(0xDA, &read_init[0], 1);
+  LCD_ReadCmd(0xDB, &read_init[1], 1);
+  LCD_ReadCmd(0xDC, &read_init[2], 1);
+
   
   for(uint16_t i=0; i<sizeof(init_cmd); ){
 #ifdef LCD_DC

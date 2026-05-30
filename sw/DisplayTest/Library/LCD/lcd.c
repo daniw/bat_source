@@ -184,7 +184,7 @@ static void setDMAMemMode(uint8_t memInc, uint8_t size)
  * @param cmd -> command to write
  * @return none
  */
-static void LCD_WriteCommand(uint8_t *cmd, uint8_t argc)
+static void LCD_WriteCommand(uint16_t *cmd, uint8_t argc)
 {
   //setSPI_Size(mode_9bit);
 #ifdef LCD_DC
@@ -205,7 +205,7 @@ static void LCD_WriteCommand(uint8_t *cmd, uint8_t argc)
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,RESET);
 #endif
-  HAL_SPI_Transmit(&LCD_HANDLE, (cmd), argc/2, HAL_MAX_DELAY);
+  HAL_SPI_Transmit(&LCD_HANDLE, (uint8_t*)(cmd), argc/2, HAL_MAX_DELAY);
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,SET);
 #endif
@@ -390,7 +390,7 @@ void LCD_DrawPixel(int16_t x, int16_t y, uint16_t color)
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,RESET);
 #endif
-  HAL_SPI_Transmit(&LCD_HANDLE, data, sizeof(data)/2, HAL_MAX_DELAY);
+  HAL_SPI_Transmit(&LCD_HANDLE, (uint8_t*)data, sizeof(data)/2, HAL_MAX_DELAY);
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,SET);
 #endif
@@ -646,7 +646,7 @@ void LCD_init(void)
 #ifdef LCD_DC
     LCD_WriteCommand((uint8_t*)&init_cmd[i+1], (init_cmd[i]));
 #else
-    LCD_WriteCommand((uint8_t*)&init_cmd[i+1], 2*(init_cmd[i]+1));
+    LCD_WriteCommand(&init_cmd[i+1], 2*(init_cmd[i]+1));
 #endif
     i += init_cmd[i]+2;
   }

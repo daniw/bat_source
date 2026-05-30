@@ -11,6 +11,7 @@
 #include "stdint.h"
 #include "main.h"
 #include "stdio.h"
+#include "statemachine.h"
 
 #define GPIO_DISPLAY_WR       0x00
 #define GPIO_CONV_CTRL_EN     0x01
@@ -38,6 +39,7 @@
 
 
 
+
 void aux_io_ctrl_GPIO_Init(void);
 
 uint8_t aux_io_ctrl_readHW_Revision(void);
@@ -48,6 +50,12 @@ uint8_t aux_io_ctrl_readHW_Revision(void);
  * @param value value to set the pin (0,1)
  */
 void aux_io_ctrl_manual_set_io(uint8_t pin, uint8_t value);
+
+/**
+ * Sets the GPIO Config to the specified mode
+ * @param mode statemachine mode to be set.
+ */
+void aux_io_ctrl_set_config(statemachine_modes_t mode);
 
 
 #endif /* SRC_AUX_IO_CTRL_H_ */

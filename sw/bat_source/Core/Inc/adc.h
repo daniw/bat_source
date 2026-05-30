@@ -59,7 +59,7 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_EXT_VTERM_GAIN_MV 	0.1431914341802f 		//0.1373291015625 		//(1200.0f/8388608 * 14400/15) (ADC * Resistor divider) Max Value 1152 V
 #define ADC_EXT_VSENS_GAIN_UV	0.7152557f  //(1200.0f/8388608 * 1 * 5)(ADC * ADC GAIN * Resistor divider) Max Value 6V
 #define ADC_EXT_IISO_GAIN_UA 	0.00143051f  //(1200.0f/8388608 * 1 * 0.01) (ADC * ADC Gain * mA/mV)
-#define ADC_EXT_IOUT_GAIN_mA 	0.0014305114f			//0.00178813934326171875 	//(1200.0f/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
+#define ADC_EXT_IOUT_GAIN_mA 	0.0016881f			//0.00178813934326171875 	//(1200.0f/8388608 * 12.5) (ADC * ADC Gain * mA/mV)
 
 #define ADC_GAIN_V_3V3         (2500.0f*53/10/65536)
 #define ADC_GAIN_V_3V3A        (2500.0f*53/10/65536)
@@ -79,6 +79,10 @@ extern ADC_HandleTypeDef hadc5;
 
 
 #define ADC_POTI_MAX 127
+
+#define ADC_TRIGGER_HRTIM_PRIM ADC_EXTERNALTRIG_HRTIM_TRG1
+#define ADC_TRIGGER_HRTIM_HV ADC_EXTERNALTRIG_HRTIM_TRG2
+#define ADC_TRIGGER_HRTIM_SEK ADC_EXTERNALTRIG_HRTIM_TRG3
 
 /* USER CODE END Private defines */
 
@@ -158,7 +162,7 @@ typedef struct {
 
     int32_t* ext_adc_data;
 
-    uint16_t reference_poti;
+    //uint16_t reference_poti;
 
     uint16_t r_mOhmx10;
 
@@ -169,6 +173,7 @@ typedef struct {
 
 void adc_init(int32_t* ext_adc_data);
 void adc_start(void);
+void adc_convert_fast_data(void);
 void adc_convert_data(void);
 void adc_configure_mode(statemachine_modes_t mode);
 

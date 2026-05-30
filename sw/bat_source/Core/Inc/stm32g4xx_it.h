@@ -65,8 +65,10 @@ void DMA1_Channel6_IRQHandler(void);
 void DMA1_Channel7_IRQHandler(void);
 void TIM2_IRQHandler(void);
 void SPI3_IRQHandler(void);
+void DMA2_Channel1_IRQHandler(void);
 void I2C4_EV_IRQHandler(void);
 void I2C4_ER_IRQHandler(void);
+void DMA1_Channel8_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

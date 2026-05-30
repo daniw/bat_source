@@ -52,17 +52,17 @@ void MX_GPIO_Init(void);
 #define GPIO_SET_SHUNT_ISO_EN(value) HAL_GPIO_WritePin(SHUNT_ISO_EN_GPIO_Port, SHUNT_ISO_EN_Pin,value)
 #define GPIO_SET_ADC_SYNC_RESET(value) HAL_GPIO_WritePin(ADC_SYNC_RESET_GPIO_Port, ADC_SYNC_RESET_Pin,value)
 
-inline uint8_t gpio_readBtnOut(void) {
+static inline uint8_t gpio_readBtnOut(void) {
 	return HAL_GPIO_ReadPin(BUTTON_OUT_GPIO_Port, BUTTON_OUT_Pin) == 0;
 }
-inline uint8_t gpio_readBtnEsc(void) {
+static inline uint8_t gpio_readBtnEsc(void) {
 	return HAL_GPIO_ReadPin(BUTTON_ESC_GPIO_Port, BUTTON_ESC_Pin) == 0;
 }
-inline uint8_t gpio_readBtnOk(void) {
+static inline uint8_t gpio_readBtnOk(void) {
 	return HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == 0;
 }
 
-inline void gpio_shutdown(void){
+static inline void gpio_shutdown(void){
 	HAL_GPIO_WritePin(ON_REQ_GPIO_Port, ON_REQ_Pin,0);
 }
 

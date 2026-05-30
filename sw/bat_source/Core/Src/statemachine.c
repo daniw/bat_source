@@ -7,7 +7,7 @@
 
 #include "statemachine.h"
 #include "aux_io_ctrl.h"
-#include "display.h"
+//#include "display.h"
 #include "timer.h"
 #include "ctrl_main.h"
 #include "stm32g4xx_hal.h"
@@ -36,6 +36,10 @@ void statemachine_init(void) {
 
 void statemachine_step(void) {
 	uint8_t temp;
+
+	adc_convert_data();
+
+	// Handle Buttons press
 	if (gpio_readBtnOk())
 		ok_button_pressed += 1;
 	else if (gpio_readBtnEsc())
@@ -44,72 +48,74 @@ void statemachine_step(void) {
 		ok_button_pressed = 0;
 		esc_button_pressed = 0;
 	}
-
-	if (gpio_readBtnOut())
-		out_button_pressed += 1;
-	else
+	if (gpio_readBtnOut()) {
+		if (out_button_pressed < 2)
+			out_button_pressed += 1;
+	} else
 		out_button_pressed = 0;
 
+	// Select transition to next state
 	switch (statemachine_handle.current_mode) {
 	case STATEMACHINE_IDLE:
 		temp = (tim_encoder_read() / 2) % 6 + 1;
 		if (temp != statemachine_handle.current_menu_index) {
 			statemachine_handle.current_menu_index = temp;
-			display_show_menu();
+			//display_show_menu();
 
 		}
 		if (ok_button_pressed == 1) {
-			statemachine_switchfromIdle(statemachine_handle.current_menu_index );
+			statemachine_switchfromIdle(statemachine_handle.current_menu_index);
 		}
 
 		if (esc_button_pressed == 1)
 			statemachine_handle.current_mode = STATEMACHINE_MODE_SHUTDOWN;
 		break;
 	case STATEMACHINE_MODE_60V_OUT:
-		display_draw_measure_data();
 		if (out_button_pressed == 1) {
-			ctrl_main_init();
-			//aux_io_ctrl_manual_set_io(AUX_IO_CTRL_EN, 1);
-			//pwm_enable();
+			ctrl_main_start_ctrl(statemachine_handle.current_mode);
+			aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		} else if (out_button_pressed == 0) {
-			//pwm_disable();
-			//aux_io_ctrl_manual_set_io(AUX_IO_CTRL_EN, 0);
+			ctrl_main_stop_control();
+			aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 0);
 		}
+		if (esc_button_pressed == 1) {
+			ctrl_main_stop_control();
+			statemachine_switchtoIdle();
+		}
+		break;
+
+	case STATEMACHINE_MODE_10A_OUT:		//display_draw_measure_data();
+		if (out_button_pressed == 1) {
+			ctrl_main_start_ctrl(statemachine_handle.current_mode);
+			aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
+		} else if (out_button_pressed == 0) {
+			ctrl_main_stop_control();
+			aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 0);
+		}
+		if (esc_button_pressed == 1) {
+			ctrl_main_stop_control();
+			statemachine_switchtoIdle();
+		}
+		break;
+	case STATEMACHINE_MODE_RESISTANCE_1A:
+	case STATEMACHINE_MODE_RESISTANCE_1mA:
+	case STATEMACHINE_MODE_ISOMETER:
 
 		if (esc_button_pressed == 1) {
 			statemachine_switchtoIdle();
 		}
 		break;
-
-	case STATEMACHINE_MODE_10A_OUT:
-		display_draw_measure_data();
-				if (esc_button_pressed == 1) {
-					statemachine_switchtoIdle();
-				}
-				break;
-	case STATEMACHINE_MODE_RESISTANCE_1A:
-		display_draw_measure_data();
-				if (esc_button_pressed == 1) {
-					statemachine_switchtoIdle();
-				}
-				break;
-	case STATEMACHINE_MODE_ISOMETER:
-		display_draw_measure_data();
-				if (esc_button_pressed == 1) {
-					statemachine_switchtoIdle();
-				}
-				break;
 	case STATEMACHINE_MODE_VOLTMETER:
-		display_draw_measure_data();
-				if (esc_button_pressed == 1) {
-					statemachine_switchtoIdle();
-				}
-				break;
+		if (esc_button_pressed == 1) {
+			ctrl_main_stop_control();
+			statemachine_switchtoIdle();
+		}
+		break;
 
 	case STATEMACHINE_MODE_SETTINGS:
 		temp = (tim_encoder_read() / 2) % STATEMACHINE_SETTINGS_MODE_LENGTH;
 
-		display_show_settings(temp);
+		//display_show_settings(temp);
 
 		if (esc_button_pressed == 1 && statemachine_handle.settings_mode == 0)
 			statemachine_switchtoIdle();
@@ -121,88 +127,110 @@ void statemachine_step(void) {
 		break;
 
 	case STATEMACHINE_MODE_SHUTDOWN:
-		if (esc_button_pressed == 0)
-			gpio_shutdown();
+		gpio_shutdown();
+
 	default:
 		break;
 	}
 
-	display_draw();
+	//display_draw();
 }
 
 void statemachine_switchfromIdle(statemachine_modes_t mode) {
+	printf("Switch from Idle to %d\r\n", mode);
+
 	switch (mode) {
 	case STATEMACHINE_MODE_60V_OUT:
 		ui_ctrl_ledOutOn();
 
-		statemachine_handle.current_mode =mode;
+		adc_configure_mode(mode);
+		statemachine_handle.current_mode = mode;
 
-		display_draw_basic_layout();
-		display_draw_measure_layout();
-		display_draw_measure_data();
+		/*display_draw_basic_layout();
+		 display_draw_measure_layout();
+		 display_draw_measure_data();*/
 		break;
 
 	case STATEMACHINE_MODE_10A_OUT:
 		ui_ctrl_ledOutOn();
+		adc_configure_mode(mode);
 		statemachine_handle.current_mode = mode;
 
-		display_draw_basic_layout();
-		display_draw_measure_layout();
-		display_draw_measure_data();
+		/*display_draw_basic_layout();
+		 display_draw_measure_layout();
+		 display_draw_measure_data();*/
 		break;
 
 	case STATEMACHINE_MODE_RESISTANCE_1A:
 		ui_ctrl_ledOutOn();
 		ui_ctrl_ledSenseOn();
 
-		statemachine_handle.current_mode =mode;
+		statemachine_handle.current_mode = mode;
+		ctrl_main_start_ctrl(statemachine_handle.current_mode);
+		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 
-		display_draw_basic_layout();
-		display_draw_measure_layout();
-		display_draw_measure_data();
+		//display_draw_basic_layout();
+		//display_draw_measure_layout();
+		//display_draw_measure_data();
+		break;
+
+	case STATEMACHINE_MODE_RESISTANCE_1mA:
+		ui_ctrl_ledOutOn();
+
+		statemachine_handle.current_mode = mode;
+		ctrl_main_start_ctrl(statemachine_handle.current_mode);
+		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
+
+		//display_draw_basic_layout();
+		//display_draw_measure_layout();
+		//display_draw_measure_data();
 		break;
 
 	case STATEMACHINE_MODE_ISOMETER:
 		ui_ctrl_ledOutOn();
 
-		statemachine_handle.current_mode =mode;
+		statemachine_handle.current_mode = mode;
 
-		display_draw_basic_layout();
-		display_draw_measure_layout();
-		display_draw_measure_data();
+		//display_draw_basic_layout();
+		//display_draw_measure_layout();
+		//display_draw_measure_data();
 		break;
 
 	case STATEMACHINE_MODE_VOLTMETER:
 		ui_ctrl_ledOutOn();
 
 		statemachine_handle.current_mode = mode;
-
-		display_draw_basic_layout();
-		display_draw_measure_layout();
-		display_draw_measure_data();
+		//
+		//display_draw_basic_layout();
+		//display_draw_measure_layout();
+		//display_draw_measure_data();
 		break;
 
 	case STATEMACHINE_MODE_SETTINGS:
-		display_draw_basic_layout();
-		display_show_settings(0);
+		//display_draw_basic_layout();
+		//display_show_settings(0);
 		statemachine_handle.current_mode = mode;
 		break;
 	case 0:
-		//statemachine_handle.current_mode =
-		//		statemachine_handle.current_menu_index;
+		statemachine_switchtoIdle();
 		break;
 	default:
 		break;
 	}
-
+	aux_io_ctrl_set_config(mode);
 	tim_encoder_reset(0);
 }
 
 void statemachine_switchtoIdle(void) {
+	printf("Switch to Idle\r\n");
+
+	aux_io_ctrl_set_config(STATEMACHINE_IDLE);
+	ctrl_main_stop_control();
+	aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 0);
 	tim_encoder_reset(62);
 	statemachine_handle.current_mode = STATEMACHINE_IDLE;
 	ui_ctrl_ledOutOff();
 	ui_ctrl_ledSenseOff();
-	display_draw_basic_layout();
+//display_draw_basic_layout();
 
 }

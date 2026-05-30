@@ -12,7 +12,7 @@
 /* Pin connections. Use same names as in CubeMX */
 #define LCD_DC                DISPLAY_WR
 //#define LCD_RST               DISPLAY_ /* Disable if your display has no RST pin */
-//#define LCD_CS                DISPLAY_CS  /* Disable if your display has no CS pin */
+#define LCD_CS                DISPLAY_CS  /* Disable if your display has no CS pin */
 //#define LCD_BL              LCD_BL  /* Enable if you need backlight control */
 
 //#define USE_DMA                       /* Use DMA for transfers when possible */
@@ -21,7 +21,7 @@
 //#define USE_ST7735                    /* LCD Selection */
 #define USE_ST7789
 
-#define LCD_ROTATION 1                /* XY rotation/mirroring. Valid values: 0...3 */
+#define LCD_ROTATION 3                /* XY rotation/mirroring. Valid values: 0...3 */
 
 #ifdef USE_ST7735                     /* ST7735 LCD sizes */
   #define LCD_160X128

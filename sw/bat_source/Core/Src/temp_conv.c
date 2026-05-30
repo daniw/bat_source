@@ -20,6 +20,7 @@
  */
 /*******************************************************************************/
 #include <temp_conv.h>
+#include "math.h"
 
 #define TEMP_NTC_INDEX 16
 #define TEMP_NTC_STEP  8
