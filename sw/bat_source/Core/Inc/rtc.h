@@ -35,7 +35,7 @@ extern "C" {
 extern RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN Private defines */
-
+#define RTC_INIT_DATATIME 0
 /* USER CODE END Private defines */
 
 void MX_RTC_Init(void);
