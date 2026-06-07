@@ -59,7 +59,8 @@ extern ADS131M04_handle ext_adc;
 extern ctrl_main_t ctrl_main_handle;
 extern I2C_HandleTypeDef *i2c_handle;
 extern w25n01gv_handle flash;
-extern PID_controller_t ctrl_pi_voltage;
+extern PID_controller_t ctrl_pi_voltage_buck;
+extern PID_controller_t ctrl_pi_voltage_boost;
 extern PID_controller_t ctrl_pi_current;
 
 // Uart handling
@@ -193,7 +194,7 @@ void cli_init(UART_HandleTypeDef *huart1) {
     memset(history, 0, sizeof(history));
     history_count = 0;
     history_index = -1;
-	printf("Serial Interface enabled.\r\n");
+	printf("Serial Interface enabled V 1.0.\r\n");
 	printf(">>\r\n");
 #endif
 }
@@ -540,37 +541,37 @@ void cmd_setRef(void){
 
 void cmd_printBMS(void){
 	  BQ76905_readAllValues(&bms);
-	  printf("SafetyRegisters.safetyAlertA         = 0x%02X\n", bms.SafetyRegisters.safetyAlertA);
-	  printf("SafetyRegisters.safetyStatusA        = 0x%02X\n", bms.SafetyRegisters.safetyStatusA);
-	  printf("SafetyRegisters.safetyAlertB         = 0x%02X\n", bms.SafetyRegisters.safetyAlertB);
-	  printf("SafetyRegisters.safetyStatusB        = 0x%02X\n", bms.SafetyRegisters.safetyStatusB);
+	  printf("SafetyRegisters.safetyAlertA         = 0x%02X\r\n", bms.SafetyRegisters.safetyAlertA);
+	  printf("SafetyRegisters.safetyStatusA        = 0x%02X\r\n", bms.SafetyRegisters.safetyStatusA);
+	  printf("SafetyRegisters.safetyAlertB         = 0x%02X\r\n", bms.SafetyRegisters.safetyAlertB);
+	  printf("SafetyRegisters.safetyStatusB        = 0x%02X\r\n", bms.SafetyRegisters.safetyStatusB);
 	  printf("\n");
-	  printf("CellVoltageRegisters.BatteryStatus   = 0x%04X\n", bms.CellVoltageRegisters.BatteryStatus);
+	  printf("CellVoltageRegisters.BatteryStatus   = 0x%04X\r\n", bms.CellVoltageRegisters.BatteryStatus);
 	  for (int i = 0; i < 5; ++i) {
-	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u mV\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
+	  	printf("CellVoltageRegisters.CellVoltages[%d] = %u mV\r\n", i, bms.CellVoltageRegisters.CellVoltages[i]);
 	  }
 	  printf("\n");
-	  printf("VoltageRegisters.Reg18Voltage        = %u\n",    bms.VoltageRegisters.Reg18Voltage);
-	  printf("VoltageRegisters.VssVoltage          = %u\n",    bms.VoltageRegisters.VssVoltage);
-	  printf("VoltageRegisters.StackVoltage        = %u mV\n", bms.VoltageRegisters.StackVoltage);
-	  printf("VoltageRegisters.IntTemp             = %u\n",    bms.VoltageRegisters.IntTemp);
-	  printf("VoltageRegisters.TSTemp              = %u\n",    bms.VoltageRegisters.TSTemp);
+	  printf("VoltageRegisters.Reg18Voltage        = %u\r\n",    bms.VoltageRegisters.Reg18Voltage);
+	  printf("VoltageRegisters.VssVoltage          = %u\r\n",    bms.VoltageRegisters.VssVoltage);
+	  printf("VoltageRegisters.StackVoltage        = %u mV\r\n", bms.VoltageRegisters.StackVoltage);
+	  printf("VoltageRegisters.IntTemp             = %u\r\n",    bms.VoltageRegisters.IntTemp);
+	  printf("VoltageRegisters.TSTemp              = %u\r\n",    bms.VoltageRegisters.TSTemp);
 	  printf("\n");
-	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\n",  (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
-	  printf("CurrentRegisters.CC2Current          = %d mA\n",       bms.CurrentRegisters.CC2Current);
-	  printf("CurrentRegisters.CC1Current          = %d mA\n",       bms.CurrentRegisters.CC1Current);
-	  printf("Passed Charge                        = %ld mAs\n",     bms.Accumulator.accumulatedCharge);
-	  printf("Passed Charge (low bytes)            = %ld mAs\n",     (int32_t)(bms.Accumulator.accumulatedCharge&0xFFFFFFFF));
-	  printf("Passed Charge (high bytes)           = %ld mAs\n",     (int32_t)(bms.Accumulator.accumulatedCharge>>32));
-	  printf("Passed Time                          = %ld s\n",       bms.Accumulator.passedTime/4);
+	  printf("CurrentRegisters.RawCurrent          = 0x%04X%04X\r\n",  (uint16_t)(bms.CurrentRegisters.RawCurrent>>16),(uint16_t)(bms.CurrentRegisters.RawCurrent));
+	  printf("CurrentRegisters.CC2Current          = %d mA\r\n",       bms.CurrentRegisters.CC2Current);
+	  printf("CurrentRegisters.CC1Current          = %d mA\r\n",       bms.CurrentRegisters.CC1Current);
+	  printf("Passed Charge                        = %ld mAs\r\n",     bms.Accumulator.accumulatedCharge);
+	  printf("Passed Charge (low bytes)            = %ld mAs\r\n",     (int32_t)(bms.Accumulator.accumulatedCharge&0xFFFFFFFF));
+	  printf("Passed Charge (high bytes)           = %ld mAs\r\n",     (int32_t)(bms.Accumulator.accumulatedCharge>>32));
+	  printf("Passed Time                          = %ld s\r\n",       bms.Accumulator.passedTime/4);
 	  printf("\n");
-	  printf("SystemCtrl.AlarmStatus               = 0x%04X\n", bms.SystemCtrl.AlarmStatus);
-	  printf("SystemCtrl.AlarmRawStatus            = 0x%04X\n", bms.SystemCtrl.AlarmRawStatus);
-	  printf("SystemCtrl.AlarmEnable               = 0x%04X\n", bms.SystemCtrl.AlarmEnable);
-	  printf("SystemCtrl.FETCtrl                   = 0x%04X\n", bms.SystemCtrl.FETCtrl);
-	  printf("SystemCtrl.RegoutCtrl                = 0x%04X\n", bms.SystemCtrl.RegoutCtrl);
-	  printf("SystemCtrl.DSGFetPWM                 = 0x%04X\n", bms.SystemCtrl.DSGFetPWM);
-	  printf("SystemCtrl.CHGFetPWM                 = 0x%04X\n", bms.SystemCtrl.CHGFetPWM);
+	  printf("SystemCtrl.AlarmStatus               = 0x%04X\r\n", bms.SystemCtrl.AlarmStatus);
+	  printf("SystemCtrl.AlarmRawStatus            = 0x%04X\r\n", bms.SystemCtrl.AlarmRawStatus);
+	  printf("SystemCtrl.AlarmEnable               = 0x%04X\r\n", bms.SystemCtrl.AlarmEnable);
+	  printf("SystemCtrl.FETCtrl                   = 0x%04X\r\n", bms.SystemCtrl.FETCtrl);
+	  printf("SystemCtrl.RegoutCtrl                = 0x%04X\r\n", bms.SystemCtrl.RegoutCtrl);
+	  printf("SystemCtrl.DSGFetPWM                 = 0x%04X\r\n", bms.SystemCtrl.DSGFetPWM);
+	  printf("SystemCtrl.CHGFetPWM                 = 0x%04X\r\n", bms.SystemCtrl.CHGFetPWM);
 }
 
 
@@ -1304,9 +1305,12 @@ void cmd_setCtrlGain(void) {
 	P = strtof(arg_locs[2], &end);
 	I = strtof(arg_locs[3], &end);
 	if (id == 0) {
-		ctrl_pi_voltage.P_gain = P;
-		ctrl_pi_voltage.I_gain = I / CTRL_FREQ;
-	} else if (id == 1) {
+		ctrl_pi_voltage_buck.P_gain = P;
+		ctrl_pi_voltage_buck.I_gain = I / CTRL_FREQ;
+	}else if (id == 1) {
+			ctrl_pi_voltage_boost.P_gain = P;
+			ctrl_pi_voltage_boost.I_gain = I / CTRL_FREQ;
+	} else if (id == 2) {
 		ctrl_pi_current.P_gain = P;
 		ctrl_pi_current.I_gain = I / CTRL_FREQ;
 
