@@ -6,6 +6,9 @@
  */
 
 #include "w25n01gv.h"
+#include "stdio.h"
+
+uint8_t buffer[W25N01GV_PAGE_SIZE];
 
 /*
  * Initialize flash memory W25N01GV
@@ -13,7 +16,7 @@
  * @param hqspi handle for QSPI peripheral
  * @param timeout timeout for QSPI operation
  */
-HAL_StatusTypeDef w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *hqspi, uint32_t timeout) {
+w25n01gv_status_t w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *hqspi, uint32_t timeout) {
 #ifdef W25N01GV_TEST_UNION_STRUCT
 	/* test orientation of bitfields */
 	test_bitfield_t test_bitfield;      /* testvariable */
@@ -44,7 +47,7 @@ HAL_StatusTypeDef w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *
 		}
 	}
 #endif // W25N01GV_TEST_UNION_STRUCT
-	HAL_StatusTypeDef status;
+	w25n01gv_status_t status;
 	hw25n01gv->hqspi = hqspi;
 	hw25n01gv->timeout = timeout;
 	hw25n01gv->reg_prot.reg = W25N01GV_REG_PROT_INIT;
@@ -52,14 +55,353 @@ HAL_StatusTypeDef w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *
 	hw25n01gv->reg_status.reg = W25N01GV_REG_STATUS_INIT;
 	hw25n01gv->reg_conf.fields.buf_mode = W25N01GV_BUF;
 	status = w25n01gv_reset(hw25n01gv);
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		status = w25n01gv_read_reg(hw25n01gv);
 	}
 	return status;
 }
 
-HAL_StatusTypeDef w25n01gv_reset(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+/*
+ * Read data from flash memory
+ * @param hw25n01gv W25N01GV handle to the device
+ * @param data pointer to data
+ * @param address address
+ * @param size size of data to be read
+ * Todo: Untested, must be tested before usage
+ */
+w25n01gv_status_t w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size) {
+	w25n01gv_status_t status;
+	uint16_t page_addr;
+	uint16_t column_addr;
+	uint32_t size_preread;
+
+	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
+	size_preread = (size > W25N01GV_PAGE_SIZE - column_addr) ? W25N01GV_PAGE_SIZE - column_addr : size;
+
+	status = w25n01gv_wait_busy(hw25n01gv);
+	if (column_addr != 0) {
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_buffer_mode_enable(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_page_read(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_read_data(hw25n01gv, data, column_addr, size_preread);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		data += (W25N01GV_PAGE_SIZE - column_addr);
+		page_addr++;
+		size -= size_preread;
+		column_addr = 0;
+	}
+	if (size > 0) {
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_buffer_mode_disable(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_page_read(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_read_data(hw25n01gv, data, column_addr, size);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+	}
+	return status;
+}
+
+/*
+ * Read otp data from flash memory
+ * @param hw25n01gv W25N01GV handle to the device
+ * @param data pointer to data
+ * @param address address
+ * @param size size of data to be read
+ * Todo: Untested, must be tested before usage
+ */
+w25n01gv_status_t w25n01gv_read_otp(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size) {
+	w25n01gv_status_t status;
+	uint16_t page_addr;
+	uint16_t column_addr;
+	uint32_t size_preread;
+	w25n01gv_conf_reg_t reg_conf;
+
+	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
+	size_preread = (size > W25N01GV_PAGE_SIZE - column_addr) ? W25N01GV_PAGE_SIZE - column_addr : size;
+
+	status = w25n01gv_wait_busy(hw25n01gv);
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_buffer_mode_enable(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_read_reg_conf(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		reg_conf = hw25n01gv->reg_conf;
+		reg_conf.fields.otp_enter = 1;
+		status = w25n01gv_write_reg_conf(hw25n01gv, &reg_conf);
+	}
+	if (column_addr != 0) {
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_page_read(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_read_data(hw25n01gv, data, column_addr, size_preread);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		data += (W25N01GV_PAGE_SIZE - column_addr);
+		page_addr++;
+		size -= size_preread;
+		column_addr = 0;
+	}
+	if (size > 0) {
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_page_read(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_read_data(hw25n01gv, data, column_addr, size);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_read_reg_conf(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		reg_conf = hw25n01gv->reg_conf;
+		reg_conf.fields.otp_enter = 0;
+		status = w25n01gv_write_reg_conf(hw25n01gv, &reg_conf);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	return status;
+}
+
+/*
+ * Erase data from flash memory
+ * @param hw25n01gv W25N01GV handle to the device
+ * @param address address
+ * @param size size of data to be erased
+ * Todo: Untested, must be tested before usage
+ */
+w25n01gv_status_t w25n01gv_erase(w25n01gv_handle *hw25n01gv, uint32_t start_address, uint32_t end_address) {
+	w25n01gv_status_t status;
+	w25n01gv_prot_reg_t reg_prot;
+
+	status = w25n01gv_wait_busy(hw25n01gv);
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_read_reg_prot(hw25n01gv);
+	}
+	reg_prot = hw25n01gv->reg_prot;
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_set_prot(hw25n01gv, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
+	}
+	for (uint32_t page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(start_address); page_addr <= W25N01GV_ADDR_TO_PAGE_ADDR(end_address); page_addr += W25N01GV_PAGES_PER_BLOCK) {
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_write_enable(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			printf("Erasing block at page address: 0x%04lX\r\n", page_addr); // Todo: remove after debugging
+			status = w25n01gv_block_erase(hw25n01gv, page_addr);
+		}
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_set_prot(hw25n01gv, reg_prot.fields.block_prot, reg_prot.fields.top_bot_prot);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	return status;
+}
+
+/*
+ * Write data to flash memory
+ * @param hw25n01gv W25N01GV handle to the device
+ * @param data pointer to data
+ * @param address address
+ * @param size size of data to be read
+ * Todo: Untested, must be tested before usage
+ */
+w25n01gv_status_t w25n01gv_write(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size) {
+	w25n01gv_status_t status;
+	w25n01gv_prot_reg_t reg_prot;
+	uint16_t page_addr;
+	uint16_t column_addr;
+	uint16_t write_size;
+
+	if ((address + size) > W25N01GV_SIZE) {
+		return W25N01GV_ADDR_OVERRUN;
+	}
+
+	status = w25n01gv_wait_busy(hw25n01gv);
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_buffer_mode_enable(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_read_reg_prot(hw25n01gv);
+	}
+	reg_prot = hw25n01gv->reg_prot;
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_set_prot(hw25n01gv, W25N01GV_PROT_NONE, W25N01GV_PROT_LOWER);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	while (size > 0) {
+		page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
+		column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
+		write_size = (column_addr + size >= W25N01GV_PAGE_SIZE) ? W25N01GV_PAGE_SIZE - column_addr : size;
+
+		printf("Writing data to external flash\n");
+		//printf("Page address:   0x%4X\n", page_addr);
+		//printf("Column address: 0x%4X\n", column_addr);
+		//printf("Write size:     0x%4X\n", write_size);
+
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_page_read(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_read_data(hw25n01gv, buffer, column_addr, write_size);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		for (uint16_t i = 0; i < write_size; i++) {
+			if (buffer[i] != 0xFF) {
+				printf("Writing aborted, tried writing to non-empty page: 0x%04X\r\n", page_addr); // Todo: remove after debugging
+				if (status == W25N01GV_OK) {
+					status = w25n01gv_set_prot(hw25n01gv, reg_prot.fields.block_prot, reg_prot.fields.top_bot_prot);
+				}
+				if (status == W25N01GV_OK) {
+					status = w25n01gv_wait_busy(hw25n01gv);
+				}
+				return W25N01GV_WRITE_NON_EMPTY;
+			}
+		}
+		printf("Writing, page address: 0x%04X, column address: 0x%04X, size: %u\r\n", page_addr, column_addr, write_size); // Todo: remove after debugging
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_write_enable(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_prog_load(hw25n01gv, data, column_addr, write_size);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (hw25n01gv->reg_status.fields.program_failure != 0) {
+			printf("Writing aborted, program failure (prog load), page address: 0x%04X\r\n", page_addr); // Todo: remove after debugging
+			if (status == W25N01GV_OK) {
+				status = w25n01gv_set_prot(hw25n01gv, reg_prot.fields.block_prot, reg_prot.fields.top_bot_prot);
+			}
+			if (status == W25N01GV_OK) {
+				status = w25n01gv_wait_busy(hw25n01gv);
+			}
+			return W25N01GV_PROG_FAILURE;
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_write_enable(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_prog_exec(hw25n01gv, page_addr);
+		}
+		if (status == W25N01GV_OK) {
+			status = w25n01gv_wait_busy(hw25n01gv);
+		}
+		if (hw25n01gv->reg_status.fields.program_failure != 0) {
+			printf("Writing aborted, program failure (prog execute), page address: 0x%04X\r\n", page_addr); // Todo: remove after debugging
+			if (status == W25N01GV_OK) {
+				status = w25n01gv_set_prot(hw25n01gv, reg_prot.fields.block_prot, reg_prot.fields.top_bot_prot);
+			}
+			if (status == W25N01GV_OK) {
+				status = w25n01gv_wait_busy(hw25n01gv);
+			}
+			return W25N01GV_PROG_FAILURE;
+		}
+		address += write_size;
+		data += write_size;
+		size -= write_size;
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_set_prot(hw25n01gv, reg_prot.fields.block_prot, reg_prot.fields.top_bot_prot);
+	}
+	if (status == W25N01GV_OK) {
+		status = w25n01gv_wait_busy(hw25n01gv);
+	}
+	return status;
+}
+
+/*
+ * Reset flash memory
+ * @param hw25n01gv W25N01GV handle to the device.
+ */
+w25n01gv_status_t w25n01gv_reset(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_RESET;
 	cmd.Address             = 0x00;
@@ -76,8 +418,8 @@ HAL_StatusTypeDef w25n01gv_reset(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
 	status = w25n01gv_wait_busy(hw25n01gv);
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	/*if (status == HAL_OK) {
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	/*if (status == W25N01GV_OK) {
 		uint8_t pData;
 		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &pData, hw25n01gv->timeout);
 	}*/
@@ -89,8 +431,8 @@ HAL_StatusTypeDef w25n01gv_reset(w25n01gv_handle *hw25n01gv) {
  * @param hw25n01gv W25N01GV handle to the device.
  * @param id pointer to array to write JEDEC ID into
  */
-HAL_StatusTypeDef w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_ID;
 	cmd.Address             = 0x00;
@@ -106,9 +448,9 @@ HAL_StatusTypeDef w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, id, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, id, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -117,13 +459,13 @@ HAL_StatusTypeDef w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id) {
  * Read all status registers
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_read_reg(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_reg(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	status = w25n01gv_read_reg_prot(hw25n01gv);
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		status = w25n01gv_read_reg_conf(hw25n01gv);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		status = w25n01gv_read_reg_status(hw25n01gv);
 	}
 	return status;
@@ -134,8 +476,8 @@ HAL_StatusTypeDef w25n01gv_read_reg(w25n01gv_handle *hw25n01gv) {
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_PROT_ADDR;
@@ -151,9 +493,9 @@ HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -163,8 +505,8 @@ HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv) {
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_CONF_ADDR;
@@ -180,9 +522,9 @@ HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_conf.reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_conf.reg, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -192,8 +534,8 @@ HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv) {
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_STATUS_ADDR;
@@ -209,9 +551,9 @@ HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_status.reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_status.reg, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -220,13 +562,13 @@ HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv) {
  * Write all status registers
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_write_reg(w25n01gv_handle *hw25n01gv, w25n01gv_reg_t *regs) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_reg(w25n01gv_handle *hw25n01gv, w25n01gv_reg_t *regs) {
+	w25n01gv_status_t status;
 	status = w25n01gv_write_reg_prot(hw25n01gv, &regs->reg_prot);
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		status = w25n01gv_write_reg_conf(hw25n01gv, &regs->reg_conf);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		status = w25n01gv_write_reg_status(hw25n01gv, &regs->reg_status);
 	}
 	return status;
@@ -237,8 +579,8 @@ HAL_StatusTypeDef w25n01gv_write_reg(w25n01gv_handle *hw25n01gv, w25n01gv_reg_t 
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_prot_reg_t *reg) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_prot_reg_t *reg) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_WRITE_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_PROT_ADDR;
@@ -254,11 +596,11 @@ HAL_StatusTypeDef w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_p
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		hw25n01gv->reg_prot.reg = reg->reg;
 	}
 	return status;
@@ -269,8 +611,8 @@ HAL_StatusTypeDef w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_p
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_conf_reg_t *reg) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_conf_reg_t *reg) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_WRITE_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_CONF_ADDR;
@@ -286,11 +628,11 @@ HAL_StatusTypeDef w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_c
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		hw25n01gv->reg_conf.reg = reg->reg;
 	}
 	return status;
@@ -301,8 +643,8 @@ HAL_StatusTypeDef w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_c
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_WRITE_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_STATUS_ADDR;
@@ -318,11 +660,11 @@ HAL_StatusTypeDef w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, &reg->reg, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		hw25n01gv->reg_status.reg = reg->reg;
 	}
 	return status;
@@ -333,8 +675,8 @@ HAL_StatusTypeDef w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv
  * @param hw25n01gv W25N01GV handle to the device.
  * @param reg pointer to register variable
  */
-HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_prot, uint8_t upper_lower) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_prot, uint8_t upper_lower) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_PROT_ADDR;
@@ -350,9 +692,9 @@ HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_pr
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
 		hw25n01gv->reg_prot.fields.block_prot = block_prot & 0xF;
 		hw25n01gv->reg_prot.fields.top_bot_prot = upper_lower & 0x1;
 	}
@@ -370,11 +712,11 @@ HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_pr
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, &hw25n01gv->reg_prot.reg, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -383,9 +725,8 @@ HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_pr
  * Wait until the busy flag in the status register has cleared
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
-	w25n01gv_status_reg_t reg;
+w25n01gv_status_t w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_STATUS_REG;
 	cmd.Address             = W25N01GV_REG_STATUS_ADDR;
@@ -402,13 +743,11 @@ HAL_StatusTypeDef w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
 	do {
-		status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-		if (status == HAL_OK) {
-			//status = HAL_QSPI_Receive(hw25n01gv->hqspi, &reg.reg, hw25n01gv->timeout);
-			status = HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_status.reg, hw25n01gv->timeout);
+		status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+		if (status == W25N01GV_OK) {
+			status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, &hw25n01gv->reg_status.reg, hw25n01gv->timeout);
 		}
-	//} while ((status == HAL_OK) && (reg.fields.busy != 0));
-	} while ((status == HAL_OK) && (hw25n01gv->reg_status.fields.busy != 0));
+	} while ((status == W25N01GV_OK) && (hw25n01gv->reg_status.fields.busy != 0));
 	return status;
 }
 
@@ -416,10 +755,10 @@ HAL_StatusTypeDef w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv) {
  * Enable buffer mode
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	status = w25n01gv_read_reg_conf(hw25n01gv);
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		hw25n01gv->reg_conf.fields.buf_mode = 1;
 		status = w25n01gv_write_reg_conf(hw25n01gv, &hw25n01gv->reg_conf);
 	}
@@ -430,10 +769,10 @@ HAL_StatusTypeDef w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv) {
  * Disable buffer mode
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	status = w25n01gv_read_reg_conf(hw25n01gv);
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		hw25n01gv->reg_conf.fields.buf_mode = 0;
 		status = w25n01gv_write_reg_conf(hw25n01gv, &hw25n01gv->reg_conf);
 	}
@@ -444,8 +783,8 @@ HAL_StatusTypeDef w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv) {
  * Enable write
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_write_enable(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_enable(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_WRITE_ENABLE;
 	cmd.Address             = 0x00;
@@ -461,7 +800,7 @@ HAL_StatusTypeDef w25n01gv_write_enable(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
 	return status;
 }
 
@@ -469,8 +808,8 @@ HAL_StatusTypeDef w25n01gv_write_enable(w25n01gv_handle *hw25n01gv) {
  * Disable write
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_write_disable(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_write_disable(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_WRITE_DISABLE;
 	cmd.Address             = 0x00;
@@ -486,7 +825,7 @@ HAL_StatusTypeDef w25n01gv_write_disable(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
 	return status;
 }
 
@@ -496,8 +835,8 @@ HAL_StatusTypeDef w25n01gv_write_disable(w25n01gv_handle *hw25n01gv) {
  * @param badblock  Pointer to bad block to be written to bad block look up table
  * Todo: Untested, must be tested before usage
  */
-HAL_StatusTypeDef w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n01gv_badblock_t badblock) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n01gv_badblock_t badblock) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_BB_MANAGEMENT;
 	cmd.Address             = badblock.word;
@@ -513,10 +852,10 @@ HAL_StatusTypeDef w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n0
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
 		uint8_t pData;
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, &pData, hw25n01gv->timeout);
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, &pData, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -525,8 +864,8 @@ HAL_StatusTypeDef w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n0
  * Read bad block look up table
  * @param hw25n01gv W25N01GV handle to the device.
  */
-HAL_StatusTypeDef w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv) {
+	w25n01gv_status_t status;
 	uint8_t pData[4*W25N01GV_BADBLOCK_LUT_SIZE];
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_READ_BBM_LUT;
@@ -543,11 +882,11 @@ HAL_StatusTypeDef w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv) {
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		for (uint8_t i = 0; i < W25N01GV_BADBLOCK_LUT_SIZE; i++) {
 			for (uint8_t j = 0; j < 4; j++) {
 				hw25n01gv->badblock_lut->bytes[3-j] = pData[i*4 + j];
@@ -562,8 +901,8 @@ HAL_StatusTypeDef w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv) {
  * @param hw25n01gv W25N01GV handle to the device.
  * @param page_addr pointer for page address of last ECC failure
  */
-HAL_StatusTypeDef w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t *page_addr) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t *page_addr) {
+	w25n01gv_status_t status;
 	uint8_t pData[2];
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_LAST_ECC_FAIL_PAGE_ADDR;
@@ -580,11 +919,11 @@ HAL_StatusTypeDef w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
 	}
-	if (status == HAL_OK) {
+	if (status == W25N01GV_OK) {
 		*page_addr = (((uint16_t) pData[0]) << 8) | pData[1];
 	}
 	return status;
@@ -595,8 +934,8 @@ HAL_StatusTypeDef w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t
  * @param hw25n01gv W25N01GV handle to the device.
  * @param page_addr Page address
  */
-HAL_StatusTypeDef w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_BLOCK_ERASE;
 	cmd.Address             = 0x00;
@@ -612,12 +951,12 @@ HAL_StatusTypeDef w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
 		uint8_t pData[2];
 		pData[0] = (uint8_t) (page_addr>>8);
 		pData[1] = (uint8_t) (page_addr & 0x00FF);
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -628,10 +967,10 @@ HAL_StatusTypeDef w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page
  * @param col_addr column address
  * @param data pointer to data
  * @param col_addr column address
- * @param len length of data to be loaded
+ * @param size size of data to be loaded
  */
-HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 #if (W25N01GV_WRITE_DATA_LINES == 1)
 		cmd.Instruction         = W25N01GV_CMD_PROG_DATA_LOAD;
@@ -644,7 +983,7 @@ HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, 
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -659,16 +998,16 @@ HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, 
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
 #else
 	#error This amount of data lines is not supported! Check the definition of W25N01GV_WRITE_DATA_LINES.
 #endif // W25N01GV_WRITE_DATA_LINES
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, data, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, data, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -679,10 +1018,10 @@ HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, 
  * @param col_addr column address
  * @param data pointer to data
  * @param col_addr column address
- * @param len length of data to be loaded
+ * @param size size of data to be loaded
  */
-HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 #if (W25N01GV_WRITE_DATA_LINES == 1)
 		cmd.Instruction         = W25N01GV_CMD_RAND_PROG_DATA_LOAD;
@@ -695,7 +1034,7 @@ HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t 
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -710,16 +1049,16 @@ HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t 
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
 #else
 	#error This amount data lines is not supported! Check the definition of W25N01GV_WRITE_DATA_LINES.
 #endif // W25N01GV_WRITE_DATA_LINES
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, data, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, data, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -729,8 +1068,8 @@ HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t 
  * @param hw25n01gv W25N01GV handle to the device.
  * @param page_addr Page address
  */
-HAL_StatusTypeDef w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_PROG_EXEC;
 	cmd.Address             = 0x00;
@@ -746,12 +1085,12 @@ HAL_StatusTypeDef w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_a
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
 		uint8_t pData[2];
 		pData[0] = (uint8_t) (page_addr>>8);
 		pData[1] = (uint8_t) (page_addr & 0x00FF);
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -761,8 +1100,8 @@ HAL_StatusTypeDef w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_a
  * @param hw25n01gv W25N01GV handle to the device
  * @param addr page address
  */
-HAL_StatusTypeDef w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_addr) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	cmd.Instruction         = W25N01GV_CMD_PAGE_DATA_READ;
 	cmd.Address             = 0x00;
@@ -778,12 +1117,12 @@ HAL_StatusTypeDef w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_a
 	cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 	cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 	cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
 		uint8_t pData[2];
 		pData[0] = (uint8_t) (page_addr>>8);
 		pData[1] = (uint8_t) (page_addr & 0x00FF);
-		status = HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
+		status = (w25n01gv_status_t) HAL_QSPI_Transmit(hw25n01gv->hqspi, pData, hw25n01gv->timeout);
 	}
 	return status;
 }
@@ -793,10 +1132,10 @@ HAL_StatusTypeDef w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_a
  * @param hw25n01gv W25N01GV handle to the device
  * @param data pointer to data
  * @param col_addr column address
- * @param len length of data to be read
+ * @param size size of data to be read
  */
-HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len) {
-	HAL_StatusTypeDef status;
+w25n01gv_status_t w25n01gv_read_data(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size) {
+	w25n01gv_status_t status;
 	QSPI_CommandTypeDef cmd = {0};
 	if ((hw25n01gv->reg_conf.fields.buf_mode == 1) || (hw25n01gv->reg_conf.fields.otp_enter == 1)) {
 #if (W25N01GV_FAST_READ == 0)
@@ -810,7 +1149,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -825,7 +1164,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -840,7 +1179,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -855,7 +1194,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -870,7 +1209,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -885,7 +1224,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -900,7 +1239,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_1_LINE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -915,7 +1254,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_2_LINES;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -930,7 +1269,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_2_LINES;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -945,7 +1284,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_4_LINES;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -960,7 +1299,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_4_LINES;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -980,7 +1319,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -995,7 +1334,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1010,7 +1349,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_1_LINE;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1025,7 +1364,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1040,7 +1379,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1055,7 +1394,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1070,7 +1409,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_1_LINE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1085,7 +1424,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1100,7 +1439,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_2_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1115,7 +1454,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1130,7 +1469,7 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 		cmd.AddressMode         = QSPI_ADDRESS_NONE;
 		cmd.AlternateByteMode   = QSPI_ALTERNATE_BYTES_NONE;
 		cmd.DataMode            = QSPI_DATA_4_LINES;
-		cmd.NbData              = len;
+		cmd.NbData              = size;
 		cmd.DdrMode             = QSPI_DDR_MODE_DISABLE;
 		cmd.DdrHoldHalfCycle    = QSPI_DDR_HHC_ANALOG_DELAY;
 		cmd.SIOOMode            = QSPI_SIOO_INST_EVERY_CMD;
@@ -1138,9 +1477,10 @@ HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint1
 	#error This combination of address and data lines is not supported! Check the definition of W25N01GV_READ_ADDR_LINES, W25N01GV_READ_DATA_LINES, W25N01GV_READ_4_BYTE_ADDR.
 #endif // W25N01GV_READ_ADDR_LINES, W25N01GV_READ_DATA_LINES, W25N01GV_READ_4_BYTE_ADDR
 	}
-	status = HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
-	if (status == HAL_OK) {
-		status = HAL_QSPI_Receive(hw25n01gv->hqspi, data, hw25n01gv->timeout);
+	status = (w25n01gv_status_t) HAL_QSPI_Command(hw25n01gv->hqspi, &cmd, hw25n01gv->timeout);
+	if (status == W25N01GV_OK) {
+		status = (w25n01gv_status_t) HAL_QSPI_Receive(hw25n01gv->hqspi, data, hw25n01gv->timeout);
 	}
 	return status;
 }
+

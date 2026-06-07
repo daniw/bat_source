@@ -27,13 +27,14 @@
 
 #define W25N01GV_TEST_UNION_STRUCT
 
-#define W25N01GV_PAGE_SIZE								(2048)
-#define W25N01GV_PAGES_PER_BLOCK						(64) // Number of pages in a block
-#define W25N01GV_NOF_BLOCKS								(1024)
+#define W25N01GV_PAGE_SIZE								(2048U)
+#define W25N01GV_PAGES_PER_BLOCK						(64U) // Number of pages in a block
+#define W25N01GV_NOF_BLOCKS								(1024U)
 #define W25N01GV_NOF_PAGES								(W25N01GV_PAGES_PER_BLOCK * W25N01GV_NOF_BLOCKS)
 #define W25N01GV_PAGE_MASK								(W25N01GV_PAGE_SIZE-1)
+#define W25N01GV_SIZE									(W25N01GV_PAGE_SIZE * W25N01GV_NOF_PAGES)
 #define W25N01GV_ADDR_TO_COLUMN_ADDR(addr)				((uint16_t) (addr & W25N01GV_PAGE_MASK))
-#define W25N01GV_ADDR_TO_PAGE_ADDR(addr)				((uint16_t) ((address >> 11) & 0xFFFF)) // Todo: Compute mask and shift width from paramaters
+#define W25N01GV_ADDR_TO_PAGE_ADDR(addr)				((uint16_t) ((addr >> 11) & 0xFFFF)) // Todo: Compute mask and shift width from paramaters
 
 #define W25N01GV_MANUF_ID								(0xEF)
 #define W25N01GV_DEVICE_ID								(0xAA21)
@@ -177,6 +178,20 @@ typedef union {
 } test_bitfield_t;
 #endif // W25N01GV_TEST_UNION_STRUCT
 
+/**
+  * @brief  HAL Status structures definition
+  */
+typedef enum
+{
+  W25N01GV_OK              = HAL_OK,      // 0x00U,
+  W25N01GV_ERROR           = HAL_ERROR,   // 0x01U,
+  W25N01GV_BUSY            = HAL_BUSY,    // 0x02U,
+  W25N01GV_TIMEOUT         = HAL_TIMEOUT, // 0x03U,
+  W25N01GV_ADDR_OVERRUN    = 0x04U,
+  W25N01GV_WRITE_NON_EMPTY = 0x05U,
+  W25N01GV_PROG_FAILURE    = 0x06U
+} w25n01gv_status_t;
+
 typedef union {
 	uint8_t reg;							/*!< direct register access */
 	struct {
@@ -273,56 +288,64 @@ typedef struct {
 	uint32_t timeout;
 } w25n01gv_handle;
 
-HAL_StatusTypeDef w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *hqspi, uint32_t timeout);
+w25n01gv_status_t w25n01gv_init(w25n01gv_handle *hw25n01gv, QSPI_HandleTypeDef *hqspi, uint32_t timeout);
 
-HAL_StatusTypeDef w25n01gv_reset(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size);
 
-HAL_StatusTypeDef w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id);
+w25n01gv_status_t w25n01gv_read_otp(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size);
 
-HAL_StatusTypeDef w25n01gv_read_reg(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_erase(w25n01gv_handle *hw25n01gv, uint32_t start_address, uint32_t end_address);
 
-HAL_StatusTypeDef w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_write(w25n01gv_handle *hw25n01gv, uint8_t *data, uint32_t address, uint32_t size);
 
-HAL_StatusTypeDef w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_reset(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_read_id(w25n01gv_handle *hw25n01gv, uint8_t *id);
 
-HAL_StatusTypeDef w25n01gv_write_reg(w25n01gv_handle *hw25n01gvm, w25n01gv_reg_t *regs);
+w25n01gv_status_t w25n01gv_read_reg(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_prot_reg_t *reg);
+w25n01gv_status_t w25n01gv_read_reg_prot(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_conf_reg_t *reg);
+w25n01gv_status_t w25n01gv_read_reg_conf(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg);
+w25n01gv_status_t w25n01gv_read_reg_status(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_prot, uint8_t upper_lower);
+w25n01gv_status_t w25n01gv_write_reg(w25n01gv_handle *hw25n01gvm, w25n01gv_reg_t *regs);
 
-HAL_StatusTypeDef w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_write_reg_prot(w25n01gv_handle *hw25n01gv, w25n01gv_prot_reg_t *reg);
 
-HAL_StatusTypeDef w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_write_reg_conf(w25n01gv_handle *hw25n01gv, w25n01gv_conf_reg_t *reg);
 
-HAL_StatusTypeDef w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_write_reg_status(w25n01gv_handle *hw25n01gv, w25n01gv_status_reg_t *reg);
 
-HAL_StatusTypeDef w25n01gv_write_enable(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_set_prot(w25n01gv_handle *hw25n01gv, uint8_t block_prot, uint8_t upper_lower);
 
-HAL_StatusTypeDef w25n01gv_write_disable(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_wait_busy(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n01gv_badblock_t badblock);
+w25n01gv_status_t w25n01gv_buffer_mode_enable(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv);
+w25n01gv_status_t w25n01gv_buffer_mode_disable(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t *page_addr);
+w25n01gv_status_t w25n01gv_write_enable(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+w25n01gv_status_t w25n01gv_write_disable(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len);
+w25n01gv_status_t w25n01gv_badblock_management(w25n01gv_handle *hw25n01gv, w25n01gv_badblock_t badblock);
 
-HAL_StatusTypeDef w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len);
+w25n01gv_status_t w25n01gv_read_badblock(w25n01gv_handle *hw25n01gv);
 
-HAL_StatusTypeDef w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+w25n01gv_status_t w25n01gv_last_ecc_failure(w25n01gv_handle *hw25n01gv, uint16_t *page_addr);
 
-HAL_StatusTypeDef w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+w25n01gv_status_t w25n01gv_block_erase(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
 
-HAL_StatusTypeDef w25n01gv_read(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t len);
+w25n01gv_status_t w25n01gv_prog_load(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size);
+
+w25n01gv_status_t w25n01gv_prog_load_random(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size);
+
+w25n01gv_status_t w25n01gv_prog_exec(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+
+w25n01gv_status_t w25n01gv_page_read(w25n01gv_handle *hw25n01gv, uint16_t page_addr);
+
+w25n01gv_status_t w25n01gv_read_data(w25n01gv_handle *hw25n01gv, uint8_t *data, uint16_t col_addr, uint32_t size);
 
 #endif /* INC_W25N01GV_H_ */

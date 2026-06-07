@@ -77,6 +77,7 @@ BQ76905_handle bms;
 ADC_MEAS_DATA adc_data;
 ADS131M04_handle ext_adc;
 w25n01gv_handle flash;
+w25n01gv_status_t flash_status = W25N01GV_OK;
 
 /* USER CODE END PV */
 
@@ -155,7 +156,6 @@ int main(void)
    */
   cli_init(&huart2);
 
-
   /*
    * Init UI control (LEDs)
    */
@@ -191,7 +191,19 @@ int main(void)
   /*
    * QSPI flash memory init
    */
-  w25n01gv_init(&flash, &hqspi1, 1000);
+  flash_status = w25n01gv_init(&flash, &hqspi1, 1000);
+/*  if (flash_status == HAL_OK){
+    flash_status = w25n01gv_wait_busy(&flash);
+  }
+  if (flash_status == HAL_OK){
+  	flash_status = w25n01gv_buffer_mode_disable(&flash);
+  }
+  if (flash_status == HAL_OK){
+    flash_status = w25n01gv_wait_busy(&flash);
+  }*/
+  if (flash_status != W25N01GV_OK) {
+    printf("Flash initialisation failed!\r\n");
+  }
 
   gpio_turnOn();
 
@@ -212,13 +224,19 @@ int main(void)
 	  /*
 	   * DAC Test
 	   */
-	  if (dac_value + 256 >= 4096)
+	  /*if (dac_value + 256 >= 4096)
 	  {
 		  dac_value = 0;
 	  }
 	  else
 	  {
 		  dac_value += 256;
+	  */
+	  if (dac_value <= 2048) {
+		  dac_value = 3804;
+	  }
+	  else {
+		  dac_value = 2048;
 	  }
 	  dac_setValue1ARef(dac_value);
 	  /*

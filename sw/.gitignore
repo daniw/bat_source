@@ -7,8 +7,14 @@
 *.mk
 
 bat_source/Debug
+bat_source/Release
 
 DisplayTest/Debug
+DisplayTest/Release
 DisplayTest/Drivers
 DisplayTest/CMSIS
 DisplayTest/.settings
+
+Ext_Loader/Debug
+Ext_Loader/Release
+Ext_Loader/External Loader
