@@ -31,6 +31,7 @@
 #include "w25n01gv.h"
 #include "ctrl_param.h"
 #include "rtc.h"
+#include "lcd.h"
 
 #ifdef CLI_ENABLED
 
@@ -94,6 +95,7 @@ void cmd_changeState(void);
 void cmd_setCtrlGain(void);
 void cmd_printRTC(void);
 void cmd_setRTC(void);
+void cmd_testLCD(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -121,7 +123,8 @@ void (*cmd_func[])(void) = {
 	cmd_changeState,
 	cmd_setCtrlGain,
 	cmd_printRTC,
-	cmd_setRTC
+	cmd_setRTC,
+	cmd_testLCD
 };
 
 // List of command names
@@ -150,7 +153,8 @@ const char *cmd_str[] = {
 		"state",
 		"setPI",
 		"pRTC",
-		"setRTC"
+		"setRTC",
+		"testLCD"
 };
 
 // List of command names including arguments
@@ -179,7 +183,8 @@ const char *cmd_arg_str[] = {
 		"state [new state]",
 		"setPI [P Gain] [I Gain]"
 		"pRTC",
-		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}"
+		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
+		"testLCD"
 };
 
 int cmd_index;
@@ -1271,6 +1276,11 @@ void cmd_setRTC(void){
 	if (status != HAL_OK) {
 		printf("Setting time failed. \r\n");
 	}
+	return;
+}
+
+void cmd_testLCD(void){
+	LCD_Test();
 	return;
 }
 
