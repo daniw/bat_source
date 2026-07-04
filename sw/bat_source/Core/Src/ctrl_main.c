@@ -14,7 +14,8 @@
 #include "aux_io_ctrl.h"
 
 ctrl_main_t ctrl_main_handle;
-PID_controller_t ctrl_pi_voltage;
+PID_controller_t ctrl_pi_voltage_buck;
+PID_controller_t ctrl_pi_voltage_boost;
 PID_controller_t ctrl_pi_current;
 
 PID_controller_t ctrl_pi_flyback_voltage;
@@ -24,7 +25,9 @@ const uint16_t ctrl_main_iso_values[4] = { 125, 250, 500, 1000 };
 
 /******************* Function Prototypes **************************/
 void ctrl_main_apply_reference(uint16_t reference_poti_count);
-void ctrl_main_ctrl_voltage(uint16_t voltage_meas_mV,
+void ctrl_main_ctrl_voltage_buck(uint16_t voltage_meas_mV,
+		int16_t voltage_meas_accurate);
+void ctrl_main_ctrl_voltage_boost(uint16_t voltage_meas_mV,
 		int16_t voltage_meas_accurate);
 void ctrl_main_ctrl_current(int16_t current_meas_mA,
 		int16_t current_meas_accurate);
@@ -35,9 +38,16 @@ void ctrl_main_ctrl_current(int16_t current_meas_mA,
 void ctrl_main_init(void) {
 
 
-	ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BUCK_P,
+	ctrl_PID_controller_init(&ctrl_pi_voltage_buck, CTRL_PARAM_VOLTAGE_BUCK_P,
 	CTRL_PARAM_VOLTAGE_BUCK_I, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
 	CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_LOW);
+
+
+
+	ctrl_PID_controller_init(&ctrl_pi_voltage_boost, CTRL_PARAM_VOLTAGE_BOOST_P,
+	CTRL_PARAM_VOLTAGE_BOOST_I, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
+	CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
+
 
 	ctrl_PID_controller_init(&ctrl_pi_current, CTRL_PARAM_CURRENT_P,
 	CTRL_PARAM_CURRENT_I, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
@@ -53,23 +63,18 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 	switch (mode) {
 
 	case CTRL_MODE_60V:
-		ctrl_pi_voltage.prev_I_action = 0.0;
+		ctrl_pi_voltage_boost.prev_I_action = 0.0;
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_LOW);
 		hrtim_set_freq(HRTIM_CHANNEL_SEK, CTRL_PARAM_SW_FREQ_HIGH);
 		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_LOW);
-		hrtim_set_duty(HRTIM_CHANNEL_SEK, CTRL_PARAM_CONST_DUTY_HIGH);
+		hrtim_set_duty(HRTIM_CHANNEL_SEK, CTRL_PARAM_CONST_DUTY_LOW);
 		hrtim_enable(HRTIM_CHANNEL_PRIM);
 		hrtim_enable(HRTIM_CHANNEL_SEK);
-
-		ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BOOST_P,
-		CTRL_PARAM_VOLTAGE_BOOST_I, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
-		CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
-
 		break;
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
 	case CTRL_MODE_10A:
-		ctrl_pi_voltage.prev_I_action = 0.0;
+		ctrl_pi_voltage_buck.prev_I_action = 0.0;
 		ctrl_pi_current.prev_I_action = 0.0;
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_HIGH);
 		hrtim_set_freq(HRTIM_CHANNEL_SEK, CTRL_PARAM_SW_FREQ_LOW);
@@ -77,10 +82,6 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 		hrtim_set_duty(HRTIM_CHANNEL_PRIM, 0);
 		hrtim_enable(HRTIM_CHANNEL_PRIM);
 		hrtim_enable(HRTIM_CHANNEL_SEK);
-
-		ctrl_PID_controller_init(&ctrl_pi_voltage, CTRL_PARAM_VOLTAGE_BUCK_P,
-		CTRL_PARAM_VOLTAGE_BUCK_I, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
-		CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_LOW);
 		break;
 	case CTRL_MODE_ISOMETER:
 		break;
@@ -106,9 +107,12 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 	switch (ctrl_main_handle.mode) {
 
 	case CTRL_MODE_60V:
+		ctrl_main_ctrl_voltage_boost(adc_data->converted.v_out,
+				adc_data->converted.v_term_ext_mv);
+		break;
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
-		ctrl_main_ctrl_voltage(adc_data->converted.v_out,
+		ctrl_main_ctrl_voltage_buck(adc_data->converted.v_out,
 				adc_data->converted.v_term_ext_mv);
 		break;
 	case CTRL_MODE_10A:
@@ -161,27 +165,55 @@ void ctrl_main_apply_reference(uint16_t reference_poti_count) {
 
 }
 
-void ctrl_main_ctrl_voltage(uint16_t voltage_meas_mV,
+void ctrl_main_ctrl_voltage_buck(uint16_t voltage_meas_mV,
 		int16_t voltage_meas_accurate_mV) {
 uint8_t duty;
 	// Startup Ramp
 	if (ctrl_main_handle.ramp > 1.0F) {
-		ctrl_pi_voltage.ref = ctrl_main_handle.voltage_reference_mV / 1000.0F;
+		ctrl_pi_voltage_buck.ref = ctrl_main_handle.voltage_reference_mV / 1000.0F;
 		ctrl_main_handle.ramp = 1.1F;
 	}
 
 	else {
 		ctrl_main_handle.ramp += (10.0F / CTRL_FREQ);
-		ctrl_pi_voltage.ref = (ctrl_main_handle.voltage_reference_mV / 1000.0F)
+		ctrl_pi_voltage_buck.ref = (ctrl_main_handle.voltage_reference_mV / 1000.0F)
 				* ctrl_main_handle.ramp;
 	}
 
-	ctrl_PID_controller_execute(&ctrl_pi_voltage, voltage_meas_mV / 1000.0F,
+	ctrl_PID_controller_execute(&ctrl_pi_voltage_buck, voltage_meas_mV / 1000.0F,
 			voltage_meas_accurate_mV / 1000.0F, 0);
 
 	// Apply Duty
-	hrtim_set_duty(HRTIM_CHANNEL_PRIM, ctrl_pi_voltage.action);
-	duty = ctrl_pi_voltage.action*100;
+	hrtim_set_duty(HRTIM_CHANNEL_PRIM, ctrl_pi_voltage_buck.action);
+	duty = ctrl_pi_voltage_buck.action*100;
+	//if(ctrl_pi_voltage.action > 0.24F || ctrl_pi_voltage.action<0.24F)
+	//	printf("%d\r\n", duty);
+}
+
+
+void ctrl_main_ctrl_voltage_boost(uint16_t voltage_meas_mV,
+		int16_t voltage_meas_accurate_mV) {
+uint8_t duty;
+	// Startup Ramp
+	if (ctrl_main_handle.ramp > 1.0F) {
+		ctrl_pi_voltage_boost.ref = ctrl_main_handle.voltage_reference_mV / 1000.0F;
+		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_HIGH);
+		ctrl_main_handle.ramp = 1.1F;
+	}
+
+	else {
+		ctrl_main_handle.ramp += (10.0F / CTRL_FREQ);
+		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_HIGH*ctrl_main_handle.ramp);
+		ctrl_pi_voltage_boost.ref = (ctrl_main_handle.voltage_reference_mV / 1000.0F)
+				* ctrl_main_handle.ramp;
+	}
+
+	ctrl_PID_controller_execute(&ctrl_pi_voltage_boost, voltage_meas_mV / 1000.0F,
+			voltage_meas_accurate_mV / 1000.0F, 0);
+
+	// Apply Duty
+	hrtim_set_duty(HRTIM_CHANNEL_SEK, ctrl_pi_voltage_boost.action);
+	duty = ctrl_pi_voltage_boost.action*100;
 	//if(ctrl_pi_voltage.action > 0.24F || ctrl_pi_voltage.action<0.24F)
 	//	printf("%d\r\n", duty);
 }
@@ -219,14 +251,14 @@ void ctrl_main_ctrl_hv(int32_t voltage_meas_mV, int16_t current_meas_mA) {
 
 	else {
 		ctrl_main_handle.ramp += (10.0F / CTRL_FREQ);
-		ctrl_pi_voltage.ref = (ctrl_main_handle.voltage_reference_mV / 1000.0F)
+		ctrl_pi_flyback_voltage.ref = (ctrl_main_handle.voltage_reference_mV / 1000.0F)
 				* ctrl_main_handle.ramp;
 	}
 
-	ctrl_PID_controller_execute(&ctrl_pi_voltage, voltage_meas_mV / 1000.0F,
+	ctrl_PID_controller_execute(&ctrl_pi_flyback_voltage, voltage_meas_mV / 1000.0F,
 			voltage_meas_mV / 1000.0F, 0);
 
-	ctrl_pi_current.ref = ctrl_pi_voltage.action;
+	ctrl_pi_current.ref = ctrl_pi_flyback_voltage.action;
 	ctrl_PID_controller_execute(&ctrl_pi_current, current_meas_mA / 1000.0F,
 			current_meas_mA / 1000.0F, 0);
 	// Apply Duty
