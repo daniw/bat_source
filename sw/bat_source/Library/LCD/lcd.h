@@ -34,9 +34,6 @@
   #define LCD_240X320
 #endif
 
-
-
-
 #ifdef USE_ST7735
   #ifdef LCD_160X128
     #define LCD_X_SHIFT 0
@@ -241,7 +238,14 @@ typedef enum{
 }lcd_cmds;
 
 #define DC_BIT_CMD 0x0000
+#ifdef LCD_DC
+#define DC_BIT_DATA 0x0000
+#else
 #define DC_BIT_DATA 0x0100
+#endif // LCD_DC
+
+#define SPI_PRESCALER_LCD_READ	32	//  5MHz
+#define SPI_PRESCALER_LCD_WRITE	16//4	// 40MHz
 
 #define color565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
 #define ABS(x) ((x) > 0 ? (x) : -(x))

@@ -1,4 +1,5 @@
 #include "lcd.h"
+#include "spi.h"
 #include "string.h"
 #include <stdio.h>
 
@@ -34,6 +35,7 @@ const uint8_t init_cmd[] = {
 #else
 const uint16_t init_cmd[] = {
 #endif
+	0,  DC_BIT_CMD | CMD_SWRESET,
     0,  DC_BIT_CMD | CMD_SLPOUT,
     1,  DC_BIT_CMD | CMD_COLMOD,  DC_BIT_DATA | CMD_COLOR_MODE_16bit,
     5,  DC_BIT_CMD | CMD_PORCTRL, DC_BIT_DATA | 0x0C, DC_BIT_DATA | 0x0C, DC_BIT_DATA | 0x00, DC_BIT_DATA | 0x33, DC_BIT_DATA | 0x33,   // Standard porch
@@ -85,6 +87,7 @@ static UG_DEVICE device = {
     .flush = LCD_Update,
 };
 
+#define mode_9bit     2
 #define mode_16bit    1
 #define mode_8bit     0
 /*
@@ -97,20 +100,26 @@ static void setSPI_Size(int8_t size){
   if(config.spi_sz!=size){
     __HAL_SPI_DISABLE(&LCD_HANDLE);
     config.spi_sz=size;
-    if(size==mode_16bit){
-      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_16BIT;
+    if(mode_8bit == size){
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_8BIT;
       //LCD_HANDLE.Instance->CR1 |= SPI_CR1_;
       LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
       LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
 
     }
-    else{
-      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_8BIT;
+    else if(mode_16bit == size) {
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_16BIT;
       //LCD_HANDLE.Instance->CR1 &= ~(SPI_CR1_DFF);
       LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
       LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
     }
-    __HAL_SPI_ENABLE(&LCD_HANDLE);
+    else { // (mode_9bit == size) {
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_9BIT;
+      //LCD_HANDLE.Instance->CR1 &= ~(SPI_CR1_DFF);
+      LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
+      LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
+    }
+    HAL_SPI_Init(&LCD_HANDLE);
   }
 
 }
@@ -196,6 +205,9 @@ static void LCD_WriteCommand(uint8_t *cmd, uint8_t argc)
   LCD_PIN(LCD_CS,RESET);
 #endif
   HAL_SPI_Transmit(&LCD_HANDLE, cmd, 1, HAL_MAX_DELAY);
+  if (CMD_SWRESET == *cmd) {
+  	HAL_Delay(5);
+  }
   if(argc){
     LCD_PIN(LCD_DC,SET);
     HAL_SPI_Transmit(&LCD_HANDLE, (cmd+1), argc, HAL_MAX_DELAY);
@@ -256,7 +268,7 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
     buff_size -= chunk_size;
   }
 #ifdef LCD_CS
-	LCD_PIN(LCD_CS, SET);
+	//LCD_PIN(LCD_CS, SET);
 #endif
 }
 
@@ -268,19 +280,79 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
 
 static void LCD_ReadCmd(uint8_t cmd, uint8_t *data, uint8_t count)
 {
-	uint8_t rx_data[2];
-	uint8_t tx_data[2] = {0x00,0x00};
-	tx_data[1] = cmd;
+	uint8_t rx_data[count];
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_READ);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,RESET);
+#endif
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,RESET);
+#endif
+	if (CMD_RDDID == cmd || CMD_RDDST == cmd) {
+		uint8_t tx_data[2] = {0x00, 0x00};
+		tx_data[0] = cmd<<1 & 0xFF;
+		tx_data[1] = cmd>>7 & 0xFF;
+		setSPI_Size(mode_9bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, tx_data, 1, HAL_MAX_DELAY);
+		setSPI_Size(mode_8bit);
+	}
+	else {
+		uint8_t tx_data = cmd;
+		setSPI_Size(mode_8bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, &tx_data, 1, HAL_MAX_DELAY);
+	}
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,SET);
+#endif
+	//HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	for (uint8_t i = 0; i < count; i++) {
+		data[i] = rx_data[i];
+	}
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,SET);
+#endif
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_WRITE);
 
-  setSPI_Size(mode_16bit);
-  LCD_PIN(LCD_DC,RESET);
-  LCD_PIN(LCD_CS,RESET);
-  HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
-  //HAL_SPI_Receive(&LCD_HANDLE, data, count, HAL_MAX_DELAY);
-  LCD_PIN(LCD_CS,SET);
-  LCD_PIN(LCD_DC,SET);
-  data[0] = rx_data[1];
-
+/*	uint8_t rx_data[count+1];
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_READ);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,RESET);
+#endif
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,RESET);
+#endif
+		uint8_t tx_data = cmd;
+		setSPI_Size(mode_8bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, &tx_data, 1, HAL_MAX_DELAY);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,SET);
+#endif
+	//HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	//LCD_PIN(LCD_CS,SET);
+	// Display requires dummy clock cycle between command and data for the commands RDDID and RDDST
+	// Dummy clock cycles are not supported by the SPI module
+	// When sending 9 bits to imitate dummy clock, the SPI module sends 16 bits
+	// One additional byte is read and the data shifted by one bit to compensate for the dummy clock cycle
+	if (CMD_RDDID == cmd || CMD_RDDST == cmd) {
+		HAL_SPI_Receive(&LCD_HANDLE, rx_data, count+1, HAL_MAX_DELAY);
+		for (uint8_t i = 0; i < count; i++) {
+			data[i] = rx_data[i]<<1 | rx_data[i+1]>>7;
+		}
+	}
+	else {
+		HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+		for (uint8_t i = 0; i < count; i++) {
+			data[i] = rx_data[i];
+		}
+	}
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,SET);
+#endif
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_WRITE);*/
 }
 
 /**
@@ -328,7 +400,7 @@ void LCD_SetRotation(uint8_t m)
 #endif
     break;
   }
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, sizeof(cmd)-1);
 }
 
 
@@ -349,7 +421,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_CASET, DC_BIT_DATA | (x_start >> 8), DC_BIT_DATA | (x_start & 0xFF), DC_BIT_DATA | (x_end >> 8), DC_BIT_DATA
 				| (x_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, sizeof(cmd)-1);
 	}
 	/* Row Address set */
 	{
@@ -359,7 +431,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RASET, DC_BIT_DATA | (y_start >> 8), DC_BIT_DATA | (y_start & 0xFF), DC_BIT_DATA | (y_end >> 8), DC_BIT_DATA
 				| (y_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, sizeof(cmd)-1);
 	}
 	{
 		/* Write to RAM */
@@ -368,7 +440,22 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 #else
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RAMWR };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+//		LCD_WriteCommand(cmd, sizeof(cmd)-1);
+		  setSPI_Size(mode_8bit);
+		#ifdef LCD_DC
+		  LCD_PIN(LCD_DC,RESET);
+
+		#ifdef LCD_CS
+		  LCD_PIN(LCD_CS,RESET);
+		#endif
+		  HAL_SPI_Transmit(&LCD_HANDLE, cmd, 1, HAL_MAX_DELAY);
+		#else
+		#ifdef LCD_CS
+		  LCD_PIN(LCD_CS,RESET);
+		#endif
+		  HAL_SPI_Transmit(&LCD_HANDLE, (cmd), argc/2, HAL_MAX_DELAY);
+
+		#endif
 	}
 }
 
@@ -490,6 +577,7 @@ int8_t LCD_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint
     setDMAMemMode(mem_fixed, mode_14bit);
 #else
     setSPI_Size(mode_16bit);
+    //setSPI_Size(mode_8bit);
 #endif
   LCD_FillPixels(pixels, color);
 #ifdef USE_DMA
@@ -581,7 +669,7 @@ void LCD_InvertColors(uint8_t invert)
 #else
   uint16_t cmd[] = { DC_BIT_CMD | (invert ? CMD_INVON /* INVON */ : CMD_INVOFF /* INVOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, sizeof(cmd)-1);
 }
 
 /*
@@ -596,7 +684,7 @@ void LCD_TearEffect(uint8_t tear)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (tear ? 0x35 /* TEON */ : 0x34 /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, sizeof(cmd)-1);
 }
 
 void LCD_setPower(uint8_t power)
@@ -606,7 +694,7 @@ void LCD_setPower(uint8_t power)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (power ? CMD_DISPON /* TEON */ : CMD_DISPOFF /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, sizeof(cmd)-1);
 }
 
 static void LCD_Update(void)
@@ -635,7 +723,7 @@ static void LCD_Update(void)
 
 void LCD_init(void)
 {
-	uint8_t read_init[76];
+	uint8_t read_init[76] = {0};
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,SET);
 #endif
@@ -654,9 +742,10 @@ void LCD_init(void)
 #endif
   UG_FontSetHSpace(0);
   UG_FontSetVSpace(0);
-  LCD_ReadCmd(0xDA, &read_init[0], 1);
-  LCD_ReadCmd(0xDB, &read_init[1], 1);
-  LCD_ReadCmd(0xDC, &read_init[2], 1);
+  LCD_ReadCmd(CMD_RDID1, &read_init[0], 1);
+  LCD_ReadCmd(CMD_RDID2, &read_init[1], 1);
+  LCD_ReadCmd(CMD_RDID3, &read_init[2], 1);
+  LCD_ReadCmd(CMD_RDDID, read_init + 3, 4);
 
   
   for(uint16_t i=0; i<sizeof(init_cmd); ){
@@ -671,8 +760,14 @@ void LCD_init(void)
   UG_FillScreen(C_BLACK);               //  Clear screen
   LCD_setPower(ENABLE);
   UG_Update();
-}
 
+  UG_FontSelect(FONT_5X8);
+  UG_SetForecolor(C_YELLOW);
+  UG_SetBackcolor(C_BLACK);
+  UG_FontSetTransparency(0);
+  UG_PutString(10, 15, "I");
+  UG_FillFrame(0, 0, 3, 3, C_WHITE);
+}
 
 #define DEFAULT_FONT FONT_8X12
 
@@ -680,6 +775,7 @@ static uint32_t draw_time=0;
 static void clearTime(void){
   draw_time=HAL_GetTick();
 }
+
 static void printTime(void){
   char str[8];
   uint8_t t = UG_FontGetTransparency();
@@ -706,7 +802,9 @@ static void printTime(void){
 static UG_WINDOW window_1;
 static UG_BUTTON button_1;
 static UG_TEXTBOX textbox_1;
+#ifdef UGUI_USE_TOUCH
 static UG_OBJECT obj_buff_wnd_1[MAX_OBJECTS];
+#endif //UGUI_USE_TOUCH
 static UG_PROGRESS pgb;
 
 void LCD_Test(void)
@@ -727,7 +825,7 @@ void LCD_Test(void)
   show=start=HAL_GetTick();
   t = UG_FontGetTransparency();
   while(HAL_GetTick()-start<4000){
-    UG_FillFrame(x-rad, y-rad, x+rad, y+rad, C_BLACK);
+    UG_FillFrame(x-rad/2, y-rad/2, x+rad/2, y+rad/2, C_BLACK);
     x+=xadd;
     y+=yadd;
     if(x-rad<1){
@@ -954,7 +1052,9 @@ void LCD_Test(void)
       btn_time=now;
       u=1;
       i++;
+#ifdef UGUI_USE_TOUCH
       UG_TouchUpdate((i&1 ? 10 : -1), (i&1 ? 31 : -1), OBJ_TOUCH_STATE_CHANGED | (i&1 ? OBJ_TOUCH_STATE_IS_PRESSED : 0));
+#endif //UGUI_USE_TOUCH
       if(i==9){
         UG_ButtonSetText(&window_1,BTN_ID_0,"2D Btn");
         UG_ButtonSetStyle(&window_1, BTN_ID_0, BTN_STYLE_2D);
@@ -991,6 +1091,8 @@ void LCD_Test(void)
   UG_FontSetTransparency(t);
 #endif
   HAL_Delay(1000);
+  UG_FillScreen(C_BLACK);
+  UG_Update();
 }
 
 

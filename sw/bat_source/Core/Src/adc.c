@@ -1102,11 +1102,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	if (hadc == &hadc1) {
 		adc_interrupt_cnt++;
 		if (adc_interrupt_cnt > 1) {
-			aux_io_ctrl_manual_set_io(GPIO_DISPLAY_WR, 1);
 			adc_interrupt_cnt = 0;
 			adc_convert_fast_data();
 			ctrl_main_ctrl(&adc_data);
-			aux_io_ctrl_manual_set_io(GPIO_DISPLAY_WR, 0);
 		}
 	}
 }
