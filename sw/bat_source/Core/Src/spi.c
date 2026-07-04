@@ -82,13 +82,13 @@ void MX_SPI4_Init(void)
   hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi4.Init.NSS = SPI_NSS_SOFT;
-  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi4.Init.CRCPolynomial = 7;
   hspi4.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi4.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi4.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi4) != HAL_OK)
   {
     Error_Handler();
@@ -270,4 +270,42 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 
 /* USER CODE BEGIN 1 */
 
+/*
+ * @brief Sets SPI interface baud rate
+ * @param spiHandle Handle to the spi interface to be configured
+ * @param prescaler Prescaler to be used, supported values: 2, 4, 8, 16, 32, 64, 128, 256
+ * @return Status
+ */
+
+HAL_StatusTypeDef SPI_set_prescaler(SPI_HandleTypeDef* spiHandle, uint16_t prescaler) {
+	switch (prescaler) {
+	case 2:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+		break;
+	case 4:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+		break;
+	case 8:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+		break;
+	case 16:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+		break;
+	case 32:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+		break;
+	case 64:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+		break;
+	case 128:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+		break;
+	case 256:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+		break;
+	default:
+		return HAL_ERROR;
+	}
+    return HAL_SPI_Init(spiHandle);
+}
 /* USER CODE END 1 */

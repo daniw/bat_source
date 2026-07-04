@@ -44,7 +44,7 @@ void MX_SPI3_Init(void);
 void MX_SPI4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+HAL_StatusTypeDef SPI_set_prescaler(SPI_HandleTypeDef* spiHandle, uint16_t prescaler);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
