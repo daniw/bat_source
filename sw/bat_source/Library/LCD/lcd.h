@@ -5,6 +5,7 @@
 #include "ugui.h"
 #include "main.h"
 
+#define LCD_TEST_WINDOWS
 
 /* choose a Hardware SPI port to use. */
 #define LCD_HANDLE            hspi4

@@ -213,7 +213,31 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
   }
 }
 
-#define LCD_DMA_TIMEOUT_MS 100
+// A single DMA chunk can be up to 65535 pixels (16 bit each); at SPI4's
+// current 5 MBit/s (bat_source.ioc), that's ~210ms to clock out. Must
+// stay comfortably above that or this "safety" timeout aborts large
+// fills partway through - which is exactly what happened at 100ms,
+// cutting a full-screen fill off around the halfway point.
+#define LCD_DMA_TIMEOUT_MS 500
+#endif
+
+/**
+ * Number of trailing parameter bytes to pass as LCD_WriteCommand's argc
+ * for a `{ CMD, param, param, ... }` array. Under LCD_DC, argc must be
+ * the parameter count only (LCD_WriteCommand always sends cmd[0] as
+ * the command byte itself, separately); under the 16-bit
+ * embedded-DC-bit convention, argc is the whole array's byte size
+ * instead. Using plain sizeof(cmd) for the LCD_DC case sends one byte
+ * too many, read out of bounds past the array - that stray byte is
+ * inert after fixed-length commands like CASET/RASET/MADCTL, but after
+ * RAMWR (which has zero parameters of its own - the pixel data that
+ * follows is a separate LCD_WriteData call) it shifts every single
+ * fill/draw operation's whole pixel stream by one byte.
+ */
+#ifdef LCD_DC
+#define LCD_CMD_ARGC(cmd_array) (sizeof(cmd_array)-1)
+#else
+#define LCD_CMD_ARGC(cmd_array) (sizeof(cmd_array))
 #endif
 
 /**
@@ -378,7 +402,7 @@ void LCD_SetRotation(uint8_t m)
 #endif
     break;
   }
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 
@@ -399,7 +423,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_CASET, DC_BIT_DATA | (x_start >> 8), DC_BIT_DATA | (x_start & 0xFF), DC_BIT_DATA | (x_end >> 8), DC_BIT_DATA
 				| (x_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 	/* Row Address set */
 	{
@@ -409,7 +433,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RASET, DC_BIT_DATA | (y_start >> 8), DC_BIT_DATA | (y_start & 0xFF), DC_BIT_DATA | (y_end >> 8), DC_BIT_DATA
 				| (y_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 	{
 		/* Write to RAM */
@@ -418,7 +442,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 #else
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RAMWR };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 }
 
@@ -646,7 +670,7 @@ void LCD_InvertColors(uint8_t invert)
 #else
   uint16_t cmd[] = { DC_BIT_CMD | (invert ? CMD_INVON /* INVON */ : CMD_INVOFF /* INVOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 /*
@@ -661,7 +685,7 @@ void LCD_TearEffect(uint8_t tear)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (tear ? 0x35 /* TEON */ : 0x34 /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 void LCD_setPower(uint8_t power)
@@ -671,7 +695,7 @@ void LCD_setPower(uint8_t power)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (power ? CMD_DISPON /* TEON */ : CMD_DISPOFF /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 static void LCD_Update(void)
@@ -708,6 +732,23 @@ void LCD_init(void)
   LCD_PIN(LCD_RST,RESET);
   HAL_Delay(1);
   LCD_PIN(LCD_RST,SET);
+  HAL_Delay(200);
+#else
+  // This board has no RST pin wired to the controller, so there is no
+  // hardware reset at all otherwise - issue a software reset instead,
+  // so the controller starts from a known state regardless of what it
+  // was left in (a previous crash, a debugger reset, reflashing
+  // without power-cycling the display, ...). Delay matches the
+  // datasheet's worst-case (display was in sleep-in) wait after
+  // SWRESET, same as the hardware-reset delay above.
+  {
+#ifdef LCD_DC
+    uint8_t cmd[] = { CMD_SWRESET };
+#else
+    uint16_t cmd[] = { DC_BIT_CMD | CMD_SWRESET };
+#endif
+    LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
+  }
   HAL_Delay(200);
 #endif
   UG_Init(&gui, &device);
@@ -768,11 +809,28 @@ static void printTime(void){
 #define MAX_OBJECTS 10
 #define DEMO_FLASH_KB 256
 
+// LCD_TEST_WINDOWS (lcd.h) gates the window/button/textbox/progress-bar
+// demo below.
+
+#ifdef LCD_TEST_WINDOWS
 static UG_WINDOW window_1;
 static UG_BUTTON button_1;
 static UG_TEXTBOX textbox_1;
 static UG_OBJECT obj_buff_wnd_1[MAX_OBJECTS];
 static UG_PROGRESS pgb;
+
+/**
+ * @brief Window message callback for window_1. The demo drives every
+ *        state change (button text/style, progress value) directly
+ *        from LCD_Test()'s loop rather than reacting to messages here,
+ *        so this only needs to exist to satisfy UG_WindowCreate()'s
+ *        API - it doesn't need to do anything.
+ */
+static void window_1_callback(UG_MESSAGE *msg)
+{
+  (void) msg;
+}
+#endif
 
 void LCD_Test(void)
 {
@@ -974,9 +1032,10 @@ void LCD_Test(void)
   printTime();
   HAL_Delay(1000);
 
+#ifdef LCD_TEST_WINDOWS
   clearTime();
   // Create the window
-  //UG_WindowCreate(&window_1, obj_buff_wnd_1, MAX_OBJECTS, window_1_callback);
+  UG_WindowCreate(&window_1, obj_buff_wnd_1, MAX_OBJECTS, window_1_callback);
   // Window Title
   UG_WindowSetTitleText(&window_1, "Test Window");
   UG_WindowSetTitleTextFont(&window_1, DEFAULT_FONT);
@@ -1043,6 +1102,7 @@ void LCD_Test(void)
   UG_WindowHide(&window_1);
   UG_WindowDelete(&window_1);
   UG_Update();
+#endif
   t = UG_FontGetTransparency();
 #if DEMO_FLASH_KB >=64
   UG_FillScreen(0x4b10);
