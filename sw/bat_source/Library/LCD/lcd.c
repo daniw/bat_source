@@ -61,11 +61,13 @@ char str[32];
 static void LCD_Update(void);
 typedef struct{
   int8_t spi_sz;
+  int8_t dma_sz;
   int8_t dma_mem_inc;
 }config_t;
 
 config_t config = {
     .spi_sz = -1,
+    .dma_sz = -1,
     .dma_mem_inc = -1,
 };
 
@@ -179,6 +181,22 @@ static void setDMAMemMode(uint8_t memInc, uint8_t size)
     }
   }
 }
+
+static volatile uint8_t lcd_dma_busy = 0;
+
+/**
+ * @brief SPI DMA transfer-complete callback. Signals LCD_WriteData that the
+ *        DMA-driven transfer has finished, instead of polling the DMA
+ *        channel's internal state register.
+ * @param hspi -> handle of the SPI peripheral that completed
+ * @return none
+ */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+  if(hspi->Instance == LCD_HANDLE.Instance){
+    lcd_dma_busy = 0;
+  }
+}
 #endif
 
 /**
@@ -234,8 +252,9 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
     uint16_t chunk_size = buff_size > 65535 ? 65535 : buff_size;
 #ifdef USE_DMA
     if(buff_size>DMA_Min_Pixels){
+      lcd_dma_busy = 1;
       HAL_SPI_Transmit_DMA(&LCD_HANDLE, buff, chunk_size);
-      while(HAL_DMA_GetState(LCD_HANDLE.hdmatx)!=HAL_DMA_STATE_READY);
+      while(lcd_dma_busy);
       if(config.dma_mem_inc==mem_increase){
         if(config.dma_sz==mode_16bit)
           buff += chunk_size;
@@ -449,11 +468,27 @@ void LCD_FillPixels(uint32_t pixels, uint16_t color){
 }
 
 /**
+ * @brief Adapter matching the (UG_U16, UG_COLOR) push_pixels signature uGUI
+ *        assumes for the DRIVER_FILL_AREA callback it gets back from
+ *        LCD_FillArea (see ugui.c). LCD_FillPixels itself needs a uint32_t
+ *        count to support single-shot full-screen DMA fills (up to 76800
+ *        pixels), which would truncate if exposed directly through that
+ *        16-bit callback; uGUI only ever calls it with small glyph-sized
+ *        counts, so narrowing at this boundary is safe.
+ * @param pixels -> number of pixels to fill
+ * @param color -> fill color
+ * @return none
+ */
+static void LCD_FillPixelsUG(uint16_t pixels, uint16_t color){
+  LCD_FillPixels(pixels, color);
+}
+
+/**
  * @brief Set address of DisplayWindow and returns raw pixel draw for uGUI driver acceleration
  * @param xi&yi -> coordinates of window
  * @return none
  */
-void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, uint16_t){
+void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint16_t, uint16_t){
   if(x0==-1){ // ToDo: What is this for?
 #ifdef USE_DMA
     setDMAMemMode(mem_increase, mode_8bit);
@@ -471,7 +506,7 @@ void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, ui
 #ifdef LCD_DC
   LCD_PIN(LCD_DC,SET);
 #endif
-  return LCD_FillPixels;
+  return LCD_FillPixelsUG;
 }
 
 
@@ -482,18 +517,18 @@ void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, ui
  * @param color -> color to Fill with
  * @return none
  */
-int8_t LCD_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint16_t color)
+int8_t LCD_Fill(int16_t xSta, int16_t ySta, int16_t xEnd, int16_t yEnd, uint16_t color)
 {
   uint32_t pixels = (uint32_t)(xEnd-xSta+1)*(yEnd-ySta+1);
   LCD_SetAddressWindow(xSta, ySta, xEnd, yEnd);
 #ifdef USE_DMA
-    setDMAMemMode(mem_fixed, mode_14bit);
+    setDMAMemMode(mem_fixed, mode_16bit);
 #else
     setSPI_Size(mode_16bit);
 #endif
   LCD_FillPixels(pixels, color);
 #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);
+  setDMAMemMode(mem_increase, mode_16bit);
 #else
   setSPI_Size(mode_8bit);
 #endif
@@ -508,12 +543,11 @@ int8_t LCD_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint
  * @param data -> pointer of the Image array
  * @return none
  */
-void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
+void LCD_DrawImage(int16_t x, int16_t y, UG_BMP* bmp)
 {
-	return;
   uint16_t w = bmp->width;
   uint16_t h = bmp->height;
-  if ((x > LCD_WIDTH-1) || (y > LCD_HEIGHT-1))
+  if ((x < 0) || (x > LCD_WIDTH-1) || (y < 0) || (y > LCD_HEIGHT-1))
     return;
   if ((x + w - 1) > LCD_WIDTH-1)
     return;
@@ -524,15 +558,15 @@ void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
   LCD_SetAddressWindow(x, y, x + w - 1, y + h - 1);
 
   #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
   #else
   setSPI_Size(mode_16bit);                                                                            // Set SPI to 16 bit
   #endif
   LCD_WriteData((uint8_t*)bmp->p, w*h);
 #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
 #else
-	setSPI_Size(mode_8bit);                                                                            // Set SPI to 16 bit
+	setSPI_Size(mode_8bit);                                                                            // Set SPI to 8 bit
 #endif
   }
 
@@ -543,7 +577,7 @@ void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
  * @param color -> color of the line to Draw
  * @return none
  */
-int8_t LCD_DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+int8_t LCD_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) {
 
   if(x0==x1){                                   // If horizontal
     if(y0>y1) swap(y0,y1);
@@ -622,7 +656,7 @@ static void LCD_Update(void)
   LCD_WriteData((uint8_t*)fb, LCD_WIDTH*LCD_HEIGHT);
 #endif
 //  #ifdef USE_DMA
-//  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+//  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
 //  #else
 //  setSPI_Size(mode_8bit);                                                                            // Set SPI to 16 bit
 //  #endif
