@@ -76,6 +76,7 @@ extern ADC_HandleTypeDef hadc5;
 #define ADC_VHV_OFFSET_MV   0
 #define ADC_IBAT_OFFSET_MA  1926
 #define ADC_IOUT_OFFSET  2060
+#define ADC_IISO_OFFSET_UA  0 // ToDo: Measure. See known issue: 129uA offset on isolation current channel
 
 
 #define ADC_POTI_MAX 127
@@ -151,13 +152,16 @@ typedef struct {
     uint16_t i_bat_offset;
     uint16_t v_out_offset;
     uint16_t v_term_offset;
+    float    v_term_gain;
     uint16_t temp_int_offset;
 
     uint16_t i_out_offset;
+    float    i_out_gain;
     uint16_t temp_prim_offset;
     uint16_t temp_current_offset;
     uint16_t temp_sec_offset;
     uint16_t i_iso_offset;
+    float    i_iso_gain;
     uint16_t temp_trafo_offset;
 
     int32_t* ext_adc_data;

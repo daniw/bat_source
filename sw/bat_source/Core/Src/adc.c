@@ -23,6 +23,7 @@
 /* USER CODE BEGIN 0 */
 #include "ctrl_main.h"
 #include "aux_io_ctrl.h"
+#include "config_store.h"
 
 extern ADC_MEAS_DATA adc_data;
 
@@ -900,10 +901,18 @@ void adc_init(int32_t* ext_adc_data)
 
 	  adc_data.v_in_offset   = ADC_VIN_OFFSET_MV  ;
 	  adc_data.v_out_offset  = ADC_VOUT_OFFSET_MV ;
-	  adc_data.v_term_offset = ADC_VTERM_OFFSET_MV;
 	  adc_data.v_hv_offset   = ADC_VHV_OFFSET_MV  ;
 	  adc_data.i_bat_offset  = ADC_IBAT_OFFSET_MA ;
-	  adc_data.i_out_offset = ADC_IOUT_OFFSET;
+
+	  // V_TERM/I_OUT/I_ISO offset and gain come from config_store, which is
+	  // loaded from EEPROM (or defaulted to these same constants) before
+	  // adc_init() runs - see config_store_init() in main().
+	  adc_data.v_term_offset = config_store.calibration.v_term_offset_mv;
+	  adc_data.v_term_gain   = config_store.calibration.v_term_gain;
+	  adc_data.i_out_offset  = config_store.calibration.i_out_offset_ma;
+	  adc_data.i_out_gain    = config_store.calibration.i_out_gain;
+	  adc_data.i_iso_offset  = config_store.calibration.i_iso_offset_ua;
+	  adc_data.i_iso_gain    = config_store.calibration.i_iso_gain;
 
 }
 
@@ -1038,11 +1047,11 @@ void adc_configure_mode(statemachine_modes_t mode) {
 void adc_convert_fast_data(void){
 	adc_data.converted.v_in   = (adc_data.raw.v_in   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
 	adc_data.converted.v_out  = (adc_data.raw.v_out  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
-	adc_data.converted.v_term = (adc_data.raw.v_term - adc_data.v_term_offset)* ADC_VTERM_GAIN_MV;
+	adc_data.converted.v_term = (adc_data.raw.v_term - adc_data.v_term_offset)* adc_data.v_term_gain;
 	adc_data.converted.v_hv   = (adc_data.raw.v_hv   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
 	adc_data.converted.i_bat  = (adc_data.raw.i_bat  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
-	adc_data.converted.i_out  = (adc_data.raw.i_out  - adc_data.i_out_offset ) * ADC_IOUT_GAIN_MA;
-	adc_data.converted.i_iso  = (adc_data.raw.i_iso  - adc_data.i_iso_offset ) * ADC_IISO_GAIN_MA;
+	adc_data.converted.i_out  = (adc_data.raw.i_out  - adc_data.i_out_offset ) * adc_data.i_out_gain;
+	adc_data.converted.i_iso  = (adc_data.raw.i_iso  - adc_data.i_iso_offset ) * adc_data.i_iso_gain;
 	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
 	adc_data.converted.i_out_ext_mA  = adc_data.ext_adc_data[1] * ADC_EXT_IOUT_GAIN_mA;
 	adc_data.converted.v_sens_ext_uv = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
