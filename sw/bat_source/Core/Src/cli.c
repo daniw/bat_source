@@ -468,15 +468,52 @@ void cmd_saveEEPROM(void) {
  * Re-reads the config store from the EEPROM and prints it to the
  * Serial Port.
  */
+/**
+ * Prints a float with 6 decimal digits. This project links
+ * --specs=nano.specs without -u _printf_float, so newlib-nano's printf
+ * silently drops %f support - this avoids depending on it at all.
+ */
+static void cli_printFloat(float value) {
+	int32_t whole = (int32_t) value;
+	float frac = value - (float) whole;
+	if (frac < 0)
+		frac = -frac;
+	printf("%ld.%06lu", (long) whole, (unsigned long) (frac * 1000000.0f));
+}
+
 void cmd_readEEPROM(void) {
 	config_store_read();
 	printf("Serial Number:       %u\r\n", config_store.hardware_data.serial_number);
-	printf("V_TERM offset/gain:  %u mV / %f\r\n", config_store.calibration.v_term_offset_mv, config_store.calibration.v_term_gain);
-	printf("I_OUT  offset/gain:  %u mA / %f\r\n", config_store.calibration.i_out_offset_ma, config_store.calibration.i_out_gain);
-	printf("I_ISO  offset/gain:  %u uA / %f\r\n", config_store.calibration.i_iso_offset_ua, config_store.calibration.i_iso_gain);
-	printf("Voltage buck  P / I: %f / %f\r\n", config_store.calibration.voltage_buck_p, config_store.calibration.voltage_buck_i);
-	printf("Voltage boost P / I: %f / %f\r\n", config_store.calibration.voltage_boost_p, config_store.calibration.voltage_boost_i);
-	printf("Current loop  P / I: %f / %f\r\n", config_store.calibration.current_p, config_store.calibration.current_i);
+
+	printf("V_TERM offset/gain:  %u mV / ", config_store.calibration.v_term_offset_mv);
+	cli_printFloat(config_store.calibration.v_term_gain);
+	printf("\r\n");
+
+	printf("I_OUT  offset/gain:  %u mA / ", config_store.calibration.i_out_offset_ma);
+	cli_printFloat(config_store.calibration.i_out_gain);
+	printf("\r\n");
+
+	printf("I_ISO  offset/gain:  %u uA / ", config_store.calibration.i_iso_offset_ua);
+	cli_printFloat(config_store.calibration.i_iso_gain);
+	printf("\r\n");
+
+	printf("Voltage buck  P / I: ");
+	cli_printFloat(config_store.calibration.voltage_buck_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.voltage_buck_i);
+	printf("\r\n");
+
+	printf("Voltage boost P / I: ");
+	cli_printFloat(config_store.calibration.voltage_boost_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.voltage_boost_i);
+	printf("\r\n");
+
+	printf("Current loop  P / I: ");
+	cli_printFloat(config_store.calibration.current_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.current_i);
+	printf("\r\n");
 }
 
 /**

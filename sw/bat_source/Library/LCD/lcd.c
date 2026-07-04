@@ -197,6 +197,23 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
     lcd_dma_busy = 0;
   }
 }
+
+/**
+ * @brief SPI error callback. Also clears the DMA-busy flag, so a bus
+ *        error mid-transfer can't leave LCD_WriteData's wait spinning
+ *        forever (which would otherwise stall the whole main loop -
+ *        including BMS polling and button handling, not just the LCD).
+ * @param hspi -> handle of the SPI peripheral that errored
+ * @return none
+ */
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+  if(hspi->Instance == LCD_HANDLE.Instance){
+    lcd_dma_busy = 0;
+  }
+}
+
+#define LCD_DMA_TIMEOUT_MS 100
 #endif
 
 /**
@@ -253,8 +270,22 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
 #ifdef USE_DMA
     if(buff_size>DMA_Min_Pixels){
       lcd_dma_busy = 1;
-      HAL_SPI_Transmit_DMA(&LCD_HANDLE, buff, chunk_size);
-      while(lcd_dma_busy);
+      if(HAL_SPI_Transmit_DMA(&LCD_HANDLE, buff, chunk_size) != HAL_OK){
+        // DMA never actually started (e.g. peripheral still busy) - no
+        // completion callback will ever come, so don't wait on one.
+        lcd_dma_busy = 0;
+        HAL_SPI_Transmit(&LCD_HANDLE, buff, chunk_size, HAL_MAX_DELAY);
+      }
+      else{
+        uint32_t wait_start = HAL_GetTick();
+        while(lcd_dma_busy){
+          if((HAL_GetTick() - wait_start) > LCD_DMA_TIMEOUT_MS){
+            HAL_SPI_Abort(&LCD_HANDLE);
+            lcd_dma_busy = 0;
+            break;
+          }
+        }
+      }
       if(config.dma_mem_inc==mem_increase){
         if(config.dma_sz==mode_16bit)
           buff += chunk_size;
