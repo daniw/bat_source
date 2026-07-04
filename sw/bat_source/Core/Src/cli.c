@@ -32,6 +32,7 @@
 #include "ctrl_param.h"
 #include "rtc.h"
 #include "lcd.h"
+#include "input.h"
 
 #ifdef CLI_ENABLED
 
@@ -67,8 +68,14 @@ extern PID_controller_t ctrl_pi_current;
 // Uart handling
 UART_HandleTypeDef *cli_huart;
 
+// Keyboard control mode (see cmd_control() / cli_control_process_byte())
+static uint8_t cli_control_active = 0;
+static uint8_t cli_control_esc_state = 0; // 0=normal, 1=ESC seen, 2='[' seen
+static uint32_t cli_control_esc_tick = 0;
+
 // Forward declarations
 static void cli_process_line(void);
+static void cli_control_process_byte(char c);
 
 // Function declarations
 void cmd_help(void);
@@ -97,6 +104,7 @@ void cmd_setCtrlGain(void);
 void cmd_printRTC(void);
 void cmd_setRTC(void);
 void cmd_testLCD(void);
+void cmd_control(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -125,7 +133,8 @@ void (*cmd_func[])(void) = {
 	cmd_setCtrlGain,
 	cmd_printRTC,
 	cmd_setRTC,
-	cmd_testLCD
+	cmd_testLCD,
+	cmd_control
 };
 
 // List of command names
@@ -155,7 +164,8 @@ const char *cmd_str[] = {
 		"setPI",
 		"pRTC",
 		"setRTC",
-		"testLCD"
+		"testLCD",
+		"control"
 };
 
 // List of command names including arguments
@@ -185,7 +195,8 @@ const char *cmd_arg_str[] = {
 		"setPI [P Gain] [I Gain]"
 		"pRTC",
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
-		"testLCD"
+		"testLCD",
+		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit"
 };
 
 int cmd_index;
@@ -241,8 +252,24 @@ bool cli_readline(void) {
 	bool ret = false;
 	// 0=normal, 1=ESC seen, 2='[' seen
     static uint8_t esc_state = 0;
+
+    // A lone Esc keypress in keyboard-control mode never gets a follow-up
+    // '[' byte, so it has to be resolved on a timeout instead of by looking
+    // at the next byte (which may not exist / may belong to the next key).
+    if (cli_control_active && cli_control_esc_state == 1
+    		&& (HAL_GetTick() - cli_control_esc_tick) > 25) {
+    	cli_control_esc_state = 0;
+    	input_cli_pulse_esc();
+    }
+
 	while (HAL_UART_Receive(cli_huart, (uint8_t*) &c,1, 1) == 0) {
 		ret = true;
+
+		if (cli_control_active) {
+			cli_control_process_byte(c);
+			continue;
+		}
+
         // --- Handle escape sequences (arrow keys) ---
         if (esc_state == 1) {
             if (c == '[') {
@@ -341,6 +368,63 @@ bool cli_readline(void) {
         }
     }
 	return ret;
+}
+
+/**
+ * Byte parser for keyboard-control mode (see cmd_control()). Drives input.c's
+ * CLI-simulated encoder/buttons instead of the normal line editor:
+ *   Left/Down or Right/Up = encoder step, Enter = OK, Esc = ESC,
+ *   Space = OUT (toggle, since a terminal has no key-release event), q = quit.
+ *
+ * Note: if Esc is immediately followed by an unrelated key (not '['), that
+ * key is swallowed while the lone-Esc timeout resolves -- a minor limitation
+ * of a dev/test-only feature, not worth a re-entrant parse for.
+ */
+static void cli_control_process_byte(char c) {
+	if (cli_control_esc_state == 1) {
+		if (c == '[') {
+			cli_control_esc_state = 2;
+			return;
+		}
+		cli_control_esc_state = 0;
+		input_cli_pulse_esc();
+		return;
+	}
+	if (cli_control_esc_state == 2) {
+		switch (c) {
+		case 'A': /* Up */
+		case 'C': /* Right */
+			input_cli_encoder_step(+1);
+			break;
+		case 'B': /* Down */
+		case 'D': /* Left */
+			input_cli_encoder_step(-1);
+			break;
+		default:
+			break;
+		}
+		cli_control_esc_state = 0;
+		return;
+	}
+	if (c == 27) {
+		cli_control_esc_state = 1;
+		cli_control_esc_tick = HAL_GetTick();
+		return;
+	}
+	if (c == '\r' || c == '\n') {
+		input_cli_pulse_ok();
+		return;
+	}
+	if (c == ' ') {
+		input_cli_toggle_out();
+		return;
+	}
+	if (c == 'q' || c == 'Q') {
+		cli_control_active = 0;
+		input_set_source(INPUT_SOURCE_HW);
+		cli_printf("\r\nExiting keyboard control mode.\r\n> ");
+		return;
+	}
 }
 
 /**
@@ -1286,6 +1370,20 @@ void cmd_setRTC(void){
 void cmd_testLCD(void){
 	LCD_Test();
 	return;
+}
+
+/**
+ * Enters keyboard-control mode: drives the on-device menu/encoder/buttons
+ * from the serial terminal instead of the physical hardware, for developing
+ * and testing the UI without the encoder/buttons/display board attached.
+ */
+void cmd_control(void) {
+	cli_control_active = 1;
+	cli_control_esc_state = 0;
+	input_set_source(INPUT_SOURCE_CLI);
+	cli_printf(
+			"\r\nKeyboard control mode.\r\n"
+			"  Arrows = encoder   Enter = OK   Esc = ESC   Space = OUT (toggle)   q = quit\r\n");
 }
 
 #endif

@@ -74,6 +74,7 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
 	case CTRL_MODE_10A:
+	case CTRL_MODE_CHARGE:
 		ctrl_pi_voltage_buck.prev_I_action = 0.0;
 		ctrl_pi_current.prev_I_action = 0.0;
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_HIGH);
@@ -123,6 +124,17 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 	case CTRL_MODE_ISOMETER:
 		//ctrl_main_ctrl_hv(adc_data->)
 		break;
+	case CTRL_MODE_CHARGE:
+		/* Simple CC/CV: hold charge current until the end voltage is reached,
+		 * then hold that voltage. Reuses the buck path set up in
+		 * ctrl_main_start_ctrl() (same HRTIM channel as 10A/Resistance). */
+		if (adc_data->converted.v_out < CTRL_PARAM_CHARGE_END_VOLTAGE_mV)
+			ctrl_main_ctrl_current(adc_data->converted.i_out,
+					adc_data->converted.i_out_ext_mA);
+		else
+			ctrl_main_ctrl_voltage_buck(adc_data->converted.v_out,
+					adc_data->converted.v_term_ext_mv);
+		break;
 
 	case CTRL_MODE_OFF:
 	default:
@@ -153,6 +165,11 @@ void ctrl_main_apply_reference(uint16_t reference_poti_count) {
 	case CTRL_MODE_ISOMETER:
 		ctrl_main_handle.voltage_iso_reference_V =
 				ctrl_main_iso_values[reference_poti_count & 0x3];
+		break;
+	case CTRL_MODE_CHARGE:
+		/* Charge current/end-voltage are fixed, not user-adjustable via the encoder. */
+		ctrl_main_handle.current_reference_mA = CTRL_PARAM_CHARGE_CURRENT_mA;
+		ctrl_main_handle.voltage_reference_mV = CTRL_PARAM_CHARGE_END_VOLTAGE_mV;
 		break;
 
 	case CTRL_MODE_OFF:

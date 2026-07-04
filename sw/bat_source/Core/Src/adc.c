@@ -1016,11 +1016,15 @@ void adc_configure_mode(statemachine_modes_t mode) {
 		hadc3.Init.ExternalTrigConv     = ADC_TRIGGER_HRTIM_PRIM;
 		hadc4.Init.ExternalTrigConv     = ADC_TRIGGER_HRTIM_PRIM;
 	case STATEMACHINE_MODE_VOLTMETER:
+	case STATEMACHINE_MODE_AMPMETER:
 	case STATEMACHINE_MODE_SETTINGS:
 	case STATEMACHINE_MODE_SHUTDOWN:
 	case STATEMACHINE_MODE_RESERVED:
 	case STATEMACHINE_IDLE:
 	default:
+		/* Ampmeter is a passive readout of i_out, which hadc1 already
+		 * samples continuously below regardless of mode -- nothing extra
+		 * to configure here. */
 		break;
 	}
 
