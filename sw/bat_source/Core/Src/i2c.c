@@ -401,4 +401,23 @@ uint8_t i2c_ReadBlocking(uint8_t address, uint8_t* buf, uint32_t numbytes){
 	return retval;
 }
 
+/**
+ * Checks whether a device acknowledges its address on the bus, without
+ * transferring any data. Waits until the current queued operation is
+ * finished, like the other _Blocking helpers.
+ * @param address address I2C address of the target.
+ * @return 1 if the device acknowledged, 0 otherwise.
+ */
+uint8_t i2c_IsDeviceReadyBlocking(uint8_t address){
+	uint8_t ready;
+
+	i2c_exclusiveAccess = 1;
+	while (i2c_work!=WORK_I2C_IDLE)
+		HAL_Delay(1);
+	ready = (HAL_I2C_IsDeviceReady(i2c_handle, address, 1, 10) == HAL_OK);
+	i2c_exclusiveAccess = 0;
+	i2c_Get();
+	return ready;
+}
+
 /* USER CODE END 1 */

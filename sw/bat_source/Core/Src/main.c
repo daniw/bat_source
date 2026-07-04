@@ -48,6 +48,7 @@
 #include "statemachine.h"
 #include "adc.h"
 #include "cli.h"
+#include "config_store.h"
 #include <stdio.h>
 #include "stdint.h"
 #include "lcd.h"
@@ -161,6 +162,13 @@ int main(void)
    */
   ui_ctrl_init();
 
+
+  /*
+   * Load calibration / ID data from EEPROM (or default it, on first
+   * boot / missing chip). Must run before adc_init() and
+   * ctrl_main_init() so both see the loaded calibration.
+   */
+  config_store_init();
 
   /*
    * ADC Init

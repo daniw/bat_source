@@ -33,6 +33,7 @@
 #include "rtc.h"
 #include "lcd.h"
 #include "input.h"
+#include "config_store.h"
 
 #ifdef CLI_ENABLED
 
@@ -105,6 +106,8 @@ void cmd_printRTC(void);
 void cmd_setRTC(void);
 void cmd_testLCD(void);
 void cmd_control(void);
+void cmd_setADCCal(void);
+void cmd_setSerial(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -134,7 +137,9 @@ void (*cmd_func[])(void) = {
 	cmd_printRTC,
 	cmd_setRTC,
 	cmd_testLCD,
-	cmd_control
+	cmd_control,
+	cmd_setADCCal,
+	cmd_setSerial
 };
 
 // List of command names
@@ -165,7 +170,9 @@ const char *cmd_str[] = {
 		"pRTC",
 		"setRTC",
 		"testLCD",
-		"control"
+		"control",
+		"setADCCal",
+		"setSerial"
 };
 
 // List of command names including arguments
@@ -192,11 +199,13 @@ const char *cmd_arg_str[] = {
 		"writeFlash [address] [size] [data]",
 		"testFlash",
 		"state [new state]",
-		"setPI [P Gain] [I Gain]"
+		"setPI [P Gain] [I Gain]",
 		"pRTC",
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
 		"testLCD",
-		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit"
+		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit",
+		"setADCCal [channel: 0=V_TERM,1=I_OUT,2=I_ISO] [offset] [gain]",
+		"setSerial [serial number]"
 };
 
 int cmd_index;
@@ -514,44 +523,120 @@ void cmd_help(void) {
 /*********************** Functions ************************************/
 
 /**
- * Saves the EEPROM including Hardware Part
+ * Snapshots the live ADC calibration (see setADCCal) and PID gains
+ * (see setPI) into config_store and persists the calibration block
+ * to the EEPROM.
  */
 void cmd_saveEEPROM(void) {
-	printf("Not Implemented!\n");
-	/*printf("Saving Hardware Area: %d\r\n", config_store_storeHW());
-	 printf("Saving User Area: %d\r\n", config_store_store());
-	 */
+	config_store.calibration.v_term_offset_mv = adc_data.v_term_offset;
+	config_store.calibration.v_term_gain      = adc_data.v_term_gain;
+	config_store.calibration.i_out_offset_ma  = adc_data.i_out_offset;
+	config_store.calibration.i_out_gain       = adc_data.i_out_gain;
+	config_store.calibration.i_iso_offset_ua  = adc_data.i_iso_offset;
+	config_store.calibration.i_iso_gain       = adc_data.i_iso_gain;
+
+	config_store.calibration.voltage_buck_p  = ctrl_pi_voltage_buck.P_gain;
+	config_store.calibration.voltage_buck_i  = ctrl_pi_voltage_buck.I_gain;
+	config_store.calibration.voltage_boost_p = ctrl_pi_voltage_boost.P_gain;
+	config_store.calibration.voltage_boost_i = ctrl_pi_voltage_boost.I_gain;
+	config_store.calibration.current_p       = ctrl_pi_current.P_gain;
+	config_store.calibration.current_i       = ctrl_pi_current.I_gain;
+
+	if (config_store_store() == 0)
+		printf("EEPROM: calibration saved\r\n");
+	else
+		printf("EEPROM: save failed\r\n");
 }
 
 /**
- * Reads the value of the EEPROM and prints it to the Serial Port
+ * Re-reads the config store from the EEPROM and prints it to the
+ * Serial Port.
  */
-void cmd_readEEPROM(void) {
-	printf("Not Implemented!\n");
-	/*printf("Serial Number: %06d\r\n", config_store.hardware_data.serial_number);
-	 printf("Hardware Revision: %d\r\n", config_store.hardware_data.hardware_revision);
-	 printf("Hardware Data CRC: %d\r\n", config_store.hardware_data_crc);
-	 printf("Cone ID: %d\r\n", config_store.user_settings.cone_id);
-	 printf("Fallback Color: %d\r\n", config_store.user_settings.fallback_color);
-	 printf("Fallback Mode: %d\r\n", config_store.user_settings.fallback_lightmode);
-	 printf("Fallback Repetition Time: %d\r\n", config_store.user_settings.fallback_repetition_time);
-	 printf("Fallback Phase: %d\r\n", config_store.user_settings.fallback_phase);
-	 printf("User Settings CRC: %d\r\n", config_store.user_settings_crc);
+/**
+ * Prints a float with 6 decimal digits. This project links
+ * --specs=nano.specs without -u _printf_float, so newlib-nano's printf
+ * silently drops %f support - this avoids depending on it at all.
+ */
+static void cli_printFloat(float value) {
+	int32_t whole = (int32_t) value;
+	float frac = value - (float) whole;
+	if (frac < 0)
+		frac = -frac;
+	printf("%ld.%06lu", (long) whole, (unsigned long) (frac * 1000000.0f));
+}
 
-	 printf("Hex View\r\n");
-	 for (uint8_t i = 0; i < sizeof(config_store_t); i += 16)
-	 {
-	 printf("0x%02x ", i);
-	 for (uint8_t j = 0; j < 16; j += 4)
-	 {
-	 printf("%02x%02x%02x%02x\t", *(((uint8_t *)&config_store) + i + j),
-	 *(((uint8_t *)&config_store) + i + j + 1),
-	 *(((uint8_t *)&config_store) + i + j + 2),
-	 *(((uint8_t *)&config_store) + i + j + 3));
-	 if (j == 12)
-	 printf(" \r\n");
-	 }
-	 }*/
+void cmd_readEEPROM(void) {
+	config_store_read();
+	printf("Serial Number:       %u\r\n", config_store.hardware_data.serial_number);
+
+	printf("V_TERM offset/gain:  %u mV / ", config_store.calibration.v_term_offset_mv);
+	cli_printFloat(config_store.calibration.v_term_gain);
+	printf("\r\n");
+
+	printf("I_OUT  offset/gain:  %u mA / ", config_store.calibration.i_out_offset_ma);
+	cli_printFloat(config_store.calibration.i_out_gain);
+	printf("\r\n");
+
+	printf("I_ISO  offset/gain:  %u uA / ", config_store.calibration.i_iso_offset_ua);
+	cli_printFloat(config_store.calibration.i_iso_gain);
+	printf("\r\n");
+
+	printf("Voltage buck  P / I: ");
+	cli_printFloat(config_store.calibration.voltage_buck_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.voltage_buck_i);
+	printf("\r\n");
+
+	printf("Voltage boost P / I: ");
+	cli_printFloat(config_store.calibration.voltage_boost_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.voltage_boost_i);
+	printf("\r\n");
+
+	printf("Current loop  P / I: ");
+	cli_printFloat(config_store.calibration.current_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.current_i);
+	printf("\r\n");
+}
+
+/**
+ * Sets ADC channel calibration (offset, gain) live. Not persisted -
+ * use saveEEPROM to write it to the EEPROM.
+ */
+void cmd_setADCCal(void) {
+	uint8_t id;
+	uint16_t offset;
+	float gain;
+	CLI_CHECK_ARG_CNT(3);
+	char *end;
+	id = strtoul(arg_locs[1], &end, 10);
+	offset = strtoul(arg_locs[2], &end, 10);
+	gain = strtof(arg_locs[3], &end);
+	if (id == 0) {
+		adc_data.v_term_offset = offset;
+		adc_data.v_term_gain = gain;
+	} else if (id == 1) {
+		adc_data.i_out_offset = offset;
+		adc_data.i_out_gain = gain;
+	} else if (id == 2) {
+		adc_data.i_iso_offset = offset;
+		adc_data.i_iso_gain = gain;
+	}
+}
+
+/**
+ * Sets the hardware serial number and immediately persists it to the
+ * EEPROM. This is factory/provisioning data - only call it deliberately.
+ */
+void cmd_setSerial(void) {
+	CLI_CHECK_ARG_CNT(1);
+	char *end;
+	config_store.hardware_data.serial_number = strtoul(arg_locs[1], &end, 10);
+	if (config_store_storeHW() == 0)
+		printf("EEPROM: serial number saved\r\n");
+	else
+		printf("EEPROM: save failed\r\n");
 }
 
 void cmd_turnOff(void) {

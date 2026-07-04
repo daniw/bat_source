@@ -12,6 +12,7 @@
 #include "hrtim.h"
 #include <stdio.h>
 #include "aux_io_ctrl.h"
+#include "config_store.h"
 
 ctrl_main_t ctrl_main_handle;
 PID_controller_t ctrl_pi_voltage_buck;
@@ -38,19 +39,23 @@ void ctrl_main_ctrl_current(int16_t current_meas_mA,
 void ctrl_main_init(void) {
 
 
-	ctrl_PID_controller_init(&ctrl_pi_voltage_buck, CTRL_PARAM_VOLTAGE_BUCK_P,
-	CTRL_PARAM_VOLTAGE_BUCK_I, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
+	// P/I gains come from config_store, which is loaded from EEPROM (or
+	// defaulted to the CTRL_PARAM_* constants) before ctrl_main_init() runs -
+	// see config_store_init() in main(). Duty saturation limits stay as
+	// hardcoded safety limits rather than field-tunable values.
+	ctrl_PID_controller_init(&ctrl_pi_voltage_buck, config_store.calibration.voltage_buck_p,
+	config_store.calibration.voltage_buck_i, 0, CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_HIGH,
 	CTRL_PARAM_VOLTAGE_BUCK_DUTY_SAT_LOW);
 
 
 
-	ctrl_PID_controller_init(&ctrl_pi_voltage_boost, CTRL_PARAM_VOLTAGE_BOOST_P,
-	CTRL_PARAM_VOLTAGE_BOOST_I, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
+	ctrl_PID_controller_init(&ctrl_pi_voltage_boost, config_store.calibration.voltage_boost_p,
+	config_store.calibration.voltage_boost_i, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
 	CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
 
 
-	ctrl_PID_controller_init(&ctrl_pi_current, CTRL_PARAM_CURRENT_P,
-	CTRL_PARAM_CURRENT_I, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
+	ctrl_PID_controller_init(&ctrl_pi_current, config_store.calibration.current_p,
+	config_store.calibration.current_i, 0, CTRL_PARAM_CURRENT_DUTY_SAT_HIGH,
 	CTRL_PARAM_CURRENT_DUTY_SAT_LOW);
 
 	//ctrl_PID_controller_init(&ctrl_pi_flyback_voltage, CTRL_PARAM_HV_KP, CTRL_PARAM_BH_KI, 0, 0.5, 0);

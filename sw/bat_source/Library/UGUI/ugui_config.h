@@ -14,7 +14,7 @@
 // #define UGUI_USE_COLOR_BW   // BW = 0x00|0xFF
 
 /* Enable Touch Support */
- #define UGUI_USE_TOUCH
+// #define UGUI_USE_TOUCH
 
 /* Enable Console Support */
  #define UGUI_USE_CONSOLE

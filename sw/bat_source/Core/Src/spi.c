@@ -28,6 +28,7 @@ SPI_HandleTypeDef hspi3;
 SPI_HandleTypeDef hspi4;
 DMA_HandleTypeDef hdma_spi3_rx;
 DMA_HandleTypeDef hdma_spi3_tx;
+DMA_HandleTypeDef hdma_spi4_tx;
 
 /* SPI3 init function */
 void MX_SPI3_Init(void)
@@ -81,13 +82,13 @@ void MX_SPI4_Init(void)
   hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi4.Init.NSS = SPI_NSS_SOFT;
-  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+  hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi4.Init.CRCPolynomial = 7;
   hspi4.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi4.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi4.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi4) != HAL_OK)
   {
     Error_Handler();
@@ -186,6 +187,27 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI4;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+    /* SPI4 DMA Init */
+    /* SPI4_TX Init */
+    hdma_spi4_tx.Instance = DMA2_Channel2;
+    hdma_spi4_tx.Init.Request = DMA_REQUEST_SPI4_TX;
+    hdma_spi4_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_spi4_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_spi4_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_spi4_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_spi4_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_spi4_tx.Init.Mode = DMA_NORMAL;
+    hdma_spi4_tx.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_spi4_tx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(spiHandle,hdmatx,hdma_spi4_tx);
+
+    /* SPI4 interrupt Init */
+    HAL_NVIC_SetPriority(SPI4_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(SPI4_IRQn);
   /* USER CODE BEGIN SPI4_MspInit 1 */
 
   /* USER CODE END SPI4_MspInit 1 */
@@ -235,6 +257,11 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
     */
     HAL_GPIO_DeInit(GPIOE, DISPLAY_SCK_Pin|DISPLAY_MISO_Pin|DISPLAY_MOSI_Pin);
 
+    /* SPI4 DMA DeInit */
+    HAL_DMA_DeInit(spiHandle->hdmatx);
+
+    /* SPI4 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(SPI4_IRQn);
   /* USER CODE BEGIN SPI4_MspDeInit 1 */
 
   /* USER CODE END SPI4_MspDeInit 1 */
@@ -243,4 +270,42 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 
 /* USER CODE BEGIN 1 */
 
+/*
+ * @brief Sets SPI interface baud rate
+ * @param spiHandle Handle to the spi interface to be configured
+ * @param prescaler Prescaler to be used, supported values: 2, 4, 8, 16, 32, 64, 128, 256
+ * @return Status
+ */
+
+HAL_StatusTypeDef SPI_set_prescaler(SPI_HandleTypeDef* spiHandle, uint16_t prescaler) {
+	switch (prescaler) {
+	case 2:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+		break;
+	case 4:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+		break;
+	case 8:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+		break;
+	case 16:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+		break;
+	case 32:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+		break;
+	case 64:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+		break;
+	case 128:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+		break;
+	case 256:
+		spiHandle->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+		break;
+	default:
+		return HAL_ERROR;
+	}
+    return HAL_SPI_Init(spiHandle);
+}
 /* USER CODE END 1 */

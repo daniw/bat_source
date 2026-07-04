@@ -1,4 +1,5 @@
 #include "lcd.h"
+#include "spi.h"
 #include "string.h"
 #include <stdio.h>
 
@@ -34,6 +35,7 @@ const uint8_t init_cmd[] = {
 #else
 const uint16_t init_cmd[] = {
 #endif
+	0,  DC_BIT_CMD | CMD_SWRESET,
     0,  DC_BIT_CMD | CMD_SLPOUT,
     1,  DC_BIT_CMD | CMD_COLMOD,  DC_BIT_DATA | CMD_COLOR_MODE_16bit,
     5,  DC_BIT_CMD | CMD_PORCTRL, DC_BIT_DATA | 0x0C, DC_BIT_DATA | 0x0C, DC_BIT_DATA | 0x00, DC_BIT_DATA | 0x33, DC_BIT_DATA | 0x33,   // Standard porch
@@ -61,11 +63,13 @@ char str[32];
 static void LCD_Update(void);
 typedef struct{
   int8_t spi_sz;
+  int8_t dma_sz;
   int8_t dma_mem_inc;
 }config_t;
 
 config_t config = {
     .spi_sz = -1,
+    .dma_sz = -1,
     .dma_mem_inc = -1,
 };
 
@@ -85,6 +89,7 @@ static UG_DEVICE device = {
     .flush = LCD_Update,
 };
 
+#define mode_9bit     2
 #define mode_16bit    1
 #define mode_8bit     0
 /*
@@ -97,20 +102,26 @@ static void setSPI_Size(int8_t size){
   if(config.spi_sz!=size){
     __HAL_SPI_DISABLE(&LCD_HANDLE);
     config.spi_sz=size;
-    if(size==mode_16bit){
-      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_16BIT;
+    if(mode_8bit == size){
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_8BIT;
       //LCD_HANDLE.Instance->CR1 |= SPI_CR1_;
       LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
       LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
 
     }
-    else{
-      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_8BIT;
+    else if(mode_16bit == size) {
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_16BIT;
       //LCD_HANDLE.Instance->CR1 &= ~(SPI_CR1_DFF);
       LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
       LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
     }
-    __HAL_SPI_ENABLE(&LCD_HANDLE);
+    else { // (mode_9bit == size) {
+      LCD_HANDLE.Init.DataSize = SPI_DATASIZE_9BIT;
+      //LCD_HANDLE.Instance->CR1 &= ~(SPI_CR1_DFF);
+      LCD_HANDLE.Instance->CR2 &= ~( SPI_CR2_DS_Msk);
+      LCD_HANDLE.Instance->CR2 |= (LCD_HANDLE.Init.DataSize & SPI_CR2_DS_Msk);
+    }
+    HAL_SPI_Init(&LCD_HANDLE);
   }
 
 }
@@ -179,6 +190,63 @@ static void setDMAMemMode(uint8_t memInc, uint8_t size)
     }
   }
 }
+
+static volatile uint8_t lcd_dma_busy = 0;
+
+/**
+ * @brief SPI DMA transfer-complete callback. Signals LCD_WriteData that the
+ *        DMA-driven transfer has finished, instead of polling the DMA
+ *        channel's internal state register.
+ * @param hspi -> handle of the SPI peripheral that completed
+ * @return none
+ */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+  if(hspi->Instance == LCD_HANDLE.Instance){
+    lcd_dma_busy = 0;
+  }
+}
+
+/**
+ * @brief SPI error callback. Also clears the DMA-busy flag, so a bus
+ *        error mid-transfer can't leave LCD_WriteData's wait spinning
+ *        forever (which would otherwise stall the whole main loop -
+ *        including BMS polling and button handling, not just the LCD).
+ * @param hspi -> handle of the SPI peripheral that errored
+ * @return none
+ */
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+  if(hspi->Instance == LCD_HANDLE.Instance){
+    lcd_dma_busy = 0;
+  }
+}
+
+// A single DMA chunk can be up to 65535 pixels (16 bit each); at SPI4's
+// current 5 MBit/s (bat_source.ioc), that's ~210ms to clock out. Must
+// stay comfortably above that or this "safety" timeout aborts large
+// fills partway through - which is exactly what happened at 100ms,
+// cutting a full-screen fill off around the halfway point.
+#define LCD_DMA_TIMEOUT_MS 500
+#endif
+
+/**
+ * Number of trailing parameter bytes to pass as LCD_WriteCommand's argc
+ * for a `{ CMD, param, param, ... }` array. Under LCD_DC, argc must be
+ * the parameter count only (LCD_WriteCommand always sends cmd[0] as
+ * the command byte itself, separately); under the 16-bit
+ * embedded-DC-bit convention, argc is the whole array's byte size
+ * instead. Using plain sizeof(cmd) for the LCD_DC case sends one byte
+ * too many, read out of bounds past the array - that stray byte is
+ * inert after fixed-length commands like CASET/RASET/MADCTL, but after
+ * RAMWR (which has zero parameters of its own - the pixel data that
+ * follows is a separate LCD_WriteData call) it shifts every single
+ * fill/draw operation's whole pixel stream by one byte.
+ */
+#ifdef LCD_DC
+#define LCD_CMD_ARGC(cmd_array) (sizeof(cmd_array)-1)
+#else
+#define LCD_CMD_ARGC(cmd_array) (sizeof(cmd_array))
 #endif
 
 /**
@@ -196,6 +264,9 @@ static void LCD_WriteCommand(uint8_t *cmd, uint8_t argc)
   LCD_PIN(LCD_CS,RESET);
 #endif
   HAL_SPI_Transmit(&LCD_HANDLE, cmd, 1, HAL_MAX_DELAY);
+  if (CMD_SWRESET == *cmd) {
+  	HAL_Delay(5);
+  }
   if(argc){
     LCD_PIN(LCD_DC,SET);
     HAL_SPI_Transmit(&LCD_HANDLE, (cmd+1), argc, HAL_MAX_DELAY);
@@ -234,8 +305,23 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
     uint16_t chunk_size = buff_size > 65535 ? 65535 : buff_size;
 #ifdef USE_DMA
     if(buff_size>DMA_Min_Pixels){
-      HAL_SPI_Transmit_DMA(&LCD_HANDLE, buff, chunk_size);
-      while(HAL_DMA_GetState(LCD_HANDLE.hdmatx)!=HAL_DMA_STATE_READY);
+      lcd_dma_busy = 1;
+      if(HAL_SPI_Transmit_DMA(&LCD_HANDLE, buff, chunk_size) != HAL_OK){
+        // DMA never actually started (e.g. peripheral still busy) - no
+        // completion callback will ever come, so don't wait on one.
+        lcd_dma_busy = 0;
+        HAL_SPI_Transmit(&LCD_HANDLE, buff, chunk_size, HAL_MAX_DELAY);
+      }
+      else{
+        uint32_t wait_start = HAL_GetTick();
+        while(lcd_dma_busy){
+          if((HAL_GetTick() - wait_start) > LCD_DMA_TIMEOUT_MS){
+            HAL_SPI_Abort(&LCD_HANDLE);
+            lcd_dma_busy = 0;
+            break;
+          }
+        }
+      }
       if(config.dma_mem_inc==mem_increase){
         if(config.dma_sz==mode_16bit)
           buff += chunk_size;
@@ -268,19 +354,79 @@ static void LCD_WriteData(uint8_t *buff, size_t buff_size) {
 
 static void LCD_ReadCmd(uint8_t cmd, uint8_t *data, uint8_t count)
 {
-	uint8_t rx_data[2];
-	uint8_t tx_data[2] = {0x00,0x00};
-	tx_data[1] = cmd;
+	uint8_t rx_data[count];
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_READ);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,RESET);
+#endif
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,RESET);
+#endif
+	if (CMD_RDDID == cmd || CMD_RDDST == cmd) {
+		uint8_t tx_data[2] = {0x00, 0x00};
+		tx_data[0] = cmd<<1 & 0xFF;
+		tx_data[1] = cmd>>7 & 0xFF;
+		setSPI_Size(mode_9bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, tx_data, 1, HAL_MAX_DELAY);
+		setSPI_Size(mode_8bit);
+	}
+	else {
+		uint8_t tx_data = cmd;
+		setSPI_Size(mode_8bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, &tx_data, 1, HAL_MAX_DELAY);
+	}
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,SET);
+#endif
+	//HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	for (uint8_t i = 0; i < count; i++) {
+		data[i] = rx_data[i];
+	}
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,SET);
+#endif
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_WRITE);
 
-  setSPI_Size(mode_16bit);
-  LCD_PIN(LCD_DC,RESET);
-  LCD_PIN(LCD_CS,RESET);
-  HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
-  //HAL_SPI_Receive(&LCD_HANDLE, data, count, HAL_MAX_DELAY);
-  LCD_PIN(LCD_CS,SET);
-  LCD_PIN(LCD_DC,SET);
-  data[0] = rx_data[1];
-
+/*	uint8_t rx_data[count+1];
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_READ);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,RESET);
+#endif
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,RESET);
+#endif
+		uint8_t tx_data = cmd;
+		setSPI_Size(mode_8bit);
+		//HAL_SPI_TransmitReceive(&LCD_HANDLE, tx_data,rx_data, 1, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(&LCD_HANDLE, &tx_data, 1, HAL_MAX_DELAY);
+#ifdef LCD_DC
+	LCD_PIN(LCD_DC,SET);
+#endif
+	//HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+	//LCD_PIN(LCD_CS,SET);
+	// Display requires dummy clock cycle between command and data for the commands RDDID and RDDST
+	// Dummy clock cycles are not supported by the SPI module
+	// When sending 9 bits to imitate dummy clock, the SPI module sends 16 bits
+	// One additional byte is read and the data shifted by one bit to compensate for the dummy clock cycle
+	if (CMD_RDDID == cmd || CMD_RDDST == cmd) {
+		HAL_SPI_Receive(&LCD_HANDLE, rx_data, count+1, HAL_MAX_DELAY);
+		for (uint8_t i = 0; i < count; i++) {
+			data[i] = rx_data[i]<<1 | rx_data[i+1]>>7;
+		}
+	}
+	else {
+		HAL_SPI_Receive(&LCD_HANDLE, rx_data, count, HAL_MAX_DELAY);
+		for (uint8_t i = 0; i < count; i++) {
+			data[i] = rx_data[i];
+		}
+	}
+#ifdef LCD_CS
+	LCD_PIN(LCD_CS,SET);
+#endif
+	SPI_set_prescaler(&LCD_HANDLE, SPI_PRESCALER_LCD_WRITE);*/
 }
 
 /**
@@ -328,7 +474,7 @@ void LCD_SetRotation(uint8_t m)
 #endif
     break;
   }
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 
@@ -349,7 +495,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_CASET, DC_BIT_DATA | (x_start >> 8), DC_BIT_DATA | (x_start & 0xFF), DC_BIT_DATA | (x_end >> 8), DC_BIT_DATA
 				| (x_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 	/* Row Address set */
 	{
@@ -359,7 +505,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RASET, DC_BIT_DATA | (y_start >> 8), DC_BIT_DATA | (y_start & 0xFF), DC_BIT_DATA | (y_end >> 8), DC_BIT_DATA
 				| (y_end & 0xFF) };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 	{
 		/* Write to RAM */
@@ -368,7 +514,7 @@ static void LCD_SetAddressWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 #else
 		uint16_t cmd[] = { DC_BIT_CMD | CMD_RAMWR };
 #endif
-		LCD_WriteCommand(cmd, sizeof(cmd));
+		LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 	}
 }
 
@@ -449,11 +595,27 @@ void LCD_FillPixels(uint32_t pixels, uint16_t color){
 }
 
 /**
+ * @brief Adapter matching the (UG_U16, UG_COLOR) push_pixels signature uGUI
+ *        assumes for the DRIVER_FILL_AREA callback it gets back from
+ *        LCD_FillArea (see ugui.c). LCD_FillPixels itself needs a uint32_t
+ *        count to support single-shot full-screen DMA fills (up to 76800
+ *        pixels), which would truncate if exposed directly through that
+ *        16-bit callback; uGUI only ever calls it with small glyph-sized
+ *        counts, so narrowing at this boundary is safe.
+ * @param pixels -> number of pixels to fill
+ * @param color -> fill color
+ * @return none
+ */
+static void LCD_FillPixelsUG(uint16_t pixels, uint16_t color){
+  LCD_FillPixels(pixels, color);
+}
+
+/**
  * @brief Set address of DisplayWindow and returns raw pixel draw for uGUI driver acceleration
  * @param xi&yi -> coordinates of window
  * @return none
  */
-void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, uint16_t){
+void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint16_t, uint16_t){
   if(x0==-1){ // ToDo: What is this for?
 #ifdef USE_DMA
     setDMAMemMode(mem_increase, mode_8bit);
@@ -471,7 +633,7 @@ void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, ui
 #ifdef LCD_DC
   LCD_PIN(LCD_DC,SET);
 #endif
-  return LCD_FillPixels;
+  return LCD_FillPixelsUG;
 }
 
 
@@ -482,18 +644,19 @@ void(*LCD_FillArea(int16_t x0, int16_t y0, int16_t x1, int16_t y1))(uint32_t, ui
  * @param color -> color to Fill with
  * @return none
  */
-int8_t LCD_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint16_t color)
+int8_t LCD_Fill(int16_t xSta, int16_t ySta, int16_t xEnd, int16_t yEnd, uint16_t color)
 {
   uint32_t pixels = (uint32_t)(xEnd-xSta+1)*(yEnd-ySta+1);
   LCD_SetAddressWindow(xSta, ySta, xEnd, yEnd);
 #ifdef USE_DMA
-    setDMAMemMode(mem_fixed, mode_14bit);
+    setDMAMemMode(mem_fixed, mode_16bit);
 #else
     setSPI_Size(mode_16bit);
+    //setSPI_Size(mode_8bit);
 #endif
   LCD_FillPixels(pixels, color);
 #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);
+  setDMAMemMode(mem_increase, mode_16bit);
 #else
   setSPI_Size(mode_8bit);
 #endif
@@ -508,12 +671,11 @@ int8_t LCD_Fill(uint16_t xSta, uint16_t ySta, uint16_t xEnd, uint16_t yEnd, uint
  * @param data -> pointer of the Image array
  * @return none
  */
-void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
+void LCD_DrawImage(int16_t x, int16_t y, UG_BMP* bmp)
 {
-	return;
   uint16_t w = bmp->width;
   uint16_t h = bmp->height;
-  if ((x > LCD_WIDTH-1) || (y > LCD_HEIGHT-1))
+  if ((x < 0) || (x > LCD_WIDTH-1) || (y < 0) || (y > LCD_HEIGHT-1))
     return;
   if ((x + w - 1) > LCD_WIDTH-1)
     return;
@@ -524,15 +686,15 @@ void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
   LCD_SetAddressWindow(x, y, x + w - 1, y + h - 1);
 
   #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
   #else
   setSPI_Size(mode_16bit);                                                                            // Set SPI to 16 bit
   #endif
   LCD_WriteData((uint8_t*)bmp->p, w*h);
 #ifdef USE_DMA
-  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
 #else
-	setSPI_Size(mode_8bit);                                                                            // Set SPI to 16 bit
+	setSPI_Size(mode_8bit);                                                                            // Set SPI to 8 bit
 #endif
   }
 
@@ -543,7 +705,7 @@ void LCD_DrawImage(uint16_t x, uint16_t y, UG_BMP* bmp)
  * @param color -> color of the line to Draw
  * @return none
  */
-int8_t LCD_DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) {
+int8_t LCD_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) {
 
   if(x0==x1){                                   // If horizontal
     if(y0>y1) swap(y0,y1);
@@ -581,7 +743,7 @@ void LCD_InvertColors(uint8_t invert)
 #else
   uint16_t cmd[] = { DC_BIT_CMD | (invert ? CMD_INVON /* INVON */ : CMD_INVOFF /* INVOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 /*
@@ -596,7 +758,7 @@ void LCD_TearEffect(uint8_t tear)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (tear ? 0x35 /* TEON */ : 0x34 /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 void LCD_setPower(uint8_t power)
@@ -606,7 +768,7 @@ void LCD_setPower(uint8_t power)
 #else
 	  uint16_t cmd[] = {  DC_BIT_CMD | (power ? CMD_DISPON /* TEON */ : CMD_DISPOFF /* TEOFF */) };
 #endif
-  LCD_WriteCommand(cmd, sizeof(cmd));
+  LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
 }
 
 static void LCD_Update(void)
@@ -622,7 +784,7 @@ static void LCD_Update(void)
   LCD_WriteData((uint8_t*)fb, LCD_WIDTH*LCD_HEIGHT);
 #endif
 //  #ifdef USE_DMA
-//  setDMAMemMode(mem_increase, mode_14bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
+//  setDMAMemMode(mem_increase, mode_16bit);                                                            // Set SPI and DMA to 16 bit, enable memory increase
 //  #else
 //  setSPI_Size(mode_8bit);                                                                            // Set SPI to 16 bit
 //  #endif
@@ -635,7 +797,7 @@ static void LCD_Update(void)
 
 void LCD_init(void)
 {
-	uint8_t read_init[76];
+	uint8_t read_init[76] = {0};
 #ifdef LCD_CS
   LCD_PIN(LCD_CS,SET);
 #endif
@@ -643,6 +805,23 @@ void LCD_init(void)
   LCD_PIN(LCD_RST,RESET);
   HAL_Delay(1);
   LCD_PIN(LCD_RST,SET);
+  HAL_Delay(200);
+#else
+  // This board has no RST pin wired to the controller, so there is no
+  // hardware reset at all otherwise - issue a software reset instead,
+  // so the controller starts from a known state regardless of what it
+  // was left in (a previous crash, a debugger reset, reflashing
+  // without power-cycling the display, ...). Delay matches the
+  // datasheet's worst-case (display was in sleep-in) wait after
+  // SWRESET, same as the hardware-reset delay above.
+  {
+#ifdef LCD_DC
+    uint8_t cmd[] = { CMD_SWRESET };
+#else
+    uint16_t cmd[] = { DC_BIT_CMD | CMD_SWRESET };
+#endif
+    LCD_WriteCommand(cmd, LCD_CMD_ARGC(cmd));
+  }
   HAL_Delay(200);
 #endif
   UG_Init(&gui, &device);
@@ -654,9 +833,10 @@ void LCD_init(void)
 #endif
   UG_FontSetHSpace(0);
   UG_FontSetVSpace(0);
-  LCD_ReadCmd(0xDA, &read_init[0], 1);
-  LCD_ReadCmd(0xDB, &read_init[1], 1);
-  LCD_ReadCmd(0xDC, &read_init[2], 1);
+  LCD_ReadCmd(CMD_RDID1, &read_init[0], 1);
+  LCD_ReadCmd(CMD_RDID2, &read_init[1], 1);
+  LCD_ReadCmd(CMD_RDID3, &read_init[2], 1);
+  LCD_ReadCmd(CMD_RDDID, read_init + 3, 4);
 
   
   for(uint16_t i=0; i<sizeof(init_cmd); ){
@@ -671,8 +851,14 @@ void LCD_init(void)
   UG_FillScreen(C_BLACK);               //  Clear screen
   LCD_setPower(ENABLE);
   UG_Update();
-}
 
+  UG_FontSelect(FONT_5X8);
+  UG_SetForecolor(C_YELLOW);
+  UG_SetBackcolor(C_BLACK);
+  UG_FontSetTransparency(0);
+  UG_PutString(10, 15, "I");
+  UG_FillFrame(0, 0, 3, 3, C_WHITE);
+}
 
 #define DEFAULT_FONT FONT_8X12
 
@@ -680,6 +866,7 @@ static uint32_t draw_time=0;
 static void clearTime(void){
   draw_time=HAL_GetTick();
 }
+
 static void printTime(void){
   char str[8];
   uint8_t t = UG_FontGetTransparency();
@@ -703,11 +890,31 @@ static void printTime(void){
 #define MAX_OBJECTS 10
 #define DEMO_FLASH_KB 256
 
+// LCD_TEST_WINDOWS (lcd.h) gates the window/button/textbox/progress-bar
+// demo below.
+
+#ifdef LCD_TEST_WINDOWS
 static UG_WINDOW window_1;
 static UG_BUTTON button_1;
 static UG_TEXTBOX textbox_1;
-static UG_OBJECT obj_buff_wnd_1[MAX_OBJECTS];
+static UG_OBJECT obj_buff_wnd_1[MAX_OBJECTS]; // uGUI's object list buffer for
+                                               // window_1 - not touch-specific,
+                                               // needed by UG_WindowCreate()
+                                               // regardless of UGUI_USE_TOUCH.
 static UG_PROGRESS pgb;
+
+/**
+ * @brief Window message callback for window_1. The demo drives every
+ *        state change (button text/style, progress value) directly
+ *        from LCD_Test()'s loop rather than reacting to messages here,
+ *        so this only needs to exist to satisfy UG_WindowCreate()'s
+ *        API - it doesn't need to do anything.
+ */
+static void window_1_callback(UG_MESSAGE *msg)
+{
+  (void) msg;
+}
+#endif
 
 void LCD_Test(void)
 {
@@ -727,7 +934,7 @@ void LCD_Test(void)
   show=start=HAL_GetTick();
   t = UG_FontGetTransparency();
   while(HAL_GetTick()-start<4000){
-    UG_FillFrame(x-rad, y-rad, x+rad, y+rad, C_BLACK);
+    UG_FillFrame(x-rad/2, y-rad/2, x+rad/2, y+rad/2, C_BLACK);
     x+=xadd;
     y+=yadd;
     if(x-rad<1){
@@ -909,9 +1116,10 @@ void LCD_Test(void)
   printTime();
   HAL_Delay(1000);
 
+#ifdef LCD_TEST_WINDOWS
   clearTime();
   // Create the window
-  //UG_WindowCreate(&window_1, obj_buff_wnd_1, MAX_OBJECTS, window_1_callback);
+  UG_WindowCreate(&window_1, obj_buff_wnd_1, MAX_OBJECTS, window_1_callback);
   // Window Title
   UG_WindowSetTitleText(&window_1, "Test Window");
   UG_WindowSetTitleTextFont(&window_1, DEFAULT_FONT);
@@ -954,7 +1162,9 @@ void LCD_Test(void)
       btn_time=now;
       u=1;
       i++;
+#ifdef UGUI_USE_TOUCH
       UG_TouchUpdate((i&1 ? 10 : -1), (i&1 ? 31 : -1), OBJ_TOUCH_STATE_CHANGED | (i&1 ? OBJ_TOUCH_STATE_IS_PRESSED : 0));
+#endif //UGUI_USE_TOUCH
       if(i==9){
         UG_ButtonSetText(&window_1,BTN_ID_0,"2D Btn");
         UG_ButtonSetStyle(&window_1, BTN_ID_0, BTN_STYLE_2D);
@@ -978,6 +1188,7 @@ void LCD_Test(void)
   UG_WindowHide(&window_1);
   UG_WindowDelete(&window_1);
   UG_Update();
+#endif
   t = UG_FontGetTransparency();
 #if DEMO_FLASH_KB >=64
   UG_FillScreen(0x4b10);
@@ -991,6 +1202,8 @@ void LCD_Test(void)
   UG_FontSetTransparency(t);
 #endif
   HAL_Delay(1000);
+  UG_FillScreen(C_BLACK);
+  UG_Update();
 }
 
 
