@@ -29,8 +29,9 @@
 #include "ui_ctrl.h"
 #include "gpio.h"
 #include "w25n01gv.h"
-
 #include "ctrl_param.h"
+#include "rtc.h"
+#include "lcd.h"
 
 #ifdef CLI_ENABLED
 
@@ -41,7 +42,7 @@
 #define CLI_CHECK_ARG_CNT_NONE(nof_args)            if (number_of_args != nof_args && number_of_args != 0)      {printf("Incorrect number of arguments\nUsage: %s\n", cmd_arg_str[cmd_index]); return;}
 
 char line_buffer[LINE_BUF_SIZE];
-char *arg_locs[MAX_NUM_ARGS];
+char *arg_locs[MAX_NUM_ARGS+1];
 uint8_t number_of_args;
 uint8_t line_buffer_index;
 
@@ -93,6 +94,9 @@ void cmd_writeFlash(void);
 void cmd_testFlash(void);
 void cmd_changeState(void);
 void cmd_setCtrlGain(void);
+void cmd_printRTC(void);
+void cmd_setRTC(void);
+void cmd_testLCD(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -118,7 +122,10 @@ void (*cmd_func[])(void) = {
 	cmd_writeFlash,
 	cmd_testFlash,
 	cmd_changeState,
-	cmd_setCtrlGain
+	cmd_setCtrlGain,
+	cmd_printRTC,
+	cmd_setRTC,
+	cmd_testLCD
 };
 
 // List of command names
@@ -145,7 +152,10 @@ const char *cmd_str[] = {
 		"writeFlash",
 		"testFlash",
 		"state",
-		"setPI"
+		"setPI",
+		"pRTC",
+		"setRTC",
+		"testLCD"
 };
 
 // List of command names including arguments
@@ -163,8 +173,8 @@ const char *cmd_arg_str[] = {
 		"enPWM [channel] [0 disable | 1 enable]",
 		"setRef [value]",
 		"test_i2c",
-		"setLED [current]",
-		"setBacklight [current]",
+		"setLED [current, 0.1mA]",
+		"setBacklight [current, 0.1mA]",
 		"readLux",
 		"pFlashID",
 		"readFlash [address] [size]",
@@ -173,6 +183,9 @@ const char *cmd_arg_str[] = {
 		"testFlash",
 		"state [new state]",
 		"setPI [P Gain] [I Gain]"
+		"pRTC",
+		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
+		"testLCD"
 };
 
 int cmd_index;
@@ -344,7 +357,7 @@ static void cli_process_line(void) {
     full_line_copy[LINE_BUF_SIZE - 1] = '\0';
 
     arg_locs[number_of_args] = strtok(line_buffer, " ");
-    while (arg_locs[number_of_args] != NULL && number_of_args < MAX_NUM_ARGS - 1) {
+    while (arg_locs[number_of_args] != NULL && number_of_args < MAX_NUM_ARGS) {
         arg_locs[++number_of_args] = strtok(NULL, " ");
     }
 
@@ -353,7 +366,7 @@ static void cli_process_line(void) {
     if (number_of_args == 0)
         return;
 
-    if (arg_locs[0] != NULL)
+    if ((arg_locs[0] != NULL) && (arg_locs[number_of_args] == NULL))
         number_of_args--;
 
     for (int i = 0; i < num_commands; i++) {
@@ -521,8 +534,8 @@ void cmd_setDAC(void) {
 	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
-	pin = strtol(arg_locs[1], &end, 10);
-	value = strtol(arg_locs[2], &end, 10);
+	pin = strtoul(arg_locs[1], &end, 10);
+	value = strtoul(arg_locs[2], &end, 10);
 	//if (pin == 0)
 		//dac_setValueRef(value);
 	//else
@@ -534,7 +547,7 @@ void cmd_setRef(void){
 		CLI_CHECK_ARG_CNT(1);
 
 		char *end;
-		ctrl_main_handle.poti_reference = strtol(arg_locs[1], &end, 10);
+		ctrl_main_handle.poti_reference = strtoul(arg_locs[1], &end, 10);
 		printf("Set Reference to: %d\r\n", ctrl_main_handle.poti_reference);
 }
 
@@ -620,7 +633,7 @@ void cmd_setDuty(void){
 	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
-	channel = strtol(arg_locs[1], &end, 10);
+	channel = strtoul(arg_locs[1], &end, 10);
 	value = strtof(arg_locs[2], &end);
 	switch(channel){
 	case 0: hrtim_set_duty(HRTIM_CHANNEL_PRIM, value);
@@ -638,8 +651,8 @@ void cmd_PWM_en(void){
 	CLI_CHECK_ARG_CNT(2);
 
 	char *end;
-	channel = strtol(arg_locs[1], &end, 10);
-	value = strtol(arg_locs[2], &end, 10);
+	channel = strtoul(arg_locs[1], &end, 10);
+	value = strtoul(arg_locs[2], &end, 10);
 	if(value == 1)
 		hrtim_enable(channel);
 	else
@@ -662,7 +675,7 @@ void cmd_setLED(void){
 	if (number_of_args == 3) {
 		char *end;
 		for (uint8_t i = 0; i < 3; i++){
-			led_currents[i] = strtol(arg_locs[i+1], &end, 10)/2;
+			led_currents[i] = strtoul(arg_locs[i+1], &end, 10)/2;
 			if (led_currents[i] > 150) {
 				led_currents[i] = 150;
 				printf("LED current limited to 30mA\r\n");
@@ -671,7 +684,7 @@ void cmd_setLED(void){
 	}
 	else{
 		char *end;
-		led_current = strtol(arg_locs[1], &end, 10)/2;
+		led_current = strtoul(arg_locs[1], &end, 10)/2;
 		if (led_current > 150) {
 			led_current = 150;
 			printf("LED current limited to 20mA\r\n");
@@ -692,7 +705,7 @@ void cmd_setBacklight(void){
 	CLI_CHECK_ARG_CNT(1);
 
 	char *end;
-	led_current = strtol(arg_locs[1], &end, 10);
+	led_current = strtoul(arg_locs[1], &end, 10);
 	if (led_current > 400) {
 		led_current = 400;
 		printf("LED current limited to 40mA\r\n");
@@ -736,7 +749,7 @@ void cmd_readFlash(void){
 
 	char *end;
 	address = strtoul(arg_locs[1], &end, 10);
-	size = strtol(arg_locs[2], &end, 10);
+	size = strtoul(arg_locs[2], &end, 10);
 
 	page_addr = W25N01GV_ADDR_TO_PAGE_ADDR(address);
 	column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
@@ -785,7 +798,7 @@ void cmd_eraseFlash(void){
 			nof_blocks = 1;
 		}
 		else {
-			nof_blocks = strtol(arg_locs[2], &end, 10);
+			nof_blocks = strtoul(arg_locs[2], &end, 10);
 			if (nof_blocks > W25N01GV_NOF_BLOCKS) {
 				nof_blocks = W25N01GV_NOF_BLOCKS;
 			}
@@ -1159,6 +1172,7 @@ void cmd_changeState(void){
 void cmd_setCtrlGain(void) {
 	float P, I;
 	uint8_t id;
+	CLI_CHECK_ARG_CNT(3);
 	char *end;
 	id = strtol(arg_locs[1], &end, 10);
 	P = strtof(arg_locs[2], &end);
@@ -1174,6 +1188,104 @@ void cmd_setCtrlGain(void) {
 		ctrl_pi_current.I_gain = I / CTRL_FREQ;
 
 	}
+}
+
+void cmd_printRTC(void){
+	RTC_DateTypeDef date = {0};
+	RTC_TimeTypeDef time = {0};
+	HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
+	char weekday[4];
+	switch(date.WeekDay) {
+	case RTC_WEEKDAY_MONDAY:
+		strcpy(weekday, "Mon");
+		break;
+	case RTC_WEEKDAY_TUESDAY:
+		strcpy(weekday, "Tue");
+		break;
+	case RTC_WEEKDAY_WEDNESDAY:
+		strcpy(weekday, "Wed");
+		break;
+	case RTC_WEEKDAY_THURSDAY:
+		strcpy(weekday, "Thu");
+		break;
+	case RTC_WEEKDAY_FRIDAY:
+		strcpy(weekday, "Fri");
+		break;
+	case RTC_WEEKDAY_SATURDAY:
+		strcpy(weekday, "Sat");
+		break;
+	case RTC_WEEKDAY_SUNDAY:
+		strcpy(weekday, "Sun");
+		break;
+	default:
+		strcpy(weekday, "_?_");
+		break;
+	}
+	printf("20%02d-%02d-%02d %02d:%02d.%02d %s\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds, weekday);
+	return;
+}
+
+void cmd_setRTC(void){
+	RTC_DateTypeDef date = {0};
+	RTC_TimeTypeDef time = {0};
+	HAL_StatusTypeDef status = HAL_OK;
+	CLI_CHECK_ARG_CNT_RANGE(6, 7);
+	char *end;
+	date.Year = (strtoul(arg_locs[1], &end, 10) % 100);
+	date.Month = strtoul(arg_locs[2], &end, 10);
+	date.Date = strtoul(arg_locs[3], &end, 10);
+	time.Hours = strtoul(arg_locs[4], &end, 10);
+	time.Minutes = strtoul(arg_locs[5], &end, 10);
+	time.Seconds = strtoul(arg_locs[6], &end, 10);
+	if (!IS_RTC_MONTH(date.Month) || !IS_RTC_DATE(date.Date) || !IS_RTC_HOUR24(time.Hours) || !IS_RTC_MINUTES(time.Minutes) || !IS_RTC_SECONDS(time.Seconds)) {
+		printf("Error, date or time out of range: \r\n");
+		printf("20%02d-%02d-%02d %02d:%02d.%02d\r\n", date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
+		return;
+	}
+	if (number_of_args >= 7) {
+		if      (strcmp(arg_locs[7], "Mon") == 0 || strcmp(arg_locs[7], "Monday")    == 0) {
+			date.WeekDay = RTC_WEEKDAY_MONDAY;
+		}
+		else if (strcmp(arg_locs[7], "Tue") == 0 || strcmp(arg_locs[7], "Tuesday")   == 0) {
+			date.WeekDay = RTC_WEEKDAY_TUESDAY;
+		}
+		else if (strcmp(arg_locs[7], "Wed") == 0 || strcmp(arg_locs[7], "Wednesday") == 0) {
+			date.WeekDay = RTC_WEEKDAY_WEDNESDAY;
+		}
+		else if (strcmp(arg_locs[7], "Thu") == 0 || strcmp(arg_locs[7], "Thursday")  == 0) {
+			date.WeekDay = RTC_WEEKDAY_THURSDAY;
+		}
+		else if (strcmp(arg_locs[7], "Fri") == 0 || strcmp(arg_locs[7], "Friday")    == 0) {
+			date.WeekDay = RTC_WEEKDAY_FRIDAY;
+		}
+		else if (strcmp(arg_locs[7], "Sat") == 0 || strcmp(arg_locs[7], "Saturday")  == 0) {
+			date.WeekDay = RTC_WEEKDAY_SATURDAY;
+		}
+		else if (strcmp(arg_locs[7], "Sun") == 0 || strcmp(arg_locs[7], "Sunday")    == 0) {
+			date.WeekDay = RTC_WEEKDAY_SUNDAY;
+		}
+		else {
+			printf("Error, unable to parse day of week: %s\r\n", arg_locs[7]);
+			return;
+		}
+	}
+	status = HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN);
+	if (status == HAL_OK) {
+		status = HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN);
+	}
+	else {
+		printf("Setting date failed. \r\n");
+	}
+	if (status != HAL_OK) {
+		printf("Setting time failed. \r\n");
+	}
+	return;
+}
+
+void cmd_testLCD(void){
+	LCD_Test();
+	return;
 }
 
 #endif
