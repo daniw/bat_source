@@ -649,7 +649,7 @@ UniqueId=82BD92ED-AEB8-43B6-B15C-6065858880BE
 Description=PS1-1
 AllowFabrication=1
 ParameterCount=1
-VariationCount=12
+VariationCount=14
 Variation1=Designator=C138|UniqueId=\IXBTTYLR\ZXFWIKXF|Kind=1|AlternatePart=
 Variation2=Designator=R107|UniqueId=\JMGMUPPD\FOGGVTMU|Kind=1|AlternatePart=
 Variation3=Designator=Y2|UniqueId=\KUKTWLSW\BEGLCQZF|Kind=1|AlternatePart=
@@ -662,6 +662,8 @@ Variation9=Designator=R238|UniqueId=\WETRPCDH\WOAPGENC|Kind=1|AlternatePart=
 Variation10=Designator=C128|UniqueId=\NADDTKDW\RLCKGLWB|Kind=1|AlternatePart=
 Variation11=Designator=R48|UniqueId=\DMUNOPTP\QDNCJLVT|Kind=1|AlternatePart=
 Variation12=Designator=R49|UniqueId=\DMUNOPTP\EDBNBSZO|Kind=1|AlternatePart=
+Variation13=Designator=D35|UniqueId=\FYQSFHEG\QCCDFSHI|Kind=1|AlternatePart=
+Variation14=Designator=D36|UniqueId=\FYQSFHEG\NKKMSRZU|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter2_1]
@@ -673,7 +675,7 @@ UniqueId=CA130F8F-DB15-4303-A03F-5DC6D85922CA
 Description=PS1-10
 AllowFabrication=1
 ParameterCount=1
-VariationCount=155
+VariationCount=157
 Variation1=Designator=R125|UniqueId=\JMGMUPPD\LLKYSQGY|Kind=1|AlternatePart=
 Variation2=Designator=R127|UniqueId=\JMGMUPPD\PBGMLGJG|Kind=1|AlternatePart=
 Variation3=Designator=C62|UniqueId=\JMGMUPPD\FRFCLZXL|Kind=1|AlternatePart=
@@ -915,6 +917,8 @@ Variation152=Designator=C83|UniqueId=\ODRUASON\JETTDBAM|Kind=1|AlternatePart=
 Variation153=Designator=R198|UniqueId=\ODRUASON\OPBTZFWO|Kind=1|AlternatePart=
 Variation154=Designator=R199|UniqueId=\ODRUASON\LIFMJONC|Kind=1|AlternatePart=
 Variation155=Designator=C80|UniqueId=\ODRUASON\ENVNZLJP|Kind=1|AlternatePart=
+Variation156=Designator=D35|UniqueId=\FYQSFHEG\QCCDFSHI|Kind=1|AlternatePart=
+Variation157=Designator=D36|UniqueId=\FYQSFHEG\NKKMSRZU|Kind=1|AlternatePart=
 ParamVariationCount=43
 
 [Parameter3_1]
@@ -939,7 +943,7 @@ Value=B
 
 [Parameter3]
 Name=Index_Sub
-Value=A
+Value=B
 
 [Parameter4]
 Name=Layout_Designer
