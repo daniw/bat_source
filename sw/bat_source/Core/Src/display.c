@@ -209,7 +209,7 @@ static void update_active_output(statemachine_modes_t mode, uint8_t output_activ
 /* ---------------------------------------------------------------------- */
 
 #define PASSIVE_VALUE_CHARS  6  /* fixed width of "%3d.%02d" */
-#define PASSIVE_GAP_PX       12
+#define PASSIVE_GAP_PX       0
 
 static int16_t passive_readout_x;
 static int16_t passive_readout_y;

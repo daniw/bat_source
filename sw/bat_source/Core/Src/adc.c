@@ -1001,24 +1001,11 @@ void adc_configure_mode(statemachine_modes_t mode) {
 
 		break;
 	case STATEMACHINE_MODE_CHARGE:
-		  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
-		  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
-		  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_2CYCLES_5;
-		  sConfigInjected.InjectedSingleDiff = ADC_SINGLE_ENDED;
-		  sConfigInjected.InjectedOffsetNumber = ADC_OFFSET_NONE;
-		  sConfigInjected.InjectedOffset = 0;
-		  sConfigInjected.InjectedNbrOfConversion = 1;
-		  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-		  sConfigInjected.AutoInjectedConv = DISABLE;
-		  sConfigInjected.QueueInjectedContext = DISABLE;
-		  sConfigInjected.ExternalTrigInjecConv = ADC_TRIGGER_HRTIM_SEK;
-		  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONV_EDGE_RISING;
-		  sConfigInjected.InjecOversamplingMode = DISABLE;
-		  if (HAL_ADCEx_InjectedConfigChannel(&hadc5, &sConfigInjected) != HAL_OK)
-		  {
-		    Error_Handler();
-		  }
-		break;
+		// Charging reuses ctrl_main_ctrl_current() - the same PRIM-driven
+		// current control loop as 10A_OUT - so it needs the identical ADC
+		// trigger setup, not a separate injected channel (an earlier,
+		// incomplete stub set up an unused injected channel here without
+		// ever configuring hadc1-4's trigger source at all).
 	case STATEMACHINE_MODE_10A_OUT:
 		hadc1.Init.ExternalTrigConv     = ADC_TRIGGER_HRTIM_PRIM;
 		hadc2.Init.ExternalTrigConv     = ADC_TRIGGER_HRTIM_PRIM;

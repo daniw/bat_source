@@ -10,6 +10,7 @@
 
 #include "ctrl_PID_control.h"
 #include "adc.h"
+#include "statemachine.h"
 
 typedef enum {
 	CTRL_MODE_OFF,
@@ -36,6 +37,7 @@ void ctrl_main_init(void);
 void ctrl_main_start_ctrl(ctrl_mode_t mode);
 void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data);
 void ctrl_main_stop_control(void);
+ctrl_mode_t statemachine_mode_to_ctrl_mode(statemachine_modes_t mode);
 
 
 #endif /* INC_CTRL_MAIN_H_ */

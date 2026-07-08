@@ -15,6 +15,7 @@ lp581x_handle hbacklight;
 
 #define BACKLIGHT_CURRENT_MIN 20  /* 2.0 mA floor used by ui_ctrl_Dim() */
 #define BACKLIGHT_CURRENT_MAX 400 /* 40.0 mA ceiling, matches cmd_setBacklight's cap */
+#define BACKLIGHT_LUX_MAX 50000
 
 static uint16_t backlight_current_x0_1mA = BACKLIGHT_CURRENT_MIN;
 
@@ -51,11 +52,11 @@ void ui_ctrl_Dim(void) {
 	// brightness in daylight. Bounds match cmd_setBacklight's 40mA (400) cap.
 	if (lux < 10)
 		current = BACKLIGHT_CURRENT_MIN;
-	else if (lux > 2000)
+	else if (lux > BACKLIGHT_LUX_MAX)
 		current = BACKLIGHT_CURRENT_MAX;
 	else
-		current = (uint16_t) (BACKLIGHT_CURRENT_MIN
-				+ (lux * (BACKLIGHT_CURRENT_MAX - BACKLIGHT_CURRENT_MIN)) / 2000);
+		current =  (uint16_t) 0.9*current +  0.1*(BACKLIGHT_CURRENT_MIN
+				+ (lux * (BACKLIGHT_CURRENT_MAX - BACKLIGHT_CURRENT_MIN)) / BACKLIGHT_LUX_MAX);
 
 	backlight_current_x0_1mA = current;
 	for (uint8_t i = 0; i < 4; i++)
@@ -74,7 +75,7 @@ void ui_ctrl_step(void) {
 	// second rather than every tick.
 	static uint8_t tick = 0;
 
-	if (++tick >= 10) {
+	if (++tick >= 5) {
 		tick = 0;
 		ui_ctrl_Dim();
 	}
