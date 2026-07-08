@@ -55,6 +55,7 @@ void statemachine_step(void) {
 	uint8_t temp;
 
 	adc_convert_data();
+	ui_ctrl_step();
 
 	// Handle Buttons press
 	if (input_btn_ok())

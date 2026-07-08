@@ -20,6 +20,7 @@
 #include "bq76905.h"
 #include "aux_io_ctrl.h"
 #include "ui_ctrl.h"
+#include "icon_store.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -40,6 +41,7 @@ static char text[48];
 #define FOOTER_H      24
 #define FOOTER_Y      (LCD_HEIGHT - FOOTER_H)
 
+#define FONT_HUGE     FONT_48X94
 #define FONT_BIG      FONT_32X53
 #define FONT_MED      FONT_16X26
 #define FONT_SMALL    FONT_12X16
@@ -98,19 +100,47 @@ static uint8_t wrap_index(int idx) {
 	return (uint8_t) m;
 }
 
+/* icon_seeds[]/the flash icon store are indexed in exactly the same order as
+ * menu_order[] (see menu.c / icon_seed_data.c), so a carousel position's
+ * index doubles as its icon_id -- no separate mapping table needed.
+ *
+ * Bitmap icons are drawn at a fixed size regardless of position; the
+ * selected one is distinguished by an accent-colored ring instead of being
+ * physically larger (bitmaps don't scale as cleanly as the procedural
+ * fallback icons do). If the flash store isn't available/seeded, falls back
+ * to the original procedurally-drawn vector icon, which *does* still scale
+ * with `selected`. */
+static void draw_menu_icon(uint8_t icon_id, const menu_entry_t *entry, int16_t cx,
+		int16_t cy, UG_COLOR color, uint8_t selected) {
+	static uint16_t pixel_buf[ICON_STORE_ICON_WIDTH * ICON_STORE_ICON_HEIGHT];
+
+	if (icon_store_available()) {
+		UG_BMP bmp = icon_store_load(icon_id, pixel_buf);
+		if (bmp.width != 0) {
+			LCD_DrawImage(cx - bmp.width / 2, cy - bmp.height / 2, &bmp);
+			if (selected)
+				UG_DrawCircle(cx, cy, bmp.width / 2 + 4, color);
+			return;
+		}
+	}
+	entry->draw_icon(cx, cy, selected ? 28 : 16, color);
+}
+
 void display_show_idle(uint8_t menu_index) {
-	const menu_entry_t *prev = menu_entry_at(wrap_index((int) menu_index - 1));
+	uint8_t prev_idx = wrap_index((int) menu_index - 1);
+	uint8_t next_idx = wrap_index((int) menu_index + 1);
+	const menu_entry_t *prev = menu_entry_at(prev_idx);
 	const menu_entry_t *cur = menu_entry_at(menu_index);
-	const menu_entry_t *next = menu_entry_at(wrap_index((int) menu_index + 1));
+	const menu_entry_t *next = menu_entry_at(next_idx);
 	int16_t cy = STATUS_H + (FOOTER_Y - STATUS_H) / 2 - 10;
 
 	UG_FillFrame(0, STATUS_H, LCD_WIDTH - 1, FOOTER_Y - 1, C_BLACK);
 	draw_status_bar("BatSource", C_SILVER);
-	draw_footer("OK: Select", "ESC: Shutdown");
+	draw_footer("ESC: Shutdown", "OK: Select");
 
-	prev->draw_icon(LCD_WIDTH / 2 - 100, cy, 16, C_DIM_GRAY);
-	next->draw_icon(LCD_WIDTH / 2 + 100, cy, 16, C_DIM_GRAY);
-	cur->draw_icon(LCD_WIDTH / 2, cy, 28, cur->accent);
+	draw_menu_icon(prev_idx, prev, LCD_WIDTH / 2 - 100, cy, C_DIM_GRAY, 0);
+	draw_menu_icon(next_idx, next, LCD_WIDTH / 2 + 100, cy, C_DIM_GRAY, 0);
+	draw_menu_icon(menu_index, cur, LCD_WIDTH / 2, cy, cur->accent, 1);
 
 	strncpy(text, menu_name_for_mode(cur->mode), sizeof(text) - 1);
 	text[sizeof(text) - 1] = 0;
@@ -135,7 +165,7 @@ static void enter_active_output(statemachine_modes_t mode, const char *big_unit,
 
 	draw_status_bar(menu_name_for_mode(mode), entry->accent);
 	draw_output_border(entry->accent, 0);
-	draw_footer("Hold OUT to enable", "ESC: Back");
+	draw_footer("ESC: Back", "Hold OUT to enable");
 
 	LCD_PutStr(LCD_WIDTH / 2 + 70, BIG_Y + 10, (char*) big_unit, FONT_SMALL,
 			C_WHITE, C_BLACK);
@@ -174,23 +204,41 @@ static void update_active_output(statemachine_modes_t mode, uint8_t output_activ
 
 /* ---------------------------------------------------------------------- */
 /* Passive-readout template (Voltmeter / Ampmeter): big value only.        */
+/* Value + unit are centered as a group in the output window, since this   */
+/* template has no secondary/setpoint fields competing for space.          */
 /* ---------------------------------------------------------------------- */
+
+#define PASSIVE_VALUE_CHARS  6  /* fixed width of "%3d.%02d" */
+#define PASSIVE_GAP_PX       12
+
+static int16_t passive_readout_x;
+static int16_t passive_readout_y;
 
 static void enter_passive_readout(statemachine_modes_t mode, const char *unit) {
 	const menu_entry_t *entry = menu_entry_for_mode(mode);
+	int16_t value_w = PASSIVE_VALUE_CHARS * UG_GetFontWidth(FONT_HUGE);
+	int16_t unit_w = (int16_t) (strlen(unit) * UG_GetFontWidth(FONT_BIG));
+	int16_t total_w = value_w + PASSIVE_GAP_PX + unit_w;
+	int16_t value_h = UG_GetFontHeight(FONT_HUGE);
 
 	draw_status_bar(menu_name_for_mode(mode), entry->accent);
 	draw_output_border(entry->accent, 1);
 	draw_footer("ESC: Back", 0);
-	LCD_PutStr(LCD_WIDTH / 2 + 70, BIG_Y + 10, (char*) unit, FONT_SMALL,
-			C_WHITE, C_BLACK);
+
+	passive_readout_x = (LCD_WIDTH - total_w) / 2;
+	passive_readout_y = STATUS_H + ((FOOTER_Y - STATUS_H) - value_h) / 2;
+
+	LCD_PutStr(passive_readout_x + value_w + PASSIVE_GAP_PX,
+			passive_readout_y + (value_h - UG_GetFontHeight(FONT_BIG)) / 2,
+			(char*) unit, FONT_BIG, C_WHITE, C_BLACK);
 }
 
 static void update_passive_readout(int32_t value_x100) {
 	update_status_bar();
 	sprintf(text, "%3d.%02d", (int) (value_x100 / 100),
 			(int) ((value_x100 < 0 ? -value_x100 : value_x100) % 100));
-	LCD_PutStr(16, BIG_Y, text, FONT_BIG, C_WHITE, C_BLACK);
+	LCD_PutStr(passive_readout_x, passive_readout_y, text, FONT_HUGE, C_WHITE,
+			C_BLACK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -201,23 +249,29 @@ static void enter_resistance(statemachine_modes_t mode) {
 	const menu_entry_t *entry = menu_entry_for_mode(mode);
 	const char *excitation =
 			(mode == STATEMACHINE_MODE_RESISTANCE_1A) ? "I = 1.000 A" : "I = 1.000 mA";
+	const char *unit = (mode == STATEMACHINE_MODE_RESISTANCE_1A) ? "mOhm" : "Ohm";
 
 	draw_status_bar(menu_name_for_mode(mode), entry->accent);
 	draw_output_border(entry->accent, 1);
 	draw_footer("ESC: Back", 0);
 	LCD_PutStr(16, SECOND_Y, (char*) excitation, FONT_TINY, C_WHITE_63,
 			C_BLACK);
-	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, "mOhm", FONT_SMALL, C_WHITE,
-			C_BLACK);
+	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, (char*) unit, FONT_SMALL,
+			C_WHITE, C_BLACK);
 }
 
-static void update_resistance(void) {
+static void update_resistance(statemachine_modes_t mode) {
 	update_status_bar();
-	if (adc_data.r_mOhmx10 == UINT16_MAX) {
+	if (adc_data.r_mOhmx10 == UINT32_MAX) {
 		sprintf(text, "OVER ");
+	} else if (mode == STATEMACHINE_MODE_RESISTANCE_1A) {
+		/* Milliohmmeter: r_mOhmx10 is already mOhm*10. */
+		sprintf(text, "%4u.%01u", (unsigned) (adc_data.r_mOhmx10 / 10),
+				(unsigned) (adc_data.r_mOhmx10 % 10));
 	} else {
-		sprintf(text, "%4u.%01u", adc_data.r_mOhmx10 / 10,
-				adc_data.r_mOhmx10 % 10);
+		/* Ohmmeter: reformat the same field as Ohms (mOhm/1000), one decimal digit. */
+		uint32_t ohm_x10 = adc_data.r_mOhmx10 / 1000;
+		sprintf(text, "%4u.%01u", (unsigned) (ohm_x10 / 10), (unsigned) (ohm_x10 % 10));
 	}
 	LCD_PutStr(16, BIG_Y, text, FONT_BIG, C_WHITE, C_BLACK);
 
@@ -234,7 +288,7 @@ static void enter_isometer(void) {
 
 	draw_status_bar("Isolation Test", entry->accent);
 	draw_output_border(entry->accent, 1);
-	draw_footer("Encoder: test V", "ESC: Back");
+	draw_footer("ESC: Back", "Encoder: test V");
 	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, "Mohm", FONT_SMALL, C_WHITE,
 			C_BLACK);
 }
@@ -269,7 +323,7 @@ static void enter_charge(void) {
 
 	draw_status_bar("Charge", entry->accent);
 	draw_output_border(entry->accent, 0);
-	draw_footer("OK: Start/Stop", "ESC: Back");
+	draw_footer("ESC: Back", "OK: Start/Stop");
 	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, "V", FONT_SMALL, C_WHITE,
 			C_BLACK);
 }
@@ -347,7 +401,7 @@ void display_update_mode(statemachine_modes_t mode, uint8_t output_active) {
 		break;
 	case STATEMACHINE_MODE_RESISTANCE_1A:
 	case STATEMACHINE_MODE_RESISTANCE_1mA:
-		update_resistance();
+		update_resistance(mode);
 		break;
 	case STATEMACHINE_MODE_ISOMETER:
 		update_isometer();
@@ -380,7 +434,7 @@ static const char *const SETTINGS_ITEMS[STATEMACHINE_SETTINGS_MODE_LENGTH] = {
 void display_show_settings_list(uint8_t submenu_index) {
 	UG_FillFrame(0, STATUS_H, LCD_WIDTH - 1, FOOTER_Y - 1, C_BLACK);
 	draw_status_bar("Settings", C_SILVER);
-	draw_footer("OK: Open", "ESC: Back");
+	draw_footer("ESC: Back", "OK: Open");
 
 	for (int i = STATEMACHINE_SETTINGS_MODE_BMS; i < STATEMACHINE_SETTINGS_MODE_LENGTH; i++) {
 		int16_t y = STATUS_H + 16 + (i - 1) * 24;
@@ -439,8 +493,8 @@ static void update_settings_bms(void) {
 static void update_settings_display(void) {
 	sprintf(text, "Ambient light: %u lux    ", (unsigned) ui_ctrl_readBrightness());
 	LCD_PutStr(16, STATUS_H + 12, text, FONT_SMALL, C_WHITE, C_BLACK);
-	sprintf(text, "(auto-dimming not yet implemented)");
-	LCD_PutStr(16, STATUS_H + 40, text, FONT_TINY, C_WHITE_63, C_BLACK);
+	sprintf(text, "Display brightness: %u%%    ", (unsigned) ui_ctrl_readBacklightPercent());
+	LCD_PutStr(16, STATUS_H + 40, text, FONT_SMALL, C_WHITE, C_BLACK);
 }
 
 void display_update_settings_detail(uint8_t submenu_index) {

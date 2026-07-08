@@ -13,6 +13,11 @@ opt3004_handle hamb;
 lp581x_handle hled;
 lp581x_handle hbacklight;
 
+#define BACKLIGHT_CURRENT_MIN 20  /* 2.0 mA floor used by ui_ctrl_Dim() */
+#define BACKLIGHT_CURRENT_MAX 400 /* 40.0 mA ceiling, matches cmd_setBacklight's cap */
+
+static uint16_t backlight_current_x0_1mA = BACKLIGHT_CURRENT_MIN;
+
 void ui_ctrl_init(void) {
 	/*
 	 * LED test setup
@@ -37,11 +42,41 @@ void ui_ctrl_init(void) {
 	opt3004_init(&hamb, OPT3004_DEVICE_ADDRESS_GND);
 }
 
-void ui_ctrl_Dim(void){
-	uint32_t brightness;
-	brightness = opt3004_readLux(&hamb);
-	// ToDo: Implement dimming here
-	uint8_t led_current[] = { 0x10, 0x10, 0x10, 0x10 };
-	lp581x_setAnalogDimming(&hled, led_current);
+void ui_ctrl_Dim(void) {
+	uint32_t lux = opt3004_readLux(&hamb) / 100; // readLux() returns centi-lux
+	uint16_t current; // 0.1mA units, same scale as cli.c's setBacklight command
+	uint8_t backlight_currents[4];
+
+	// Linear-map ambient lux to backlight current: dim in the dark, full
+	// brightness in daylight. Bounds match cmd_setBacklight's 40mA (400) cap.
+	if (lux < 10)
+		current = BACKLIGHT_CURRENT_MIN;
+	else if (lux > 2000)
+		current = BACKLIGHT_CURRENT_MAX;
+	else
+		current = (uint16_t) (BACKLIGHT_CURRENT_MIN
+				+ (lux * (BACKLIGHT_CURRENT_MAX - BACKLIGHT_CURRENT_MIN)) / 2000);
+
+	backlight_current_x0_1mA = current;
+	for (uint8_t i = 0; i < 4; i++)
+		backlight_currents[i] = (uint8_t) (current / 2);
+	lp581x_setAnalogDimming(&hbacklight, backlight_currents);
+}
+
+uint8_t ui_ctrl_readBacklightPercent(void) {
+	return (uint8_t) (((uint32_t) (backlight_current_x0_1mA - BACKLIGHT_CURRENT_MIN) * 100)
+			/ (BACKLIGHT_CURRENT_MAX - BACKLIGHT_CURRENT_MIN));
+}
+
+void ui_ctrl_step(void) {
+	// ui_ctrl_Dim() does an I2C transaction on the shared I2C4 bus; called
+	// from statemachine_step() (100ms tick), throttle it to roughly once a
+	// second rather than every tick.
+	static uint8_t tick = 0;
+
+	if (++tick >= 10) {
+		tick = 0;
+		ui_ctrl_Dim();
+	}
 }
 

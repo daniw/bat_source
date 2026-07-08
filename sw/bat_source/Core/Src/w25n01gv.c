@@ -309,7 +309,7 @@ w25n01gv_status_t w25n01gv_write(w25n01gv_handle *hw25n01gv, uint8_t *data, uint
 		column_addr = W25N01GV_ADDR_TO_COLUMN_ADDR(address);
 		write_size = (column_addr + size >= W25N01GV_PAGE_SIZE) ? W25N01GV_PAGE_SIZE - column_addr : size;
 
-		printf("Writing data to external flash\n");
+		printf("Writing data to external flash\r\n\t");
 		//printf("Page address:   0x%4X\n", page_addr);
 		//printf("Column address: 0x%4X\n", column_addr);
 		//printf("Write size:     0x%4X\n", write_size);

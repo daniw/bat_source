@@ -168,7 +168,9 @@ typedef struct {
 
     //uint16_t reference_poti;
 
-    uint16_t r_mOhmx10;
+    // uint32_t, not uint16_t: at 1mA excitation (Ohmmeter mode) resistances in
+    // the tens-of-ohms range already exceed a uint16_t's ~6.5 Ohm ceiling here.
+    uint32_t r_mOhmx10;
 
     uint16_t vref_mV;
 

@@ -34,6 +34,7 @@
 #include "lcd.h"
 #include "input.h"
 #include "config_store.h"
+#include "icon_store.h"
 
 #ifdef CLI_ENABLED
 
@@ -108,6 +109,7 @@ void cmd_testLCD(void);
 void cmd_control(void);
 void cmd_setADCCal(void);
 void cmd_setSerial(void);
+void cmd_flashIcons(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -139,7 +141,8 @@ void (*cmd_func[])(void) = {
 	cmd_testLCD,
 	cmd_control,
 	cmd_setADCCal,
-	cmd_setSerial
+	cmd_setSerial,
+	cmd_flashIcons
 };
 
 // List of command names
@@ -172,7 +175,8 @@ const char *cmd_str[] = {
 		"testLCD",
 		"control",
 		"setADCCal",
-		"setSerial"
+		"setSerial",
+		"flashIcons"
 };
 
 // List of command names including arguments
@@ -205,7 +209,8 @@ const char *cmd_arg_str[] = {
 		"testLCD",
 		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit",
 		"setADCCal [channel: 0=V_TERM,1=I_OUT,2=I_ISO] [offset] [gain]",
-		"setSerial [serial number]"
+		"setSerial [serial number]",
+		"flashIcons"
 };
 
 int cmd_index;
@@ -1469,6 +1474,18 @@ void cmd_control(void) {
 	cli_printf(
 			"\r\nKeyboard control mode.\r\n"
 			"  Arrows = encoder   Enter = OK   Esc = ESC   Space = OUT (toggle)   q = quit\r\n");
+}
+
+/**
+ * (Re)provisions the menu icon store on the QSPI flash from the compiled-in
+ * seed artwork (icon_seed_data.c). Erases and rewrites the whole store.
+ */
+void cmd_flashIcons(void) {
+	if (icon_store_flash_seed() == 0) {
+		printf("Icon store flashed OK.\r\n");
+	} else {
+		printf("Icon store flash FAILED.\r\n");
+	}
 }
 
 #endif

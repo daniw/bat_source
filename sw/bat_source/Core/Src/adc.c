@@ -1057,6 +1057,11 @@ void adc_convert_fast_data(void){
 	adc_data.converted.i_out  = (adc_data.raw.i_out  - adc_data.i_out_offset ) * adc_data.i_out_gain;
 	adc_data.converted.i_iso  = (adc_data.raw.i_iso  - adc_data.i_iso_offset ) * adc_data.i_iso_gain;
 	adc_data.converted.v_term_ext_mv = adc_data.ext_adc_data[0] * ADC_EXT_VTERM_GAIN_MV;
+	// v_term_ext_mv_filt was previously never assigned (the only write to it was
+	// inside a commented-out legacy callback using a pre-refactor field name),
+	// so Voltmeter/60V readouts that display this field always read zero.
+	adc_data.converted.v_term_ext_mv_filt = (int32_t) (0.9f * adc_data.converted.v_term_ext_mv_filt
+			+ 0.1f * adc_data.converted.v_term_ext_mv);
 	adc_data.converted.i_out_ext_mA  = adc_data.ext_adc_data[1] * ADC_EXT_IOUT_GAIN_mA;
 	adc_data.converted.v_sens_ext_uv = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
 	adc_data.converted.i_iso_ext_uA  = adc_data.ext_adc_data[3] * ADC_EXT_IISO_GAIN_UA;
@@ -1072,7 +1077,7 @@ void adc_convert_data(void){
 		adc_data.r_mOhmx10 = 10*adc_data.converted.v_sens_ext_uv / adc_data.converted.i_out_ext_mA ;
 	}
 	else {
-		adc_data.r_mOhmx10 = UINT16_MAX;
+		adc_data.r_mOhmx10 = UINT32_MAX;
 	}
 
 	// Calculate / Estimate Temperatures
