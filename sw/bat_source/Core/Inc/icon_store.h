@@ -13,9 +13,19 @@
 #include "stdint.h"
 #include "ugui.h"
 
+#define ICON_SIZE_64 64
+#define ICON_SIZE_96 96
+
+/* Compile mask: pick which seeded icon resolution icon_seed_data.c builds
+ * and the store/carousel use. Override with -DICON_STORE_ICON_SIZE=... on
+ * the command line if desired; defaults to 64x64 otherwise. */
+#ifndef ICON_STORE_ICON_SIZE
+#define ICON_STORE_ICON_SIZE ICON_SIZE_96
+#endif
+
 #define ICON_STORE_ICON_COUNT  9
-#define ICON_STORE_ICON_WIDTH  48
-#define ICON_STORE_ICON_HEIGHT 48
+#define ICON_STORE_ICON_WIDTH  ICON_STORE_ICON_SIZE
+#define ICON_STORE_ICON_HEIGHT ICON_STORE_ICON_SIZE
 
 /* Reads and validates the store's header from flash. Call once, after
  * w25n01gv_init(). Safe to call even if the flash isn't present/seeded yet --

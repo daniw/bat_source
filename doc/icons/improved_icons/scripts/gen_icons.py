@@ -70,10 +70,8 @@ def current_source_icon(color, label):
 
 def isolation_icon(color):
     body = badge_ring(color)
-    bolt = "M 140 62 L 108 132 L 128 132 L 112 190 L 158 118 L 134 118 Z"
+    bolt = "M 143 45.5 L 103 133 L 128 133 L 108 205.5 L 165.5 115.5 L 135.5 115.5 Z"
     body += f'<path d="{bolt}" fill="{color}"/>'
-    for i, (w, y) in enumerate([(46, 208), (30, 218), (16, 226)]):
-        body += f'<line x1="{128-w/2}" y1="{y}" x2="{128+w/2}" y2="{y}" stroke="{color}" stroke-width="5" stroke-linecap="round"/>'
     return body
 
 def charge_icon(color):
@@ -86,12 +84,20 @@ def charge_icon(color):
     body += f'<path d="{bolt}" fill="#000000" stroke="{color}" stroke-width="3" stroke-linejoin="round"/>'
     return body
 
-def settings_icon(color):
+def gear_icon(color):
+    cx, cy = 128, 128
+    r_out, r_in = 50, 34
+    ring_r = (r_out + r_in) / 2
+    ring_w = r_out - r_in
     body = badge_ring(color)
-    body += f'<line x1="92" y1="176" x2="150" y2="118" stroke="{color}" stroke-width="18" stroke-linecap="round"/>'
-    body += f'<path d="{arc_path(168, 100, 26, 55, 280)}" fill="none" stroke="{color}" stroke-width="15" stroke-linecap="round"/>'
-    body += f'<circle cx="92" cy="176" r="17" fill="none" stroke="{color}" stroke-width="12"/>'
-    body += f'<circle cx="92" cy="176" r="6" fill="#000000"/>'
+    body += f'<circle cx="{cx}" cy="{cy}" r="{ring_r}" fill="none" stroke="{color}" stroke-width="{ring_w}"/>'
+    teeth = 8
+    tooth_r = 10
+    for i in range(teeth):
+        deg = i * (360 / teeth)
+        x, y = pt(cx, cy, r_out + 2, deg)
+        body += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{tooth_r}" fill="{color}"/>'
+    body += f'<circle cx="{cx}" cy="{cy}" r="16" fill="#000000"/>'
     return body
 
 ICONS = {
@@ -103,7 +109,7 @@ ICONS = {
     'voltmeter':     meter_icon(COLORS['voltmeter'], 'V'),
     'ampmeter':      meter_icon(COLORS['ampmeter'], 'A'),
     'charge':        charge_icon(COLORS['charge']),
-    'settings':      settings_icon(COLORS['settings']),
+    'settings':      gear_icon(COLORS['settings']),
 }
 
 if __name__ == '__main__':

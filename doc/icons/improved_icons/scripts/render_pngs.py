@@ -1,6 +1,7 @@
 """
-Rasterizes ../svg/*.svg into ../png/<name>_256.png and <name>_64.png via
-Inkscape's CLI, then rebuilds ../contact_sheet.png (3x3 preview grid).
+Rasterizes ../svg/*.svg into ../png/<name>_256.png, <name>_96.png and
+<name>_64.png via Inkscape's CLI, then rebuilds ../contact_sheet.png (3x3
+preview grid, from the 256px renders).
 
 Requires: inkscape (>=1.0, uses --export-type/--export-filename), Pillow.
 Usage: python3 render_pngs.py
@@ -44,6 +45,7 @@ if __name__ == '__main__':
         svg_path = os.path.join(SVG_DIR, f'{name}.svg')
         render(svg_path, os.path.join(PNG_DIR, f'{name}_256.png'), 256)
         render(svg_path, os.path.join(PNG_DIR, f'{name}_64.png'), 64)
+        render(svg_path, os.path.join(PNG_DIR, f'{name}_96.png'), 96)
         print('rendered', name)
     build_contact_sheet()
     print('wrote contact_sheet.png')
