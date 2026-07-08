@@ -75,6 +75,10 @@ extern UG_FONT FONT_24X40[];
 extern UG_FONT FONT_32X53[];
 #endif
 
+#ifdef UGUI_USE_FONT_40X78
+extern UG_FONT FONT_40X78[];
+#endif
+
 #ifdef UGUI_USE_FONT_48X94
 extern UG_FONT FONT_48X94[];
 #endif

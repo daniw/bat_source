@@ -95,10 +95,10 @@ void statemachine_step(void) {
 		// CHARGE is auto-entered, not menu/button-selected: whenever idle and
 		// a 15-25V supply is detected at the output with no BMS fault
 		// latched, start charging on our own.
-		if (adc_data.converted.v_term >= 15000 && adc_data.converted.v_term <= 25000
+		/*if (adc_data.converted.v_term >= 15000 && adc_data.converted.v_term <= 25000
 				&& !(bms.SafetyRegisters.safetyStatusA || bms.SafetyRegisters.safetyStatusB)) {
 			statemachine_switchfromIdle(STATEMACHINE_MODE_CHARGE);
-		}
+		}*/
 		break;
 
 	case STATEMACHINE_MODE_60V_OUT:

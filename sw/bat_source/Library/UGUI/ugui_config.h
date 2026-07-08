@@ -39,10 +39,13 @@
 #define UGUI_USE_FONT_22X36
 #define UGUI_USE_FONT_24X40
 #define UGUI_USE_FONT_32X53
-/* FONT_48X94 (123KB) / FONT_64X124 (217KB): full 224-char Latin-1 sets at
- * large pixel size. Currently unused -- only ~132KB of flash is free, so
- * referencing either one (let alone both) will overflow the 512KB FLASH
- * region at link time. Shrink the character range before wiring one in. */
+/* FONT_40X78 (85KB) / FONT_48X94 (123KB) / FONT_64X124 (217KB): full 224-char
+ * Latin-1 sets at large pixel size. Currently unused -- only ~132KB of flash
+ * is free, so referencing FONT_40X78 alone just fits, but any combination
+ * with FONT_48X94/FONT_64X124 (let alone all three) will overflow the 512KB
+ * FLASH region at link time. Shrink the character range before wiring more
+ * than one of these in at once. */
+#define UGUI_USE_FONT_40X78
 #define UGUI_USE_FONT_48X94
 #define UGUI_USE_FONT_64X124
 

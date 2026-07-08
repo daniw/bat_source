@@ -41,7 +41,7 @@ static char text[48];
 #define FOOTER_H      24
 #define FOOTER_Y      (LCD_HEIGHT - FOOTER_H)
 
-#define FONT_HUGE     FONT_48X94
+#define FONT_HUGE     FONT_40X78
 #define FONT_BIG      FONT_32X53
 #define FONT_MED      FONT_16X26
 #define FONT_SMALL    FONT_12X16
@@ -209,7 +209,7 @@ static void update_active_output(statemachine_modes_t mode, uint8_t output_activ
 /* ---------------------------------------------------------------------- */
 
 #define PASSIVE_VALUE_CHARS  6  /* fixed width of "%3d.%02d" */
-#define PASSIVE_GAP_PX       0
+#define PASSIVE_GAP_PX       12
 
 static int16_t passive_readout_x;
 static int16_t passive_readout_y;
@@ -491,7 +491,7 @@ static void update_settings_bms(void) {
 }
 
 static void update_settings_display(void) {
-	sprintf(text, "Ambient light: %u lux    ", (unsigned) ui_ctrl_readBrightness());
+	sprintf(text, "Ambient light: %u clux    ", (unsigned) ui_ctrl_readBrightness());
 	LCD_PutStr(16, STATUS_H + 12, text, FONT_SMALL, C_WHITE, C_BLACK);
 	sprintf(text, "Display brightness: %u%%    ", (unsigned) ui_ctrl_readBacklightPercent());
 	LCD_PutStr(16, STATUS_H + 40, text, FONT_SMALL, C_WHITE, C_BLACK);
