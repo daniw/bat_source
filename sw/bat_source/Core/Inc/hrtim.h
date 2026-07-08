@@ -51,6 +51,8 @@ void hrtim_set_freq(uint8_t channel, uint32_t freq);
 void hrtim_set_duty(uint8_t channel, float value);
 void hrtim_enable(uint8_t channel);
 void hrtim_disable(uint8_t channel);
+void hrtim_sek_force_short(void);
+void hrtim_sek_restore(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

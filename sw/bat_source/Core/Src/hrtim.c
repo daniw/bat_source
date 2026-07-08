@@ -407,4 +407,73 @@ void hrtim_disable(uint8_t channel) {
 		break;
 	}
 }
+
+static uint8_t hrtim_sek_shorted = 0;
+
+/**
+ * @brief Forces the secondary-side (SEK/SEC) half-bridge into a deliberate
+ *        shoot-through (both switches driven ON simultaneously) for
+ *        AMPMETER mode, so current can flow through the shunt without any
+ *        converter switching action in the way. Detaches
+ *        CONV_CTRL_SEC_L_Pin/CONV_CTRL_SEC_H_Pin from HRTIM's alternate
+ *        function and drives them as plain GPIO instead, since
+ *        hrtim_set_duty()'s clamp (0x60-0xFFDF) can't reach a true static
+ *        0%/100% duty.
+ *
+ *        CALLER MUST confirm the output is at ~0V before calling this -
+ *        shoot-through is only safe here because there's no significant
+ *        voltage across the half-bridge to short. Timer E's internal
+ *        counter keeps running (only the physical output pins are
+ *        detached), so ADC triggers tied to it are unaffected.
+ *
+ *        Which logic level is "ON" for these gate signals is not yet
+ *        confirmed from the schematic - verify on the bench with the
+ *        output current-limited/disconnected before trusting this under
+ *        load.
+ * @return none
+ */
+void hrtim_sek_force_short(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+
+	hrtim_disable(HRTIM_CHANNEL_SEK);
+
+	GPIO_InitStruct.Pin = CONV_CTRL_SEC_L_Pin | CONV_CTRL_SEC_H_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	// Drive both gates to the same ON level - deliberate shoot-through.
+	// TODO: confirm ON polarity on the bench before relying on this under load.
+	HAL_GPIO_WritePin(CONV_CTRL_SEC_L_GPIO_Port, CONV_CTRL_SEC_L_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(CONV_CTRL_SEC_H_GPIO_Port, CONV_CTRL_SEC_H_Pin, GPIO_PIN_SET);
+
+	hrtim_sek_shorted = 1;
+}
+
+/**
+ * @brief Reverses hrtim_sek_force_short(): restores
+ *        CONV_CTRL_SEC_L_Pin/CONV_CTRL_SEC_H_Pin to HRTIM's alternate
+ *        function (mirroring HAL_HRTIM_MspPostInit's original
+ *        configuration exactly) and re-enables the SEK output. Safe to
+ *        call even if the pins are already in their normal state.
+ * @return none
+ */
+void hrtim_sek_restore(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+
+	if (!hrtim_sek_shorted)
+		return;
+
+	GPIO_InitStruct.Pin = CONV_CTRL_SEC_L_Pin | CONV_CTRL_SEC_H_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF3_HRTIM1;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	hrtim_enable(HRTIM_CHANNEL_SEK);
+
+	hrtim_sek_shorted = 0;
+}
 /* USER CODE END 1 */

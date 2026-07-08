@@ -64,6 +64,36 @@ void ctrl_main_init(void) {
 
 }
 
+/**
+ * Maps a statemachine_modes_t to its ctrl_mode_t counterpart. The two enums
+ * are positionally identical only up through ISOMETER and diverge after
+ * that (STATEMACHINE_MODE_VOLTMETER=6 vs CTRL_MODE_CHARGE=6) - callers must
+ * go through this instead of passing statemachine_handle.current_mode
+ * directly to ctrl_main_start_ctrl(). Modes with no ctrl_mode_t counterpart
+ * (AMPMETER, VOLTMETER, SETTINGS, SHUTDOWN, IDLE) correctly map to
+ * CTRL_MODE_OFF, since none of them drive the control loop.
+ * @param mode statemachine mode to translate.
+ * @return the matching ctrl_mode_t, or CTRL_MODE_OFF if none applies.
+ */
+ctrl_mode_t statemachine_mode_to_ctrl_mode(statemachine_modes_t mode) {
+	switch (mode) {
+	case STATEMACHINE_MODE_60V_OUT:
+		return CTRL_MODE_60V;
+	case STATEMACHINE_MODE_10A_OUT:
+		return CTRL_MODE_10A;
+	case STATEMACHINE_MODE_RESISTANCE_1A:
+		return CTRL_MODE_RESISTANCE_1A;
+	case STATEMACHINE_MODE_RESISTANCE_1mA:
+		return CTRL_MODE_RESISTANCE_1mA;
+	case STATEMACHINE_MODE_ISOMETER:
+		return CTRL_MODE_ISOMETER;
+	case STATEMACHINE_MODE_CHARGE:
+		return CTRL_MODE_CHARGE;
+	default:
+		return CTRL_MODE_OFF;
+	}
+}
+
 void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 	switch (mode) {
 
@@ -79,6 +109,7 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
 	case CTRL_MODE_10A:
+	case CTRL_MODE_CHARGE:
 		ctrl_pi_voltage_buck.prev_I_action = 0.0;
 		ctrl_pi_current.prev_I_action = 0.0;
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_HIGH);
@@ -125,6 +156,14 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 				adc_data->converted.i_out_ext_mA);
 
 		break;
+	case CTRL_MODE_CHARGE:
+		// CC-then-stop: the end-of-charge/BMS-fault/voltage-removed stop
+		// conditions are checked at the 100ms statemachine tick (BMS data
+		// only refreshes once a second anyway), not here - this just runs
+		// the same constant-current control law 10A_OUT uses.
+		ctrl_main_ctrl_current(adc_data->converted.i_out,
+				adc_data->converted.i_out_ext_mA);
+		break;
 	case CTRL_MODE_ISOMETER:
 		//ctrl_main_ctrl_hv(adc_data->)
 		break;
@@ -148,6 +187,9 @@ void ctrl_main_apply_reference(uint16_t reference_poti_count) {
 		break;
 	case CTRL_MODE_10A:
 		ctrl_main_handle.current_reference_mA = reference_poti_count * 100; // 100mA Auflösung, Max Range 10A
+		break;
+	case CTRL_MODE_CHARGE:
+		ctrl_main_handle.current_reference_mA = CTRL_PARAM_CHARGE_CURRENT_mA;
 		break;
 	case CTRL_MODE_RESISTANCE_1A:
 		ctrl_main_handle.voltage_reference_mV = CTRL_PARAM_IDLE_VOLTAGE_1A_mV;
