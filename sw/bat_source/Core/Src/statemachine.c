@@ -70,12 +70,16 @@ void statemachine_init(void) {
 	statemachine_switchtoIdle();
 }
 
-/* Feeds the live encoder value into ctrl_main's poti_reference so the setpoint
- * tracks the encoder while a mode is running (dial in the value, hold OUT to
- * apply it -- ctrl_main_apply_reference() only takes effect once the control
- * loop is actually running). */
+/* Feeds the live encoder value into ctrl_main's poti_reference and
+ * immediately recomputes the derived reference (voltage/current/iso target)
+ * for whichever mode is currently showing -- this runs every tick regardless
+ * of whether OUT is held, so the reference is already correct and ready the
+ * moment the controller actually starts, not just eventually once the ADC
+ * ISR happens to catch up. */
 static void statemachine_apply_encoder_setpoint(void) {
 	ctrl_main_handle.poti_reference = input_encoder_read();
+	ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(statemachine_handle.current_mode),
+			ctrl_main_handle.poti_reference);
 }
 
 /* Drives the Settings > Calibration sub-UI (see calibration_ui_state above).
@@ -319,6 +323,7 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
+		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;
@@ -329,6 +334,7 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
+		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;
@@ -339,6 +345,7 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(CTRL_MODE_ISOMETER);
+		ctrl_main_apply_reference(CTRL_MODE_ISOMETER, ctrl_main_handle.poti_reference);
 		display_enter_mode(mode);
 		break;
 
@@ -375,6 +382,7 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.output_on = 1;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
+		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;

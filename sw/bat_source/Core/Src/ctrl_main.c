@@ -25,7 +25,6 @@ PID_controller_t ctrl_pi_flyback_current;
 const uint16_t ctrl_main_iso_values[4] = { 125, 250, 500, 1000 };
 
 /******************* Function Prototypes **************************/
-void ctrl_main_apply_reference(uint16_t reference_poti_count);
 void ctrl_main_ctrl_voltage_buck(uint16_t voltage_meas_mV,
 		int16_t voltage_meas_accurate);
 void ctrl_main_ctrl_voltage_boost(uint16_t voltage_meas_mV,
@@ -139,7 +138,6 @@ void ctrl_main_stop_control(void) {
  * Main control task
  */
 void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
-	ctrl_main_apply_reference(ctrl_main_handle.poti_reference);
 	switch (ctrl_main_handle.mode) {
 
 	case CTRL_MODE_60V:
@@ -179,11 +177,16 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 }
 
 /**
- * Apply the reference to the correct reference value depending on the control mode.
+ * Computes the reference value for the given (target) mode from the poti
+ * count. Takes mode explicitly rather than reading ctrl_main_handle.mode, so
+ * it can be called continuously from statemachine.c to keep the reference
+ * live-computed for whichever screen is showing, even before
+ * ctrl_main_start_ctrl() has actually activated the control loop.
+ * @param mode Target control mode to compute the reference for.
  * @param reference_poti_count Reference value of the poti (in count)
  */
-void ctrl_main_apply_reference(uint16_t reference_poti_count) {
-	switch (ctrl_main_handle.mode) {
+void ctrl_main_apply_reference(ctrl_mode_t mode, uint16_t reference_poti_count) {
+	switch (mode) {
 
 	case CTRL_MODE_60V:
 		ctrl_main_handle.voltage_reference_mV = reference_poti_count * 500; // 500mV Auflösung, Max range 63V
