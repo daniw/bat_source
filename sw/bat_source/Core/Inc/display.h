@@ -11,6 +11,7 @@
 
 #include "stdint.h"
 #include "statemachine.h"
+#include "calibration.h"
 
 void display_init(void);
 
@@ -28,5 +29,11 @@ void display_update_mode(statemachine_modes_t mode, uint8_t output_active);
 void display_show_settings_list(uint8_t submenu_index);
 void display_enter_settings_detail(uint8_t submenu_index);
 void display_update_settings_detail(uint8_t submenu_index);
+
+/* Calibration sub-screen (STATEMACHINE_SETTINGS_MODE_CALIBRATION). ui_state:
+ * 0 = channel list, 1 = zero step, 2 = optional gain step (reference_value is
+ * only meaningful/used for ui_state == 2, the encoder-dialed reference). */
+void display_calibration_enter(calibration_channel_t ch, uint8_t ui_state);
+void display_calibration_update(calibration_channel_t ch, uint8_t ui_state, float reference_value);
 
 #endif /* INC_DISPLAY_H_ */

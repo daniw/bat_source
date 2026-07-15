@@ -79,7 +79,7 @@ static void draw_footer(const char *left, const char *right) {
 	if (right != 0) {
 		int16_t w = (int16_t) (strlen(right) * UG_GetFontWidth(FONT_TINY));
 		LCD_PutStr(LCD_WIDTH - 4 - w, FOOTER_Y + 4, (char*) right, FONT_TINY,
-				C_WHITE_63, C_BLACK);
+		C_WHITE_63, C_BLACK);
 	}
 }
 
@@ -110,8 +110,8 @@ static uint8_t wrap_index(int idx) {
  * fallback icons do). If the flash store isn't available/seeded, falls back
  * to the original procedurally-drawn vector icon, which *does* still scale
  * with `selected`. */
-static void draw_menu_icon(uint8_t icon_id, const menu_entry_t *entry, int16_t cx,
-		int16_t cy, UG_COLOR color, uint8_t selected) {
+static void draw_menu_icon(uint8_t icon_id, const menu_entry_t *entry,
+		int16_t cx, int16_t cy, UG_COLOR color, uint8_t selected) {
 	static uint16_t pixel_buf[ICON_STORE_ICON_WIDTH * ICON_STORE_ICON_HEIGHT];
 
 	if (icon_store_available()) {
@@ -138,18 +138,19 @@ void display_show_idle(uint8_t menu_index) {
 	draw_status_bar("BatSource", C_SILVER);
 	draw_footer("ESC: Shutdown", "OK: Select");
 
-	draw_menu_icon(prev_idx, prev, LCD_WIDTH / 2 - 100, cy, C_DIM_GRAY, 0);
-	draw_menu_icon(next_idx, next, LCD_WIDTH / 2 + 100, cy, C_DIM_GRAY, 0);
+	draw_menu_icon(prev_idx, prev, LCD_WIDTH / 2 - 110, cy, C_DIM_GRAY, 0);
+	draw_menu_icon(next_idx, next, LCD_WIDTH / 2 + 110, cy, C_DIM_GRAY, 0);
 	draw_menu_icon(menu_index, cur, LCD_WIDTH / 2, cy, cur->accent, 1);
 
 	strncpy(text, menu_name_for_mode(cur->mode), sizeof(text) - 1);
 	text[sizeof(text) - 1] = 0;
 	{
 		int16_t w = (int16_t) (strlen(text) * UG_GetFontWidth(FONT_SMALL));
-		UG_FillFrame(0, cy + 40, LCD_WIDTH - 1, cy + 40 + UG_GetFontHeight(FONT_SMALL),
+		UG_FillFrame(0, cy + 70, LCD_WIDTH - 1,
+				cy + 70 + UG_GetFontHeight(FONT_SMALL),
 				C_BLACK);
-		LCD_PutStr(LCD_WIDTH / 2 - w / 2, cy + 40, text, FONT_SMALL, C_WHITE,
-				C_BLACK);
+		LCD_PutStr(LCD_WIDTH / 2 - w / 2, cy + 70, text, FONT_SMALL, C_WHITE,
+		C_BLACK);
 	}
 }
 
@@ -168,20 +169,20 @@ static void enter_active_output(statemachine_modes_t mode, const char *big_unit,
 	draw_footer("ESC: Back", "Hold OUT to enable");
 
 	LCD_PutStr(LCD_WIDTH / 2 + 70, BIG_Y + 10, (char*) big_unit, FONT_SMALL,
-			C_WHITE, C_BLACK);
+	C_WHITE, C_BLACK);
 	LCD_PutStr(16, SECOND_Y, (char*) secondary_label, FONT_TINY, C_WHITE_63,
-			C_BLACK);
+	C_BLACK);
 	LCD_PutStr(16, SECOND_Y + 18, (char*) secondary_unit, FONT_TINY, C_WHITE_63,
-			C_BLACK);
+	C_BLACK);
 	LCD_PutStr(LCD_WIDTH - 100, SECOND_Y, "SET", FONT_TINY, C_WHITE_63,
-			C_BLACK);
+	C_BLACK);
 	LCD_PutStr(LCD_WIDTH - 100, SECOND_Y + 18, (char*) setpoint_unit,
-			FONT_TINY, C_WHITE_63, C_BLACK);
+	FONT_TINY, C_WHITE_63, C_BLACK);
 }
 
-static void update_active_output(statemachine_modes_t mode, uint8_t output_active,
-		int32_t big_value_x100, int32_t secondary_value_x1000,
-		uint32_t setpoint_value_x1000) {
+static void update_active_output(statemachine_modes_t mode,
+		uint8_t output_active, int32_t big_value_x100,
+		int32_t secondary_value_x1000, uint32_t setpoint_value_x1000) {
 	const menu_entry_t *entry = menu_entry_for_mode(mode);
 
 	draw_output_border(entry->accent, output_active);
@@ -192,14 +193,14 @@ static void update_active_output(statemachine_modes_t mode, uint8_t output_activ
 	LCD_PutStr(16, BIG_Y, text, FONT_BIG, C_WHITE, C_BLACK);
 
 	sprintf(text, "%3d.%03d", (int) (secondary_value_x1000 / 1000),
-			(int) ((secondary_value_x1000 < 0 ? -secondary_value_x1000 : secondary_value_x1000)
-					% 1000));
+			(int) ((secondary_value_x1000 < 0 ?
+					-secondary_value_x1000 : secondary_value_x1000) % 1000));
 	LCD_PutStr(16, SECOND_Y + 36, text, FONT_SMALL, C_WHITE, C_BLACK);
 
 	sprintf(text, "%3u.%03u", (unsigned) (setpoint_value_x1000 / 1000),
 			(unsigned) (setpoint_value_x1000 % 1000));
 	LCD_PutStr(LCD_WIDTH - 100, SECOND_Y + 36, text, FONT_SMALL, C_WHITE,
-			C_BLACK);
+	C_BLACK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -238,7 +239,7 @@ static void update_passive_readout(int32_t value_x100) {
 	sprintf(text, "%3d.%02d", (int) (value_x100 / 100),
 			(int) ((value_x100 < 0 ? -value_x100 : value_x100) % 100));
 	LCD_PutStr(passive_readout_x, passive_readout_y, text, FONT_HUGE, C_WHITE,
-			C_BLACK);
+	C_BLACK);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -248,21 +249,23 @@ static void update_passive_readout(int32_t value_x100) {
 static void enter_resistance(statemachine_modes_t mode) {
 	const menu_entry_t *entry = menu_entry_for_mode(mode);
 	const char *excitation =
-			(mode == STATEMACHINE_MODE_RESISTANCE_1A) ? "I = 1.000 A" : "I = 1.000 mA";
-	const char *unit = (mode == STATEMACHINE_MODE_RESISTANCE_1A) ? "mOhm" : "Ohm";
+			(mode == STATEMACHINE_MODE_RESISTANCE_1A) ?
+					"I = 1.000 A" : "I = 1.000 mA";
+	const char *unit =
+			(mode == STATEMACHINE_MODE_RESISTANCE_1A) ? "mOhm" : "Ohm";
 
 	draw_status_bar(menu_name_for_mode(mode), entry->accent);
 	draw_output_border(entry->accent, 1);
 	draw_footer("ESC: Back", 0);
 	LCD_PutStr(16, SECOND_Y, (char*) excitation, FONT_TINY, C_WHITE_63,
-			C_BLACK);
+	C_BLACK);
 	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, (char*) unit, FONT_SMALL,
-			C_WHITE, C_BLACK);
+	C_WHITE, C_BLACK);
 }
 
 static void update_resistance(statemachine_modes_t mode) {
 	update_status_bar();
-	if (adc_data.r_mOhmx10 == UINT32_MAX) {
+	if (adc_data.r_mOhmx10 == UINT32_MAX || adc_data.r_Ohmx10 == UINT32_MAX ) {
 		sprintf(text, "OVER ");
 	} else if (mode == STATEMACHINE_MODE_RESISTANCE_1A) {
 		/* Milliohmmeter: r_mOhmx10 is already mOhm*10. */
@@ -270,12 +273,31 @@ static void update_resistance(statemachine_modes_t mode) {
 				(unsigned) (adc_data.r_mOhmx10 % 10));
 	} else {
 		/* Ohmmeter: reformat the same field as Ohms (mOhm/1000), one decimal digit. */
-		uint32_t ohm_x10 = adc_data.r_mOhmx10 / 1000;
-		sprintf(text, "%4u.%01u", (unsigned) (ohm_x10 / 10), (unsigned) (ohm_x10 % 10));
+		uint32_t ohm_x10 = adc_data.r_Ohmx10;
+		sprintf(text, "%4u.%01u", (unsigned) (ohm_x10 / 10),
+				(unsigned) (ohm_x10 % 10));
 	}
 	LCD_PutStr(16, BIG_Y, text, FONT_BIG, C_WHITE, C_BLACK);
+	if (mode == STATEMACHINE_MODE_RESISTANCE_1A) {
+		/* Milliohmmeter: Take V_sense */
+		sprintf(text, "V_sense = %d uV     ",
+				(int) adc_data.converted.v_sens_ext_uv);
+	} else {
+		/* Ohmmeter: take V_term*/
+		sprintf(text, "V_term = %d mV     ",
+				(int) adc_data.converted.v_term_ext_mv);
+	}
+	LCD_PutStr(16, SECOND_Y + 36, text, FONT_TINY, C_WHITE_63, C_BLACK);
 
-	sprintf(text, "V_sense = %d uV     ", (int) adc_data.converted.v_sens_ext_uv);
+	if (mode == STATEMACHINE_MODE_RESISTANCE_1A) {
+		/* Milliohmmeter: Take V_sense */
+		sprintf(text, "I_meas = %d mA    ",
+				(int) adc_data.converted.i_out_ext_mA);
+	} else {
+		/* Ohmmeter: take V_term*/
+		sprintf(text, "I_meas= %d mA     ",
+				(int) adc_data.converted.i_out_ext_mA);
+	}
 	LCD_PutStr(16, SECOND_Y + 18, text, FONT_TINY, C_WHITE_63, C_BLACK);
 }
 
@@ -290,21 +312,24 @@ static void enter_isometer(void) {
 	draw_output_border(entry->accent, 1);
 	draw_footer("ESC: Back", "Encoder: test V");
 	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, "Mohm", FONT_SMALL, C_WHITE,
-			C_BLACK);
+	C_BLACK);
 }
 
 static void update_isometer(void) {
 	update_status_bar();
 
-	sprintf(text, "Test Voltage: %4u V   ", ctrl_main_handle.voltage_iso_reference_V);
+	sprintf(text, "Test Voltage: %4u V   ",
+			ctrl_main_handle.voltage_iso_reference_V);
 	LCD_PutStr(16, SECOND_Y, text, FONT_TINY, C_WHITE_63, C_BLACK);
 
 	if (adc_data.converted.i_iso_ext_uA > 0) {
 		/* R[Mohm] = V / I[uA] (since Mohm = V/uA algebraically); keep one
 		 * decimal digit of precision via a x10 fixed-point intermediate. */
-		int32_t r_megaohm_x10 = (int32_t) ctrl_main_handle.voltage_iso_reference_V
-				* 10 / adc_data.converted.i_iso_ext_uA;
-		sprintf(text, "%3d.%01d", (int) (r_megaohm_x10 / 10), (int) (r_megaohm_x10 % 10));
+		int32_t r_megaohm_x10 =
+				(int32_t) ctrl_main_handle.voltage_iso_reference_V * 10
+						/ adc_data.converted.i_iso_ext_uA;
+		sprintf(text, "%3d.%01d", (int) (r_megaohm_x10 / 10),
+				(int) (r_megaohm_x10 % 10));
 	} else {
 		sprintf(text, " OVER");
 	}
@@ -325,7 +350,7 @@ static void enter_charge(void) {
 	draw_output_border(entry->accent, 0);
 	draw_footer("ESC: Back", "OK: Start/Stop");
 	LCD_PutStr(LCD_WIDTH / 2 + 100, BIG_Y + 10, "V", FONT_SMALL, C_WHITE,
-			C_BLACK);
+	C_BLACK);
 }
 
 static void update_charge(uint8_t output_active) {
@@ -425,23 +450,24 @@ void display_update_mode(statemachine_modes_t mode, uint8_t output_active) {
 /* ---------------------------------------------------------------------- */
 
 static const char *const SETTINGS_ITEMS[STATEMACHINE_SETTINGS_MODE_LENGTH] = {
-	[STATEMACHINE_SETTINGS_MODE_MENU] = "(list)",
-	[STATEMACHINE_SETTINGS_MODE_BMS] = "BMS Diagnostics",
-	[STATEMACHINE_SETTINGS_MODE_DISPLAY] = "Display Brightness",
-	[STATEMACHINE_SETTINGS_MODE_ABOUT] = "About",
-};
+		[STATEMACHINE_SETTINGS_MODE_MENU] = "(list)",
+		[STATEMACHINE_SETTINGS_MODE_BMS] = "BMS Diagnostics",
+		[STATEMACHINE_SETTINGS_MODE_DISPLAY] = "Display Brightness",
+		[STATEMACHINE_SETTINGS_MODE_CALIBRATION] = "Calibration",
+		[STATEMACHINE_SETTINGS_MODE_ABOUT] = "About", };
 
 void display_show_settings_list(uint8_t submenu_index) {
 	UG_FillFrame(0, STATUS_H, LCD_WIDTH - 1, FOOTER_Y - 1, C_BLACK);
 	draw_status_bar("Settings", C_SILVER);
 	draw_footer("ESC: Back", "OK: Open");
 
-	for (int i = STATEMACHINE_SETTINGS_MODE_BMS; i < STATEMACHINE_SETTINGS_MODE_LENGTH; i++) {
+	for (int i = STATEMACHINE_SETTINGS_MODE_BMS;
+			i < STATEMACHINE_SETTINGS_MODE_LENGTH; i++) {
 		int16_t y = STATUS_H + 16 + (i - 1) * 24;
 		uint8_t selected = (i == submenu_index);
 
 		LCD_PutStr(selected ? 26 : 16, y, (char*) SETTINGS_ITEMS[i], FONT_SMALL,
-				C_WHITE, C_BLACK);
+		C_WHITE, C_BLACK);
 		if (selected)
 			LCD_PutStr(6, y, ">", FONT_SMALL, C_WHITE, C_BLACK);
 	}
@@ -466,14 +492,17 @@ void display_enter_settings_detail(uint8_t submenu_index) {
 
 static void update_settings_bms(void) {
 	sprintf(text, "Safety Alert  AB = 0x%04X",
-			(bms.SafetyRegisters.safetyAlertA << 8) | bms.SafetyRegisters.safetyAlertB);
+			(bms.SafetyRegisters.safetyAlertA << 8)
+					| bms.SafetyRegisters.safetyAlertB);
 	LCD_PutStr(16, STATUS_H + 8, text, FONT_TINY, C_WHITE, C_BLACK);
 
 	sprintf(text, "Safety Status AB = 0x%04X",
-			(bms.SafetyRegisters.safetyStatusA << 8) | bms.SafetyRegisters.safetyStatusB);
+			(bms.SafetyRegisters.safetyStatusA << 8)
+					| bms.SafetyRegisters.safetyStatusB);
 	LCD_PutStr(16, STATUS_H + 24, text, FONT_TINY, C_WHITE, C_BLACK);
 
-	sprintf(text, "Cell = %u %u %u %u mV", bms.CellVoltageRegisters.CellVoltages[0],
+	sprintf(text, "Cell = %u %u %u %u mV",
+			bms.CellVoltageRegisters.CellVoltages[0],
 			bms.CellVoltageRegisters.CellVoltages[1],
 			bms.CellVoltageRegisters.CellVoltages[2],
 			bms.CellVoltageRegisters.CellVoltages[3]);
@@ -486,14 +515,17 @@ static void update_settings_bms(void) {
 			(int) (bms.Accumulator.accumulatedCharge & 0xFFFFFFFF));
 	LCD_PutStr(16, STATUS_H + 72, text, FONT_TINY, C_WHITE, C_BLACK);
 
-	sprintf(text, "Passed T = %u s    ", (unsigned) (bms.Accumulator.passedTime / 4));
+	sprintf(text, "Passed T = %u s    ",
+			(unsigned) (bms.Accumulator.passedTime / 4));
 	LCD_PutStr(16, STATUS_H + 88, text, FONT_TINY, C_WHITE, C_BLACK);
 }
 
 static void update_settings_display(void) {
-	sprintf(text, "Ambient light: %u clux    ", (unsigned) ui_ctrl_readBrightness());
+	sprintf(text, "Ambient light: %u clux    ",
+			(unsigned) ui_ctrl_readBrightness());
 	LCD_PutStr(16, STATUS_H + 12, text, FONT_SMALL, C_WHITE, C_BLACK);
-	sprintf(text, "Display brightness: %u%%    ", (unsigned) ui_ctrl_readBacklightPercent());
+	sprintf(text, "Display brightness: %u%%    ",
+			(unsigned) ui_ctrl_readBacklightPercent());
 	LCD_PutStr(16, STATUS_H + 40, text, FONT_SMALL, C_WHITE, C_BLACK);
 }
 
@@ -504,6 +536,78 @@ void display_update_settings_detail(uint8_t submenu_index) {
 		break;
 	case STATEMACHINE_SETTINGS_MODE_DISPLAY:
 		update_settings_display();
+		break;
+	default:
+		break;
+	}
+}
+
+/* ---------------------------------------------------------------------- */
+/* Calibration (Settings > Calibration)                                   */
+/* ---------------------------------------------------------------------- */
+
+static void draw_calibration_live(calibration_channel_t ch, int16_t y) {
+	sprintf(text, "Raw: %-8ld  %ld %s          ", (long) calibration_read_raw(ch),
+			(long) calibration_read_converted(ch), calibration_channel_unit(ch));
+	LCD_PutStr(16, y, text, FONT_SMALL, C_WHITE, C_BLACK);
+}
+
+void display_calibration_enter(calibration_channel_t ch, uint8_t ui_state) {
+	UG_FillFrame(0, STATUS_H, LCD_WIDTH - 1, FOOTER_Y - 1, C_BLACK);
+
+	switch (ui_state) {
+	case 0:
+		draw_status_bar("Calibration", C_SILVER);
+		draw_footer("ESC: Back", "OK: Select");
+		break;
+	case 1:
+		sprintf(text, "Calibration: %s", calibration_channel_name(ch));
+		draw_status_bar(text, C_SILVER);
+		LCD_PutStr(16, STATUS_H + 8, "Set input to 0", FONT_SMALL, C_WHITE,
+		C_BLACK);
+		LCD_PutStr(16, STATUS_H + 28, "(short/disconnect as needed)",
+		FONT_TINY, C_WHITE_63, C_BLACK);
+		draw_footer("ESC: Cancel", "OK: Zero");
+		break;
+	case 2:
+		sprintf(text, "Calibration: %s", calibration_channel_name(ch));
+		draw_status_bar(text, C_SILVER);
+		LCD_PutStr(16, STATUS_H + 8, "Apply known reference,", FONT_SMALL,
+		C_WHITE, C_BLACK);
+		LCD_PutStr(16, STATUS_H + 28, "dial in its value:", FONT_SMALL,
+		C_WHITE, C_BLACK);
+		draw_footer("ESC: Skip", "OK: Set gain");
+		break;
+	default:
+		break;
+	}
+}
+
+void display_calibration_update(calibration_channel_t ch, uint8_t ui_state,
+		float reference_value) {
+	switch (ui_state) {
+	case 0:
+		for (uint8_t i = 0; i < CAL_CH_COUNT; i++) {
+			int16_t y = STATUS_H + 8 + i * 20;
+			uint8_t selected = (i == ch);
+
+			sprintf(text, "%-6s (%s)                ",
+					calibration_channel_name((calibration_channel_t) i),
+					calibration_channel_unit((calibration_channel_t) i));
+			LCD_PutStr(selected ? 26 : 16, y, text, FONT_TINY, C_WHITE,
+			C_BLACK);
+			if (selected)
+				LCD_PutStr(6, y, ">", FONT_TINY, C_WHITE, C_BLACK);
+		}
+		break;
+	case 1:
+		draw_calibration_live(ch, STATUS_H + 60);
+		break;
+	case 2:
+		sprintf(text, "Reference: %ld %s        ", (long) reference_value,
+				calibration_channel_unit(ch));
+		LCD_PutStr(16, STATUS_H + 52, text, FONT_SMALL, C_WHITE, C_BLACK);
+		draw_calibration_live(ch, STATUS_H + 76);
 		break;
 	default:
 		break;

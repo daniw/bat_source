@@ -20,6 +20,7 @@
 #include "hrtim.h"
 #include "bq76905.h"
 #include "ctrl_param.h"
+#include "calibration.h"
 
 statemachine_t statemachine_handle;
 uint16_t ok_button_pressed;
@@ -32,6 +33,26 @@ extern BQ76905_handle bms;
 void statemachine_switchfromIdle(statemachine_modes_t mode);
 void statemachine_switchtoIdle(void);
 static void statemachine_apply_encoder_setpoint(void);
+static void statemachine_step_calibration(void);
+
+/* Settings > Calibration sub-UI state -- 0=channel list, 1=zero step,
+ * 2=optional gain step (see display_calibration_enter/update()). */
+static uint8_t calibration_ui_state = 0;
+static calibration_channel_t calibration_selected_channel = CAL_CH_V_TERM;
+
+/* Encoder-dialed reference value step per channel (in the channel's native
+ * unit) for the optional gain calibration step. V_TERM/I_OUT reuse the same
+ * per-detent scale already used for their live setpoints (ctrl_main.c's
+ * CTRL_MODE_60V/CTRL_MODE_10A); the others are new, sized to give a sensible
+ * dial range for typical reference values on that channel. */
+static const float CALIBRATION_REFERENCE_STEP[CAL_CH_COUNT] = {
+		[CAL_CH_V_TERM] = 500.0f,   // mV/detent, max ~63V
+		[CAL_CH_V_SENS] = 50000.0f, // uV/detent, max ~6.3V
+		[CAL_CH_V_OUT] = 500.0f,    // mV/detent, max ~63V
+		[CAL_CH_V_HV] = 10000.0f,   // mV/detent, max ~1270V
+		[CAL_CH_I_OUT] = 100.0f,    // mA/detent, max ~12.7A
+		[CAL_CH_I_ISO] = 100.0f,    // uA/detent, max ~12.7mA
+};
 
 void statemachine_init(void) {
 	statemachine_handle.output_on = 0;
@@ -46,6 +67,7 @@ void statemachine_init(void) {
 	display_init();
 
 	timer_add(STATEMACHINE_STEP_PERIOD_mS, TIMER_TYPE_TICK, EVENT_SM_STEP, 0);
+	statemachine_switchtoIdle();
 }
 
 /* Feeds the live encoder value into ctrl_main's poti_reference so the setpoint
@@ -54,6 +76,63 @@ void statemachine_init(void) {
  * loop is actually running). */
 static void statemachine_apply_encoder_setpoint(void) {
 	ctrl_main_handle.poti_reference = input_encoder_read();
+}
+
+/* Drives the Settings > Calibration sub-UI (see calibration_ui_state above).
+ * Zero and gain are each confirmed with their own OK press, so the two
+ * calibration steps of calibration.h can be triggered independently; ESC on
+ * the channel list backs out to the Settings list (handled by the caller),
+ * ESC on the zero/gain steps only cancels that step and returns to the
+ * channel list. */
+static void statemachine_step_calibration(void) {
+	switch (calibration_ui_state) {
+	case 0: { // channel list
+		uint8_t idx = (input_encoder_read() / 2) % CAL_CH_COUNT;
+		if (idx != calibration_selected_channel) {
+			calibration_selected_channel = (calibration_channel_t) idx;
+		}
+		display_calibration_update(calibration_selected_channel, 0, 0.0f);
+		if (ok_button_pressed == 1) {
+			calibration_ui_state = 1;
+			display_calibration_enter(calibration_selected_channel, 1);
+		}
+		if (esc_button_pressed == 1) {
+			statemachine_handle.settings_mode = STATEMACHINE_SETTINGS_MODE_MENU;
+			display_show_settings_list(statemachine_handle.current_menu_index);
+		}
+		break;
+	}
+	case 1: // zero step
+		display_calibration_update(calibration_selected_channel, 1, 0.0f);
+		if (ok_button_pressed == 1) {
+			calibration_zero(calibration_selected_channel);
+			calibration_ui_state = 2;
+			input_encoder_reset(0);
+			display_calibration_enter(calibration_selected_channel, 2);
+		}
+		if (esc_button_pressed == 1) {
+			calibration_ui_state = 0;
+			display_calibration_enter(calibration_selected_channel, 0);
+		}
+		break;
+	case 2: { // optional gain step
+		float reference_value = input_encoder_read()
+				* CALIBRATION_REFERENCE_STEP[calibration_selected_channel];
+		display_calibration_update(calibration_selected_channel, 2, reference_value);
+		if (ok_button_pressed == 1) {
+			calibration_set_gain(calibration_selected_channel, reference_value);
+			calibration_ui_state = 0;
+			display_calibration_enter(calibration_selected_channel, 0);
+		}
+		if (esc_button_pressed == 1) {
+			calibration_ui_state = 0;
+			display_calibration_enter(calibration_selected_channel, 0);
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void statemachine_step(void) {
@@ -116,7 +195,6 @@ void statemachine_step(void) {
 		display_update_mode(statemachine_handle.current_mode,
 				statemachine_handle.output_on);
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -125,7 +203,6 @@ void statemachine_step(void) {
 	case STATEMACHINE_MODE_RESISTANCE_1mA:
 		display_update_mode(statemachine_handle.current_mode, 1);
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -134,7 +211,6 @@ void statemachine_step(void) {
 		statemachine_apply_encoder_setpoint();
 		display_update_mode(statemachine_handle.current_mode, 1);
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -142,7 +218,6 @@ void statemachine_step(void) {
 	case STATEMACHINE_MODE_VOLTMETER:
 		display_update_mode(statemachine_handle.current_mode, 1);
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -150,7 +225,6 @@ void statemachine_step(void) {
 	case STATEMACHINE_MODE_AMPMETER:
 		display_update_mode(statemachine_handle.current_mode, 1);
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -169,11 +243,9 @@ void statemachine_step(void) {
 		if (bms.VoltageRegisters.StackVoltage >= CTRL_PARAM_CHARGE_END_VOLTAGE_mV
 				|| bms.SafetyRegisters.safetyStatusA || bms.SafetyRegisters.safetyStatusB
 				|| adc_data.converted.v_term < 14000) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		if (esc_button_pressed == 1) {
-			ctrl_main_stop_control();
 			statemachine_switchtoIdle();
 		}
 		break;
@@ -190,10 +262,18 @@ void statemachine_step(void) {
 			if (ok_button_pressed == 1) {
 				statemachine_handle.settings_mode =
 						(statemachine_settings_modes_t) statemachine_handle.current_menu_index;
-				display_enter_settings_detail(statemachine_handle.settings_mode);
+				if (statemachine_handle.settings_mode == STATEMACHINE_SETTINGS_MODE_CALIBRATION) {
+					calibration_ui_state = 0;
+					calibration_selected_channel = CAL_CH_V_TERM;
+					display_calibration_enter(calibration_selected_channel, 0);
+				} else {
+					display_enter_settings_detail(statemachine_handle.settings_mode);
+				}
 			}
 			if (esc_button_pressed == 1)
 				statemachine_switchtoIdle();
+		} else if (statemachine_handle.settings_mode == STATEMACHINE_SETTINGS_MODE_CALIBRATION) {
+			statemachine_step_calibration();
 		} else {
 			display_update_settings_detail(statemachine_handle.settings_mode);
 			if (esc_button_pressed == 1) {
@@ -317,10 +397,10 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 }
 
 void statemachine_switchtoIdle(void) {
-	printf("Switch to Idle\r\n");
 
-	aux_io_ctrl_set_config(STATEMACHINE_IDLE);
 	ctrl_main_stop_control();
+	printf("Switch to Idle\r\n");
+	aux_io_ctrl_set_config(STATEMACHINE_IDLE);
 	aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 0);
 	hrtim_sek_restore(); // no-op unless AMPMETER left the SEK half-bridge shorted
 	input_encoder_reset(62);

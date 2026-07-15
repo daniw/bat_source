@@ -149,8 +149,10 @@ typedef struct {
 
 	uint16_t v_in_offset;
     uint16_t v_hv_offset;
+    float    v_hv_gain;
     uint16_t i_bat_offset;
     uint16_t v_out_offset;
+    float    v_out_gain;
     uint16_t v_term_offset;
     float    v_term_gain;
     uint16_t temp_int_offset;
@@ -164,13 +166,15 @@ typedef struct {
     float    i_iso_gain;
     uint16_t temp_trafo_offset;
 
+    int32_t  v_sens_offset;
+    float    v_sens_gain;
+
     int32_t* ext_adc_data;
 
     //uint16_t reference_poti;
 
-    // uint32_t, not uint16_t: at 1mA excitation (Ohmmeter mode) resistances in
-    // the tens-of-ohms range already exceed a uint16_t's ~6.5 Ohm ceiling here.
     uint32_t r_mOhmx10;
+    uint32_t r_Ohmx10;
 
     uint16_t vref_mV;
 

@@ -35,6 +35,7 @@
 #include "input.h"
 #include "config_store.h"
 #include "icon_store.h"
+#include "calibration.h"
 
 #ifdef CLI_ENABLED
 
@@ -107,7 +108,8 @@ void cmd_printRTC(void);
 void cmd_setRTC(void);
 void cmd_testLCD(void);
 void cmd_control(void);
-void cmd_setADCCal(void);
+void cmd_zeroCal(void);
+void cmd_gainCal(void);
 void cmd_setSerial(void);
 void cmd_flashIcons(void);
 
@@ -140,7 +142,8 @@ void (*cmd_func[])(void) = {
 	cmd_setRTC,
 	cmd_testLCD,
 	cmd_control,
-	cmd_setADCCal,
+	cmd_zeroCal,
+	cmd_gainCal,
 	cmd_setSerial,
 	cmd_flashIcons
 };
@@ -174,7 +177,8 @@ const char *cmd_str[] = {
 		"setRTC",
 		"testLCD",
 		"control",
-		"setADCCal",
+		"zeroCal",
+		"gainCal",
 		"setSerial",
 		"flashIcons"
 };
@@ -208,7 +212,8 @@ const char *cmd_arg_str[] = {
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
 		"testLCD",
 		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit",
-		"setADCCal [channel: 0=V_TERM,1=I_OUT,2=I_ISO] [offset] [gain]",
+		"zeroCal [channel: 0=V_TERM,1=V_SENS,2=V_OUT,3=V_HV,4=I_OUT,5=I_ISO]",
+		"gainCal [channel: 0=V_TERM,1=V_SENS,2=V_OUT,3=V_HV,4=I_OUT,5=I_ISO] [reference value]",
 		"setSerial [serial number]",
 		"flashIcons"
 };
@@ -528,9 +533,10 @@ void cmd_help(void) {
 /*********************** Functions ************************************/
 
 /**
- * Snapshots the live ADC calibration (see setADCCal) and PID gains
- * (see setPI) into config_store and persists the calibration block
- * to the EEPROM.
+ * Snapshots the live ADC calibration (see zeroCal/gainCal) and PID
+ * gains (see setPI) into config_store and persists the calibration
+ * block to the EEPROM. zeroCal/gainCal already persist on their own,
+ * so this is mainly useful after manually tweaking PID gains.
  */
 void cmd_saveEEPROM(void) {
 	config_store.calibration.v_term_offset_mv = adc_data.v_term_offset;
@@ -539,6 +545,12 @@ void cmd_saveEEPROM(void) {
 	config_store.calibration.i_out_gain       = adc_data.i_out_gain;
 	config_store.calibration.i_iso_offset_ua  = adc_data.i_iso_offset;
 	config_store.calibration.i_iso_gain       = adc_data.i_iso_gain;
+	config_store.calibration.v_sens_offset    = adc_data.v_sens_offset;
+	config_store.calibration.v_sens_gain      = adc_data.v_sens_gain;
+	config_store.calibration.v_out_offset     = adc_data.v_out_offset;
+	config_store.calibration.v_out_gain       = adc_data.v_out_gain;
+	config_store.calibration.v_hv_offset      = adc_data.v_hv_offset;
+	config_store.calibration.v_hv_gain        = adc_data.v_hv_gain;
 
 	config_store.calibration.voltage_buck_p  = ctrl_pi_voltage_buck.P_gain;
 	config_store.calibration.voltage_buck_i  = ctrl_pi_voltage_buck.I_gain;
@@ -586,6 +598,18 @@ void cmd_readEEPROM(void) {
 	cli_printFloat(config_store.calibration.i_iso_gain);
 	printf("\r\n");
 
+	printf("V_SENS offset/gain:  %ld uV / ", (long) config_store.calibration.v_sens_offset);
+	cli_printFloat(config_store.calibration.v_sens_gain);
+	printf("\r\n");
+
+	printf("V_OUT  offset/gain:  %u mV / ", config_store.calibration.v_out_offset);
+	cli_printFloat(config_store.calibration.v_out_gain);
+	printf("\r\n");
+
+	printf("V_HV   offset/gain:  %u mV / ", config_store.calibration.v_hv_offset);
+	cli_printFloat(config_store.calibration.v_hv_gain);
+	printf("\r\n");
+
 	printf("Voltage buck  P / I: ");
 	cli_printFloat(config_store.calibration.voltage_buck_p);
 	printf(" / ");
@@ -606,28 +630,48 @@ void cmd_readEEPROM(void) {
 }
 
 /**
- * Sets ADC channel calibration (offset, gain) live. Not persisted -
- * use saveEEPROM to write it to the EEPROM.
+ * Zeroes one of the six calibratable ADC channels: set the real-world
+ * input to zero (short/disconnect for voltage channels, open circuit
+ * for current channels) first, then run this. Samples raw ADC counts,
+ * stores them as the channel's offset, and persists immediately to
+ * the EEPROM.
  */
-void cmd_setADCCal(void) {
+void cmd_zeroCal(void) {
 	uint8_t id;
-	uint16_t offset;
-	float gain;
-	CLI_CHECK_ARG_CNT(3);
 	char *end;
+
+	CLI_CHECK_ARG_CNT(1);
 	id = strtoul(arg_locs[1], &end, 10);
-	offset = strtoul(arg_locs[2], &end, 10);
-	gain = strtof(arg_locs[3], &end);
-	if (id == 0) {
-		adc_data.v_term_offset = offset;
-		adc_data.v_term_gain = gain;
-	} else if (id == 1) {
-		adc_data.i_out_offset = offset;
-		adc_data.i_out_gain = gain;
-	} else if (id == 2) {
-		adc_data.i_iso_offset = offset;
-		adc_data.i_iso_gain = gain;
+	if (id >= CAL_CH_COUNT) {
+		printf("Invalid channel\r\n");
+		return;
 	}
+	calibration_zero((calibration_channel_t) id);
+	printf("%s zeroed.\r\n", calibration_channel_name((calibration_channel_t) id));
+}
+
+/**
+ * Sets the gain (second calibration point) of one of the six
+ * calibratable ADC channels: apply a known reference value to the
+ * channel's input, then run this with that value. Samples raw ADC
+ * counts, computes gain = reference / (raw - offset), and persists
+ * immediately to the EEPROM. Run zeroCal on the channel first.
+ */
+void cmd_gainCal(void) {
+	uint8_t id;
+	float reference_value;
+	char *end;
+
+	CLI_CHECK_ARG_CNT(2);
+	id = strtoul(arg_locs[1], &end, 10);
+	if (id >= CAL_CH_COUNT) {
+		printf("Invalid channel\r\n");
+		return;
+	}
+	reference_value = strtof(arg_locs[2], &end);
+	calibration_set_gain((calibration_channel_t) id, reference_value);
+	printf("%s gain set (reference %s %s).\r\n", calibration_channel_name((calibration_channel_t) id),
+			arg_locs[2], calibration_channel_unit((calibration_channel_t) id));
 }
 
 /**

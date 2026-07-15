@@ -11,7 +11,7 @@
 
 #include "stdint.h"
 #include "icon_store.h"
-#define ICON_INCLUDE_SEED
+//#define ICON_INCLUDE_SEED
 
 typedef struct {
 	uint16_t width;

@@ -900,19 +900,24 @@ void adc_init(int32_t* ext_adc_data)
 	HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
 
 	  adc_data.v_in_offset   = ADC_VIN_OFFSET_MV  ;
-	  adc_data.v_out_offset  = ADC_VOUT_OFFSET_MV ;
-	  adc_data.v_hv_offset   = ADC_VHV_OFFSET_MV  ;
 	  adc_data.i_bat_offset  = ADC_IBAT_OFFSET_MA ;
 
-	  // V_TERM/I_OUT/I_ISO offset and gain come from config_store, which is
-	  // loaded from EEPROM (or defaulted to these same constants) before
-	  // adc_init() runs - see config_store_init() in main().
+	  // V_TERM/I_OUT/I_ISO/V_SENS/V_OUT/V_HV offset and gain come from
+	  // config_store, which is loaded from EEPROM (or defaulted to the
+	  // ADC_* constants) before adc_init() runs - see config_store_init()
+	  // in main().
 	  adc_data.v_term_offset = config_store.calibration.v_term_offset_mv;
 	  adc_data.v_term_gain   = config_store.calibration.v_term_gain;
 	  adc_data.i_out_offset  = config_store.calibration.i_out_offset_ma;
 	  adc_data.i_out_gain    = config_store.calibration.i_out_gain;
 	  adc_data.i_iso_offset  = config_store.calibration.i_iso_offset_ua;
 	  adc_data.i_iso_gain    = config_store.calibration.i_iso_gain;
+	  adc_data.v_sens_offset = config_store.calibration.v_sens_offset;
+	  adc_data.v_sens_gain   = config_store.calibration.v_sens_gain;
+	  adc_data.v_out_offset  = config_store.calibration.v_out_offset;
+	  adc_data.v_out_gain    = config_store.calibration.v_out_gain;
+	  adc_data.v_hv_offset   = config_store.calibration.v_hv_offset;
+	  adc_data.v_hv_gain     = config_store.calibration.v_hv_gain;
 
 }
 
@@ -1037,9 +1042,9 @@ void adc_configure_mode(statemachine_modes_t mode) {
 
 void adc_convert_fast_data(void){
 	adc_data.converted.v_in   = (adc_data.raw.v_in   - adc_data.v_in_offset  )* ADC_VIN_GAIN_MV;
-	adc_data.converted.v_out  = (adc_data.raw.v_out  - adc_data.v_out_offset )* ADC_VOUT_GAIN_MV;
+	adc_data.converted.v_out  = (adc_data.raw.v_out  - adc_data.v_out_offset )* adc_data.v_out_gain;
 	adc_data.converted.v_term = (adc_data.raw.v_term - adc_data.v_term_offset)* adc_data.v_term_gain;
-	adc_data.converted.v_hv   = (adc_data.raw.v_hv   - adc_data.v_hv_offset  )* ADC_VHV_GAIN_MV;
+	adc_data.converted.v_hv   = (adc_data.raw.v_hv   - adc_data.v_hv_offset  )* adc_data.v_hv_gain;
 	adc_data.converted.i_bat  = (adc_data.raw.i_bat  - adc_data.i_bat_offset )* ADC_IBAT_GAIN_MA;
 	adc_data.converted.i_out  = (adc_data.raw.i_out  - adc_data.i_out_offset ) * adc_data.i_out_gain;
 	adc_data.converted.i_iso  = (adc_data.raw.i_iso  - adc_data.i_iso_offset ) * adc_data.i_iso_gain;
@@ -1050,7 +1055,7 @@ void adc_convert_fast_data(void){
 	adc_data.converted.v_term_ext_mv_filt = (int32_t) (0.9f * adc_data.converted.v_term_ext_mv_filt
 			+ 0.1f * adc_data.converted.v_term_ext_mv);
 	adc_data.converted.i_out_ext_mA  = adc_data.ext_adc_data[1] * ADC_EXT_IOUT_GAIN_mA;
-	adc_data.converted.v_sens_ext_uv = adc_data.ext_adc_data[2] * ADC_EXT_VSENS_GAIN_UV;
+	adc_data.converted.v_sens_ext_uv = (adc_data.ext_adc_data[2] - adc_data.v_sens_offset) * adc_data.v_sens_gain;
 	adc_data.converted.i_iso_ext_uA  = adc_data.ext_adc_data[3] * ADC_EXT_IISO_GAIN_UA;
 }
 
@@ -1062,9 +1067,11 @@ void adc_convert_data(void){
 	//// Calculate resistance
 	if (adc_data.converted.i_out_ext_mA != 0) {
 		adc_data.r_mOhmx10 = 10*adc_data.converted.v_sens_ext_uv / adc_data.converted.i_out_ext_mA ;
+		adc_data.r_Ohmx10 = 10*adc_data.converted.v_term_ext_mv / adc_data.converted.i_out_ext_mA ;
 	}
 	else {
 		adc_data.r_mOhmx10 = UINT32_MAX;
+		adc_data.r_Ohmx10 = UINT32_MAX;
 	}
 
 	// Calculate / Estimate Temperatures
@@ -1088,6 +1095,13 @@ void adc_convert_data(void){
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
+	// ISOMETER mode injects I_ISO (ADC5, rank 1, see adc_configure_mode()) --
+	// this was the only channel of this callback that was ever actually
+	// wired up on this hardware; the rest below predates the current
+	// refactor and stays commented out/dead.
+	if (hadc->Instance == ADC5) {
+		adc_data.raw.i_iso = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+	}
 
 	//adc_data.v_in_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
 	//adc_data.i_bat_raw = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
