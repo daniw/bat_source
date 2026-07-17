@@ -30,6 +30,7 @@ typedef struct{
 	uint32_t current_reference_mA;
 	float ramp;
 	ctrl_mode_t mode;
+	int32_t duty;
 
 } ctrl_main_t;
 

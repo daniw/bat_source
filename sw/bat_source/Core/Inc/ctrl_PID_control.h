@@ -46,7 +46,7 @@ typedef struct
 
 void ctrl_PID_controller_init(PID_controller_t *contr, float kp, float ki, float kd, float sat_high, float sat_low);
 void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_P, float data_in_I, float data_in_D);
-
+void ctrl_PID_reset(PID_controller_t *contr);
 
 
 
