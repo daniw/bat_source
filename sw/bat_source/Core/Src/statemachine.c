@@ -323,7 +323,6 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
-		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;
@@ -334,7 +333,6 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
-		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;
@@ -345,7 +343,6 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.current_mode = mode;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(CTRL_MODE_ISOMETER);
-		ctrl_main_apply_reference(CTRL_MODE_ISOMETER, ctrl_main_handle.poti_reference);
 		display_enter_mode(mode);
 		break;
 
@@ -382,7 +379,6 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 		statemachine_handle.output_on = 1;
 		adc_configure_mode(mode);
 		ctrl_main_start_ctrl(statemachine_mode_to_ctrl_mode(mode));
-		ctrl_main_apply_reference(statemachine_mode_to_ctrl_mode(mode), ctrl_main_handle.poti_reference);
 		aux_io_ctrl_manual_set_io(GPIO_CONV_CTRL_EN, 1);
 		display_enter_mode(mode);
 		break;
@@ -402,6 +398,7 @@ void statemachine_switchfromIdle(statemachine_modes_t mode) {
 	}
 	aux_io_ctrl_set_config(mode);
 	input_encoder_reset(0);
+
 }
 
 void statemachine_switchtoIdle(void) {
