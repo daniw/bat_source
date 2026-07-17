@@ -66,10 +66,8 @@ void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_P,
 #endif
 	contr->P_action = contr->P_gain * (contr->ref - data_in_P);
 
-	if (contr->sat_flag == 0) {
-		contr->I_action = (double) (contr->I_gain * (contr->ref - data_in_I))
-				+ contr->prev_I_action;
-	}
+	contr->I_action = (double) (contr->I_gain * (contr->ref - data_in_I))
+			+ contr->prev_I_action;
 
 	contr->action = contr->P_action + contr->I_action;
 
@@ -77,16 +75,41 @@ void ctrl_PID_controller_execute(PID_controller_t *contr, float data_in_P,
 	contr->action += contr->D_action;
 #endif
 
+	/* Integrator clamping: when the output saturates, pull I_action back
+	 * to exactly the value consistent with sitting at the boundary given
+	 * this cycle's P_action (and D_action, if enabled), instead of
+	 * freezing it at whatever raw value first caused the overshoot. That
+	 * keeps prev_I_action always representative of the current operating
+	 * point, so resuming after saturation doesn't carry forward a stale
+	 * or inconsistent baseline. */
 	if (contr->action > contr->sat_limit_high) {
 		contr->action = contr->sat_limit_high;
+#ifndef NO_D_PART
+		contr->I_action = contr->sat_limit_high - contr->P_action - contr->D_action;
+#else
+		contr->I_action = contr->sat_limit_high - contr->P_action;
+#endif
 		contr->sat_flag = 1;
 	} else if (contr->action < contr->sat_limit_low) {
 		contr->action = contr->sat_limit_low;
+#ifndef NO_D_PART
+		contr->I_action = contr->sat_limit_low - contr->P_action - contr->D_action;
+#else
+		contr->I_action = contr->sat_limit_low - contr->P_action;
+#endif
 		contr->sat_flag = 1;
 	} else {
 		contr->sat_flag = 0;
-		contr->prev_I_action = contr->I_action;
 	}
+	contr->prev_I_action = contr->I_action;
 
 	contr->I_action_out = contr->I_action;
+}
+
+void ctrl_PID_reset(PID_controller_t *contr)
+{
+	contr->action = 0;
+	contr->I_action = 0;
+	contr->prev_I_action = 0;
+	contr->sat_flag = 0;
 }
