@@ -59,7 +59,16 @@ void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	for(int i = 0; i<4; i++){
 		printf("Read Cell Voltages %d\r\n", handle->CellVoltageRegisters.CellVoltages[i]);
 	}
+	 command = BQ76905_COMMAND_ALERT_A;
+	i2c_WriteBlocking(handle->address, &command, 1);
+	i2c_ReadBlocking(handle->address, (uint8_t*) &handle->SafetyRegisters,
+			sizeof(handle->SafetyRegisters));
 
+	  printf("SafetyRegisters.safetyAlertA         = 0x%02X\r\n", handle->SafetyRegisters.safetyAlertA);
+	  printf("SafetyRegisters.safetyStatusA        = 0x%02X\r\n", handle->SafetyRegisters.safetyStatusA);
+	  printf("SafetyRegisters.safetyAlertB         = 0x%02X\r\n", handle->SafetyRegisters.safetyAlertB);
+	  printf("SafetyRegisters.safetyStatusB        = 0x%02X\r\n", handle->SafetyRegisters.safetyStatusB);
+	  printf("\n");
 	if((handle->CellVoltageRegisters.BatteryStatus & 0x80) || (handle->CellVoltageRegisters.BatteryStatus == 0x0)){
 		BQ76905_resetDevice(handle);
 		BQ76905_configure(handle);
@@ -69,6 +78,8 @@ void BQ76905_init(BQ76905_handle* handle, uint8_t i2c_address){
 	}else{
 		printf("Skipped BMS reconfiguration: %x\r\n", handle->CellVoltageRegisters.BatteryStatus);
 	}
+
+
 	BQ76905_RecoverProtection(handle, 0xFF);
 	timer_add(1000,  TIMER_TYPE_TICK, EVENT_BMS_TIMER, 0);
 }
