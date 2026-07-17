@@ -169,6 +169,13 @@ typedef struct {
     int32_t  v_sens_offset;
     float    v_sens_gain;
 
+    int32_t  v_term_ext_offset;
+    float    v_term_ext_gain;
+    int32_t  i_out_ext_offset;
+    float    i_out_ext_gain;
+    int32_t  i_iso_ext_offset;
+    float    i_iso_ext_gain;
+
     int32_t* ext_adc_data;
 
     //uint16_t reference_poti;

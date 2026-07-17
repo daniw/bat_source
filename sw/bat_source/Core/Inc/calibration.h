@@ -53,4 +53,14 @@ void calibration_zero(calibration_channel_t ch);
  *  offset), stores it, then persists to EEPROM. */
 void calibration_set_gain(calibration_channel_t ch, float reference_value);
 
+/** True for V_TERM/I_OUT/I_ISO: channels that have an external-ADC
+ *  (ADS131M04) counterpart which calibration_zero()/calibration_set_gain()
+ *  calibrate automatically alongside the internal channel, since both
+ *  measure the same physical quantity at the same moment. */
+uint8_t calibration_has_ext(calibration_channel_t ch);
+
+/** Live converted value of ch's ext-ADC counterpart, for on-screen
+ *  confirmation while calibrating. 0 if calibration_has_ext(ch) is false. */
+int32_t calibration_read_ext_converted(calibration_channel_t ch);
+
 #endif /* SRC_CALIBRATION_H_ */

@@ -73,6 +73,13 @@ static void config_store_setDefaults(void)
 	config_store.calibration.v_hv_offset   = ADC_VHV_OFFSET_MV;
 	config_store.calibration.v_hv_gain     = ADC_VHV_GAIN_MV;
 
+	config_store.calibration.v_term_ext_offset = 0;
+	config_store.calibration.v_term_ext_gain   = ADC_EXT_VTERM_GAIN_MV;
+	config_store.calibration.i_out_ext_offset  = 0;
+	config_store.calibration.i_out_ext_gain    = ADC_EXT_IOUT_GAIN_mA;
+	config_store.calibration.i_iso_ext_offset  = 0;
+	config_store.calibration.i_iso_ext_gain    = ADC_EXT_IISO_GAIN_UA;
+
 	config_store.calibration.voltage_buck_p  = CTRL_PARAM_VOLTAGE_BUCK_P;
 	config_store.calibration.voltage_buck_i  = CTRL_PARAM_VOLTAGE_BUCK_I;
 	config_store.calibration.voltage_boost_p = CTRL_PARAM_VOLTAGE_BOOST_P;

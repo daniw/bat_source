@@ -182,7 +182,7 @@ static void enter_active_output(statemachine_modes_t mode, const char *big_unit,
 
 static void update_active_output(statemachine_modes_t mode,
 		uint8_t output_active, int32_t big_value_x100,
-		int32_t secondary_value_x1000, uint32_t setpoint_value_x1000) {
+		int32_t secondary_value_x1000, uint32_t setpoint_value_x1000,  int32_t debug_value) {
 	const menu_entry_t *entry = menu_entry_for_mode(mode);
 
 	draw_output_border(entry->accent, output_active);
@@ -196,6 +196,12 @@ static void update_active_output(statemachine_modes_t mode,
 			(int) ((secondary_value_x1000 < 0 ?
 					-secondary_value_x1000 : secondary_value_x1000) % 1000));
 	LCD_PutStr(16, SECOND_Y + 36, text, FONT_SMALL, C_WHITE, C_BLACK);
+
+
+	sprintf(text, "%3d.%03d", (int) (debug_value / 1000),
+			(int) ((debug_value < 0 ?
+					-debug_value : debug_value) % 1000));
+	LCD_PutStr(16, SECOND_Y + 54, text, FONT_SMALL, C_WHITE, C_BLACK);
 
 	sprintf(text, "%3u.%03u", (unsigned) (setpoint_value_x1000 / 1000),
 			(unsigned) (setpoint_value_x1000 % 1000));
@@ -416,13 +422,13 @@ void display_update_mode(statemachine_modes_t mode, uint8_t output_active) {
 		update_active_output(mode, output_active,
 				adc_data.converted.v_term_ext_mv_filt / 10,
 				adc_data.converted.i_out_ext_mA,
-				ctrl_main_handle.voltage_reference_mV);
+				ctrl_main_handle.voltage_reference_mV, ctrl_main_handle.duty);
 		break;
 	case STATEMACHINE_MODE_10A_OUT:
 		update_active_output(mode, output_active,
 				adc_data.converted.i_out_ext_mA / 10,
 				adc_data.converted.v_term_ext_mv_filt,
-				ctrl_main_handle.current_reference_mA);
+				ctrl_main_handle.current_reference_mA, 0);
 		break;
 	case STATEMACHINE_MODE_RESISTANCE_1A:
 	case STATEMACHINE_MODE_RESISTANCE_1mA:
@@ -550,6 +556,14 @@ static void draw_calibration_live(calibration_channel_t ch, int16_t y) {
 	sprintf(text, "Raw: %-8ld  %ld %s          ", (long) calibration_read_raw(ch),
 			(long) calibration_read_converted(ch), calibration_channel_unit(ch));
 	LCD_PutStr(16, y, text, FONT_SMALL, C_WHITE, C_BLACK);
+
+	if (calibration_has_ext(ch)) {
+		sprintf(text, "Ext: %ld %s          ",
+				(long) calibration_read_ext_converted(ch), calibration_channel_unit(ch));
+	} else {
+		sprintf(text, "                        ");
+	}
+	LCD_PutStr(16, y + 16, text, FONT_SMALL, C_WHITE, C_BLACK);
 }
 
 void display_calibration_enter(calibration_channel_t ch, uint8_t ui_state) {

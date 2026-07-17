@@ -207,7 +207,7 @@ const char *cmd_arg_str[] = {
 		"writeFlash [address] [size] [data]",
 		"testFlash",
 		"state [new state]",
-		"setPI [P Gain] [I Gain]",
+		"setPI [ID 0=Buck,1=Boost,2=Current] [P Gain] [I Gain]",
 		"pRTC",
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
 		"testLCD",
@@ -551,6 +551,12 @@ void cmd_saveEEPROM(void) {
 	config_store.calibration.v_out_gain       = adc_data.v_out_gain;
 	config_store.calibration.v_hv_offset      = adc_data.v_hv_offset;
 	config_store.calibration.v_hv_gain        = adc_data.v_hv_gain;
+	config_store.calibration.v_term_ext_offset = adc_data.v_term_ext_offset;
+	config_store.calibration.v_term_ext_gain   = adc_data.v_term_ext_gain;
+	config_store.calibration.i_out_ext_offset  = adc_data.i_out_ext_offset;
+	config_store.calibration.i_out_ext_gain    = adc_data.i_out_ext_gain;
+	config_store.calibration.i_iso_ext_offset  = adc_data.i_iso_ext_offset;
+	config_store.calibration.i_iso_ext_gain    = adc_data.i_iso_ext_gain;
 
 	config_store.calibration.voltage_buck_p  = ctrl_pi_voltage_buck.P_gain;
 	config_store.calibration.voltage_buck_i  = ctrl_pi_voltage_buck.I_gain;
@@ -608,6 +614,18 @@ void cmd_readEEPROM(void) {
 
 	printf("V_HV   offset/gain:  %u mV / ", config_store.calibration.v_hv_offset);
 	cli_printFloat(config_store.calibration.v_hv_gain);
+	printf("\r\n");
+
+	printf("V_TERM_EXT off/gain: %ld mV / ", (long) config_store.calibration.v_term_ext_offset);
+	cli_printFloat(config_store.calibration.v_term_ext_gain);
+	printf("\r\n");
+
+	printf("I_OUT_EXT  off/gain: %ld mA / ", (long) config_store.calibration.i_out_ext_offset);
+	cli_printFloat(config_store.calibration.i_out_ext_gain);
+	printf("\r\n");
+
+	printf("I_ISO_EXT  off/gain: %ld uA / ", (long) config_store.calibration.i_iso_ext_offset);
+	cli_printFloat(config_store.calibration.i_iso_ext_gain);
 	printf("\r\n");
 
 	printf("Voltage buck  P / I: ");
