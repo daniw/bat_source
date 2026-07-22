@@ -48,15 +48,19 @@ D:\GIT_Projekte\bat_source
 ! "C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA_3D STEP_2026-02-20"
 ! "C:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
 
-! ---------------------- Version 3 09.03.2026, Suchpfade, relativ zum Arbeitsverzeichnis ----------------------
-./01_Hauptplatine\PS1-1BA_3D_STEP_2026-03-09
-./02_UserInterface\PS1-2BA-3D_STEP_2026-03-09
-./03_Staeubli
-./90_old_files_from_FreeCAD
+! ---------------------- Version 3 09.03.2026 ----------------------
+! Version 3, 09.03.2026 - WORKSTATION
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-03-09"
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA-3D_STEP_2026-03-09"
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
+"D:\GIT_Projekte\bat_source\mech_Samuel_v2\90_old_files_from_FreeCAD\"
 
+! Version 3, 09.03.2026 - LAPTOP
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\01_Hauptplatine\PS1-1BA_3D_STEP_2026-03-09"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\02_UserInterface\PS1-2BA-3D_STEP_2026-03-09"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\03_Staeubli\"
+"C:\GIT_Projekte\bat_source\mech_Samuel_v2\90_old_files_from_FreeCAD\"
 
-! Falls sie eine Ebene höher liegen
-../andere_komponenten
 
 
 
