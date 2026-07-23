@@ -106,7 +106,7 @@ static void icon_settings(int16_t cx, int16_t cy, int16_t r, UG_COLOR color) {
 /* Menu tree                                                               */
 /* ---------------------------------------------------------------------- */
 
-const menu_entry_t menu_order[MENU_ORDER_LENGTH] = {
+const menu_entry_t menu_order[MENU_TOTAL_LENGTH] = {
 	{ STATEMACHINE_MODE_60V_OUT,        C_DODGER_BLUE,     icon_60v },
 	{ STATEMACHINE_MODE_10A_OUT,        C_ORANGE,          icon_10a },
 	{ STATEMACHINE_MODE_RESISTANCE_1A,  C_TEAL,            icon_resistance },
@@ -114,8 +114,8 @@ const menu_entry_t menu_order[MENU_ORDER_LENGTH] = {
 	{ STATEMACHINE_MODE_ISOMETER,       C_RED,             icon_isometer },
 	{ STATEMACHINE_MODE_VOLTMETER,      C_SKY_BLUE,        icon_voltmeter },
 	{ STATEMACHINE_MODE_AMPMETER,       C_GOLD,            icon_ampmeter },
-	{ STATEMACHINE_MODE_CHARGE,         C_GREEN,           icon_charge },
 	{ STATEMACHINE_MODE_SETTINGS,       C_SILVER,          icon_settings },
+	{ STATEMACHINE_MODE_CHARGE,         C_GREEN,           icon_charge },
 };
 
 static const char *const MODE_NAMES[STATEMACHINE_MODE_RESERVED + 1] = {
@@ -138,7 +138,7 @@ const menu_entry_t *menu_entry_at(uint8_t index) {
 }
 
 const menu_entry_t *menu_entry_for_mode(statemachine_modes_t mode) {
-	for (int i = 0; i < MENU_ORDER_LENGTH; i++) {
+	for (int i = 0; i < MENU_TOTAL_LENGTH; i++) {
 		if (menu_order[i].mode == mode)
 			return &menu_order[i];
 	}
