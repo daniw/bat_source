@@ -81,6 +81,8 @@ typedef struct
 	float voltage_boost_i;
 	float current_p;
 	float current_i;
+	float boost_iout_limit_p;
+	float boost_iout_limit_i;
 } calibration_t;
 
 typedef struct

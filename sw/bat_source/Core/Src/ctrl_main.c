@@ -18,6 +18,7 @@ ctrl_main_t ctrl_main_handle;
 PID_controller_t ctrl_pi_voltage_buck;
 PID_controller_t ctrl_pi_voltage_boost;
 PID_controller_t ctrl_pi_current;
+PID_controller_t ctrl_pi_boost_iout_limit;
 
 PID_controller_t ctrl_pi_flyback_voltage;
 PID_controller_t ctrl_pi_flyback_current;
@@ -28,7 +29,7 @@ const uint16_t ctrl_main_iso_values[4] = { 125, 250, 500, 1000 };
 void ctrl_main_ctrl_voltage_buck(uint32_t voltage_meas_mV,
 		int32_t voltage_meas_accurate);
 void ctrl_main_ctrl_voltage_boost(uint32_t voltage_meas_mV,
-		int32_t voltage_meas_accurate, int16_t current_meas_mA);
+		int32_t voltage_meas_accurate, int32_t current_meas_ext_mA);
 void ctrl_main_ctrl_current(int16_t current_meas_mA,
 		int16_t current_meas_accurate);
 
@@ -51,6 +52,11 @@ void ctrl_main_init(void) {
 	ctrl_PID_controller_init(&ctrl_pi_voltage_boost, config_store.calibration.voltage_boost_p,
 	config_store.calibration.voltage_boost_i, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
 	CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
+
+	ctrl_PID_controller_init(&ctrl_pi_boost_iout_limit, config_store.calibration.boost_iout_limit_p,
+	config_store.calibration.boost_iout_limit_i, 0, CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_HIGH,
+	CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW);
+	ctrl_pi_boost_iout_limit.ref = CTRL_PARAM_BOOST_IOUT_LIMIT_mA / 1000.0F;
 
 
 	ctrl_PID_controller_init(&ctrl_pi_current, config_store.calibration.current_p,
@@ -98,6 +104,7 @@ void ctrl_main_start_ctrl(ctrl_mode_t mode) {
 
 	case CTRL_MODE_60V:
 		ctrl_PID_reset(&ctrl_pi_voltage_boost);
+		ctrl_PID_reset(&ctrl_pi_boost_iout_limit);
 		hrtim_set_freq(HRTIM_CHANNEL_PRIM, CTRL_PARAM_SW_FREQ_LOW);
 		hrtim_set_freq(HRTIM_CHANNEL_SEK, CTRL_PARAM_SW_FREQ_HIGH);
 		hrtim_set_duty(HRTIM_CHANNEL_PRIM, CTRL_PARAM_CONST_DUTY_LOW);
@@ -142,7 +149,7 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 
 	case CTRL_MODE_60V:
 		ctrl_main_ctrl_voltage_boost(adc_data->converted.v_out,
-				adc_data->converted.v_term_ext_mv, adc_data->converted.i_out);
+				adc_data->converted.v_term_ext_mv, adc_data->converted.i_out_ext_mA);
 		break;
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
@@ -247,7 +254,7 @@ uint8_t duty;
 
 
 void ctrl_main_ctrl_voltage_boost(uint32_t voltage_meas_mV,
-		int32_t voltage_meas_accurate_mV, int16_t current_meas_mA) {
+		int32_t voltage_meas_accurate_mV, int32_t current_meas_ext_mA) {
 uint8_t duty;
 	// Startup Ramp
 	if (ctrl_main_handle.ramp > 1.0F) {
@@ -266,16 +273,16 @@ uint8_t duty;
 	ctrl_PID_controller_execute(&ctrl_pi_voltage_boost, voltage_meas_mV / 1000.0F,
 			voltage_meas_accurate_mV / 1000.0F, 0);
 
-	// Current-limit foldback: pure P correction on top of the voltage loop's
-	// output, does not touch ctrl_pi_voltage_boost.action/I_action (no
-	// anti-windup interaction with the voltage integrator).
+	// Current-limit foldback: independent PI loop on the accurate external
+	// ADC current reading, min-selected against the voltage loop's duty
+	// output (standard CV/CC crossover). No anti-windup interaction between
+	// the two loops - each runs and saturates independently.
+	ctrl_PID_controller_execute(&ctrl_pi_boost_iout_limit,
+			current_meas_ext_mA / 1000.0F, current_meas_ext_mA / 1000.0F, 0);
+
 	float duty_limited = ctrl_pi_voltage_boost.action;
-	int32_t current_excess_mA = (int32_t) current_meas_mA - CTRL_PARAM_BOOST_IOUT_LIMIT_mA;
-	if (current_excess_mA > 0) {
-		duty_limited -= CTRL_PARAM_BOOST_IOUT_LIMIT_P * (current_excess_mA / 1000.0F);
-		if (duty_limited < CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW)
-			duty_limited = CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW;
-	}
+	if (ctrl_pi_boost_iout_limit.action < duty_limited)
+		duty_limited = ctrl_pi_boost_iout_limit.action;
 
 	// Apply Duty
 	hrtim_set_duty(HRTIM_CHANNEL_SEK, duty_limited);

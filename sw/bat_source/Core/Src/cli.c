@@ -67,6 +67,7 @@ extern w25n01gv_handle flash;
 extern PID_controller_t ctrl_pi_voltage_buck;
 extern PID_controller_t ctrl_pi_voltage_boost;
 extern PID_controller_t ctrl_pi_current;
+extern PID_controller_t ctrl_pi_boost_iout_limit;
 
 // Uart handling
 UART_HandleTypeDef *cli_huart;
@@ -207,7 +208,7 @@ const char *cmd_arg_str[] = {
 		"writeFlash [address] [size] [data]",
 		"testFlash",
 		"state [new state]",
-		"setPI [ID 0=Buck,1=Boost,2=Current] [P Gain] [I Gain]",
+		"setPI [ID 0=Buck,1=Boost,2=Current,3=BoostIoutLimit] [P Gain] [I Gain]",
 		"pRTC",
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
 		"testLCD",
@@ -564,6 +565,8 @@ void cmd_saveEEPROM(void) {
 	config_store.calibration.voltage_boost_i = ctrl_pi_voltage_boost.I_gain;
 	config_store.calibration.current_p       = ctrl_pi_current.P_gain;
 	config_store.calibration.current_i       = ctrl_pi_current.I_gain;
+	config_store.calibration.boost_iout_limit_p = ctrl_pi_boost_iout_limit.P_gain;
+	config_store.calibration.boost_iout_limit_i = ctrl_pi_boost_iout_limit.I_gain;
 
 	if (config_store_store() == 0)
 		printf("EEPROM: calibration saved\r\n");
@@ -644,6 +647,12 @@ void cmd_readEEPROM(void) {
 	cli_printFloat(config_store.calibration.current_p);
 	printf(" / ");
 	cli_printFloat(config_store.calibration.current_i);
+	printf("\r\n");
+
+	printf("Boost Iout-limit P / I: ");
+	cli_printFloat(config_store.calibration.boost_iout_limit_p);
+	printf(" / ");
+	cli_printFloat(config_store.calibration.boost_iout_limit_i);
 	printf("\r\n");
 }
 
@@ -1423,6 +1432,9 @@ void cmd_setCtrlGain(void) {
 		ctrl_pi_current.P_gain = P;
 		ctrl_pi_current.I_gain = I / CTRL_FREQ;
 
+	} else if (id == 3) {
+		ctrl_pi_boost_iout_limit.P_gain = P;
+		ctrl_pi_boost_iout_limit.I_gain = I / CTRL_FREQ;
 	}
 }
 

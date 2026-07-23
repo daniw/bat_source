@@ -86,6 +86,8 @@ static void config_store_setDefaults(void)
 	config_store.calibration.voltage_boost_i = CTRL_PARAM_VOLTAGE_BOOST_I;
 	config_store.calibration.current_p       = CTRL_PARAM_CURRENT_P;
 	config_store.calibration.current_i       = CTRL_PARAM_CURRENT_I;
+	config_store.calibration.boost_iout_limit_p = CTRL_PARAM_BOOST_IOUT_LIMIT_P;
+	config_store.calibration.boost_iout_limit_i = CTRL_PARAM_BOOST_IOUT_LIMIT_I;
 }
 
 /**
