@@ -30,6 +30,7 @@ typedef struct{
 	uint32_t current_reference_mA;
 	float ramp;
 	ctrl_mode_t mode;
+	int32_t duty;
 
 } ctrl_main_t;
 
@@ -37,6 +38,7 @@ void ctrl_main_init(void);
 void ctrl_main_start_ctrl(ctrl_mode_t mode);
 void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data);
 void ctrl_main_stop_control(void);
+void ctrl_main_apply_reference(ctrl_mode_t mode, uint16_t reference_poti_count);
 ctrl_mode_t statemachine_mode_to_ctrl_mode(statemachine_modes_t mode);
 
 

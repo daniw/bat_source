@@ -1042,8 +1042,8 @@ void LCD_Test(void)
   UG_FillScreen(C_BLACK);
   LCD_PutStr(10, 5, "Big font", DEFAULT_FONT, C_RED, C_BLACK);
   clearTime();
-  LCD_PutStr(10, 35, "Hello", FONT_arial_49X57, C_CYAN, C_BLACK);
-  LCD_PutStr(10, 80, "Steve!", FONT_arial_49X57, C_CYAN, C_BLACK);
+  LCD_PutStr(10, 35, "Hello", FONT_32X53, C_CYAN, C_BLACK);
+  LCD_PutStr(10, 80, "Steve!", FONT_32X53, C_CYAN, C_BLACK);
   UG_Update();
   printTime();
   HAL_Delay(1000);

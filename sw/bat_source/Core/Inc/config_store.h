@@ -18,7 +18,7 @@
 #define CONFIG_STORE_PSVN 1 // Version of the persistent storage layout
 
 #define CONFIG_STORE_HARDWARE_DATA_SIZE 16
-#define CONFIG_STORE_CALIBRATION_SIZE   64
+#define CONFIG_STORE_CALIBRATION_SIZE   128
 
 /**
  * Factory-programmed hardware identification. Hardware revision is
@@ -39,6 +39,18 @@ typedef struct
  * Units and scaling match what's fed directly into adc_data and
  * ctrl_PID_controller_init()/PID_controller_t, so no re-scaling is
  * needed when loading or saving.
+ *
+ * v_sens/v_out/v_hv were added alongside v_term/i_out/i_iso once the
+ * calibration.c module made all six channels (V_TERM, V_SENS, V_OUT,
+ * V_HV, I_OUT, I_ISO) calibratable from the Settings menu / CLI -
+ * offset is always in raw ADC counts (same convention as the
+ * pre-existing three fields), subtracted before gain is applied.
+ *
+ * v_term_ext/i_out_ext/i_iso_ext trim the external ADS131M04's
+ * counterparts of v_term/i_out/i_iso. They have no channel of their
+ * own in calibration.c - calibrating V_TERM/I_OUT/I_ISO samples and
+ * sets these in the same pass, since both readings come from the same
+ * physical measurement at the same moment.
  */
 typedef struct
 {
@@ -48,6 +60,20 @@ typedef struct
 	float    i_out_gain;
 	uint16_t i_iso_offset_ua;
 	float    i_iso_gain;
+
+	int32_t  v_sens_offset;
+	float    v_sens_gain;
+	uint16_t v_out_offset;
+	float    v_out_gain;
+	uint16_t v_hv_offset;
+	float    v_hv_gain;
+
+	int32_t  v_term_ext_offset;
+	float    v_term_ext_gain;
+	int32_t  i_out_ext_offset;
+	float    i_out_ext_gain;
+	int32_t  i_iso_ext_offset;
+	float    i_iso_ext_gain;
 
 	float voltage_buck_p;
 	float voltage_buck_i;

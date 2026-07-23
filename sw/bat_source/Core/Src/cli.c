@@ -32,7 +32,10 @@
 #include "ctrl_param.h"
 #include "rtc.h"
 #include "lcd.h"
+#include "input.h"
 #include "config_store.h"
+#include "icon_store.h"
+#include "calibration.h"
 
 #ifdef CLI_ENABLED
 
@@ -68,8 +71,14 @@ extern PID_controller_t ctrl_pi_current;
 // Uart handling
 UART_HandleTypeDef *cli_huart;
 
+// Keyboard control mode (see cmd_control() / cli_control_process_byte())
+static uint8_t cli_control_active = 0;
+static uint8_t cli_control_esc_state = 0; // 0=normal, 1=ESC seen, 2='[' seen
+static uint32_t cli_control_esc_tick = 0;
+
 // Forward declarations
 static void cli_process_line(void);
+static void cli_control_process_byte(char c);
 
 // Function declarations
 void cmd_help(void);
@@ -98,8 +107,11 @@ void cmd_setCtrlGain(void);
 void cmd_printRTC(void);
 void cmd_setRTC(void);
 void cmd_testLCD(void);
-void cmd_setADCCal(void);
+void cmd_control(void);
+void cmd_zeroCal(void);
+void cmd_gainCal(void);
 void cmd_setSerial(void);
+void cmd_flashIcons(void);
 
 // List of functions pointers corresponding to each command
 void (*cmd_func[])(void) = {
@@ -129,8 +141,11 @@ void (*cmd_func[])(void) = {
 	cmd_printRTC,
 	cmd_setRTC,
 	cmd_testLCD,
-	cmd_setADCCal,
-	cmd_setSerial
+	cmd_control,
+	cmd_zeroCal,
+	cmd_gainCal,
+	cmd_setSerial,
+	cmd_flashIcons
 };
 
 // List of command names
@@ -161,8 +176,11 @@ const char *cmd_str[] = {
 		"pRTC",
 		"setRTC",
 		"testLCD",
-		"setADCCal",
-		"setSerial"
+		"control",
+		"zeroCal",
+		"gainCal",
+		"setSerial",
+		"flashIcons"
 };
 
 // List of command names including arguments
@@ -189,12 +207,15 @@ const char *cmd_arg_str[] = {
 		"writeFlash [address] [size] [data]",
 		"testFlash",
 		"state [new state]",
-		"setPI [P Gain] [I Gain]",
+		"setPI [ID 0=Buck,1=Boost,2=Current] [P Gain] [I Gain]",
 		"pRTC",
 		"setRTC [year] [month] [day] [hour] [minute] [second] {weekday}",
 		"testLCD",
-		"setADCCal [channel: 0=V_TERM,1=I_OUT,2=I_ISO] [offset] [gain]",
-		"setSerial [serial number]"
+		"control -- arrows=encoder Enter=OK Esc=ESC Space=OUT(toggle) q=quit",
+		"zeroCal [channel: 0=V_TERM,1=V_SENS,2=V_OUT,3=V_HV,4=I_OUT,5=I_ISO]",
+		"gainCal [channel: 0=V_TERM,1=V_SENS,2=V_OUT,3=V_HV,4=I_OUT,5=I_ISO] [reference value]",
+		"setSerial [serial number]",
+		"flashIcons"
 };
 
 int cmd_index;
@@ -250,8 +271,24 @@ bool cli_readline(void) {
 	bool ret = false;
 	// 0=normal, 1=ESC seen, 2='[' seen
     static uint8_t esc_state = 0;
+
+    // A lone Esc keypress in keyboard-control mode never gets a follow-up
+    // '[' byte, so it has to be resolved on a timeout instead of by looking
+    // at the next byte (which may not exist / may belong to the next key).
+    if (cli_control_active && cli_control_esc_state == 1
+    		&& (HAL_GetTick() - cli_control_esc_tick) > 25) {
+    	cli_control_esc_state = 0;
+    	input_cli_pulse_esc();
+    }
+
 	while (HAL_UART_Receive(cli_huart, (uint8_t*) &c,1, 1) == 0) {
 		ret = true;
+
+		if (cli_control_active) {
+			cli_control_process_byte(c);
+			continue;
+		}
+
         // --- Handle escape sequences (arrow keys) ---
         if (esc_state == 1) {
             if (c == '[') {
@@ -353,6 +390,63 @@ bool cli_readline(void) {
 }
 
 /**
+ * Byte parser for keyboard-control mode (see cmd_control()). Drives input.c's
+ * CLI-simulated encoder/buttons instead of the normal line editor:
+ *   Left/Down or Right/Up = encoder step, Enter = OK, Esc = ESC,
+ *   Space = OUT (toggle, since a terminal has no key-release event), q = quit.
+ *
+ * Note: if Esc is immediately followed by an unrelated key (not '['), that
+ * key is swallowed while the lone-Esc timeout resolves -- a minor limitation
+ * of a dev/test-only feature, not worth a re-entrant parse for.
+ */
+static void cli_control_process_byte(char c) {
+	if (cli_control_esc_state == 1) {
+		if (c == '[') {
+			cli_control_esc_state = 2;
+			return;
+		}
+		cli_control_esc_state = 0;
+		input_cli_pulse_esc();
+		return;
+	}
+	if (cli_control_esc_state == 2) {
+		switch (c) {
+		case 'A': /* Up */
+		case 'C': /* Right */
+			input_cli_encoder_step(+1);
+			break;
+		case 'B': /* Down */
+		case 'D': /* Left */
+			input_cli_encoder_step(-1);
+			break;
+		default:
+			break;
+		}
+		cli_control_esc_state = 0;
+		return;
+	}
+	if (c == 27) {
+		cli_control_esc_state = 1;
+		cli_control_esc_tick = HAL_GetTick();
+		return;
+	}
+	if (c == '\r' || c == '\n') {
+		input_cli_pulse_ok();
+		return;
+	}
+	if (c == ' ') {
+		input_cli_toggle_out();
+		return;
+	}
+	if (c == 'q' || c == 'Q') {
+		cli_control_active = 0;
+		input_set_source(INPUT_SOURCE_HW);
+		cli_printf("\r\nExiting keyboard control mode.\r\n> ");
+		return;
+	}
+}
+
+/**
  * Parse the line into the arguments
  *
  * @return Returns the number of available arguments
@@ -439,9 +533,10 @@ void cmd_help(void) {
 /*********************** Functions ************************************/
 
 /**
- * Snapshots the live ADC calibration (see setADCCal) and PID gains
- * (see setPI) into config_store and persists the calibration block
- * to the EEPROM.
+ * Snapshots the live ADC calibration (see zeroCal/gainCal) and PID
+ * gains (see setPI) into config_store and persists the calibration
+ * block to the EEPROM. zeroCal/gainCal already persist on their own,
+ * so this is mainly useful after manually tweaking PID gains.
  */
 void cmd_saveEEPROM(void) {
 	config_store.calibration.v_term_offset_mv = adc_data.v_term_offset;
@@ -450,6 +545,18 @@ void cmd_saveEEPROM(void) {
 	config_store.calibration.i_out_gain       = adc_data.i_out_gain;
 	config_store.calibration.i_iso_offset_ua  = adc_data.i_iso_offset;
 	config_store.calibration.i_iso_gain       = adc_data.i_iso_gain;
+	config_store.calibration.v_sens_offset    = adc_data.v_sens_offset;
+	config_store.calibration.v_sens_gain      = adc_data.v_sens_gain;
+	config_store.calibration.v_out_offset     = adc_data.v_out_offset;
+	config_store.calibration.v_out_gain       = adc_data.v_out_gain;
+	config_store.calibration.v_hv_offset      = adc_data.v_hv_offset;
+	config_store.calibration.v_hv_gain        = adc_data.v_hv_gain;
+	config_store.calibration.v_term_ext_offset = adc_data.v_term_ext_offset;
+	config_store.calibration.v_term_ext_gain   = adc_data.v_term_ext_gain;
+	config_store.calibration.i_out_ext_offset  = adc_data.i_out_ext_offset;
+	config_store.calibration.i_out_ext_gain    = adc_data.i_out_ext_gain;
+	config_store.calibration.i_iso_ext_offset  = adc_data.i_iso_ext_offset;
+	config_store.calibration.i_iso_ext_gain    = adc_data.i_iso_ext_gain;
 
 	config_store.calibration.voltage_buck_p  = ctrl_pi_voltage_buck.P_gain;
 	config_store.calibration.voltage_buck_i  = ctrl_pi_voltage_buck.I_gain;
@@ -497,6 +604,30 @@ void cmd_readEEPROM(void) {
 	cli_printFloat(config_store.calibration.i_iso_gain);
 	printf("\r\n");
 
+	printf("V_SENS offset/gain:  %ld uV / ", (long) config_store.calibration.v_sens_offset);
+	cli_printFloat(config_store.calibration.v_sens_gain);
+	printf("\r\n");
+
+	printf("V_OUT  offset/gain:  %u mV / ", config_store.calibration.v_out_offset);
+	cli_printFloat(config_store.calibration.v_out_gain);
+	printf("\r\n");
+
+	printf("V_HV   offset/gain:  %u mV / ", config_store.calibration.v_hv_offset);
+	cli_printFloat(config_store.calibration.v_hv_gain);
+	printf("\r\n");
+
+	printf("V_TERM_EXT off/gain: %ld mV / ", (long) config_store.calibration.v_term_ext_offset);
+	cli_printFloat(config_store.calibration.v_term_ext_gain);
+	printf("\r\n");
+
+	printf("I_OUT_EXT  off/gain: %ld mA / ", (long) config_store.calibration.i_out_ext_offset);
+	cli_printFloat(config_store.calibration.i_out_ext_gain);
+	printf("\r\n");
+
+	printf("I_ISO_EXT  off/gain: %ld uA / ", (long) config_store.calibration.i_iso_ext_offset);
+	cli_printFloat(config_store.calibration.i_iso_ext_gain);
+	printf("\r\n");
+
 	printf("Voltage buck  P / I: ");
 	cli_printFloat(config_store.calibration.voltage_buck_p);
 	printf(" / ");
@@ -517,28 +648,48 @@ void cmd_readEEPROM(void) {
 }
 
 /**
- * Sets ADC channel calibration (offset, gain) live. Not persisted -
- * use saveEEPROM to write it to the EEPROM.
+ * Zeroes one of the six calibratable ADC channels: set the real-world
+ * input to zero (short/disconnect for voltage channels, open circuit
+ * for current channels) first, then run this. Samples raw ADC counts,
+ * stores them as the channel's offset, and persists immediately to
+ * the EEPROM.
  */
-void cmd_setADCCal(void) {
+void cmd_zeroCal(void) {
 	uint8_t id;
-	uint16_t offset;
-	float gain;
-	CLI_CHECK_ARG_CNT(3);
 	char *end;
+
+	CLI_CHECK_ARG_CNT(1);
 	id = strtoul(arg_locs[1], &end, 10);
-	offset = strtoul(arg_locs[2], &end, 10);
-	gain = strtof(arg_locs[3], &end);
-	if (id == 0) {
-		adc_data.v_term_offset = offset;
-		adc_data.v_term_gain = gain;
-	} else if (id == 1) {
-		adc_data.i_out_offset = offset;
-		adc_data.i_out_gain = gain;
-	} else if (id == 2) {
-		adc_data.i_iso_offset = offset;
-		adc_data.i_iso_gain = gain;
+	if (id >= CAL_CH_COUNT) {
+		printf("Invalid channel\r\n");
+		return;
 	}
+	calibration_zero((calibration_channel_t) id);
+	printf("%s zeroed.\r\n", calibration_channel_name((calibration_channel_t) id));
+}
+
+/**
+ * Sets the gain (second calibration point) of one of the six
+ * calibratable ADC channels: apply a known reference value to the
+ * channel's input, then run this with that value. Samples raw ADC
+ * counts, computes gain = reference / (raw - offset), and persists
+ * immediately to the EEPROM. Run zeroCal on the channel first.
+ */
+void cmd_gainCal(void) {
+	uint8_t id;
+	float reference_value;
+	char *end;
+
+	CLI_CHECK_ARG_CNT(2);
+	id = strtoul(arg_locs[1], &end, 10);
+	if (id >= CAL_CH_COUNT) {
+		printf("Invalid channel\r\n");
+		return;
+	}
+	reference_value = strtof(arg_locs[2], &end);
+	calibration_set_gain((calibration_channel_t) id, reference_value);
+	printf("%s gain set (reference %s %s).\r\n", calibration_channel_name((calibration_channel_t) id),
+			arg_locs[2], calibration_channel_unit((calibration_channel_t) id));
 }
 
 /**
@@ -1371,6 +1522,32 @@ void cmd_setRTC(void){
 void cmd_testLCD(void){
 	LCD_Test();
 	return;
+}
+
+/**
+ * Enters keyboard-control mode: drives the on-device menu/encoder/buttons
+ * from the serial terminal instead of the physical hardware, for developing
+ * and testing the UI without the encoder/buttons/display board attached.
+ */
+void cmd_control(void) {
+	cli_control_active = 1;
+	cli_control_esc_state = 0;
+	input_set_source(INPUT_SOURCE_CLI);
+	cli_printf(
+			"\r\nKeyboard control mode.\r\n"
+			"  Arrows = encoder   Enter = OK   Esc = ESC   Space = OUT (toggle)   q = quit\r\n");
+}
+
+/**
+ * (Re)provisions the menu icon store on the QSPI flash from the compiled-in
+ * seed artwork (icon_seed_data.c). Erases and rewrites the whole store.
+ */
+void cmd_flashIcons(void) {
+	if (icon_store_flash_seed() == 0) {
+		printf("Icon store flashed OK.\r\n");
+	} else {
+		printf("Icon store flash FAILED.\r\n");
+	}
 }
 
 #endif

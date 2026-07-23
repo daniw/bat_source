@@ -53,6 +53,7 @@
 #include "stdint.h"
 #include "lcd.h"
 #include "w25n01gv.h"
+#include "icon_store.h"
 #include "ads131m04.h"
 /* USER CODE END Includes */
 
@@ -212,6 +213,7 @@ int main(void)
   if (flash_status != W25N01GV_OK) {
     printf("Flash initialisation failed!\r\n");
   }
+  icon_store_init(); // safe even if flash init failed above -- just reports unavailable
 
   gpio_turnOn();
 
