@@ -28,7 +28,7 @@ const uint16_t ctrl_main_iso_values[4] = { 125, 250, 500, 1000 };
 void ctrl_main_ctrl_voltage_buck(uint32_t voltage_meas_mV,
 		int32_t voltage_meas_accurate);
 void ctrl_main_ctrl_voltage_boost(uint32_t voltage_meas_mV,
-		int32_t voltage_meas_accurate);
+		int32_t voltage_meas_accurate, int16_t current_meas_mA);
 void ctrl_main_ctrl_current(int16_t current_meas_mA,
 		int16_t current_meas_accurate);
 
@@ -142,7 +142,7 @@ void ctrl_main_ctrl(ADC_MEAS_DATA *adc_data) {
 
 	case CTRL_MODE_60V:
 		ctrl_main_ctrl_voltage_boost(adc_data->converted.v_out,
-				adc_data->converted.v_term_ext_mv);
+				adc_data->converted.v_term_ext_mv, adc_data->converted.i_out);
 		break;
 	case CTRL_MODE_RESISTANCE_1A:
 	case CTRL_MODE_RESISTANCE_1mA:
@@ -247,7 +247,7 @@ uint8_t duty;
 
 
 void ctrl_main_ctrl_voltage_boost(uint32_t voltage_meas_mV,
-		int32_t voltage_meas_accurate_mV) {
+		int32_t voltage_meas_accurate_mV, int16_t current_meas_mA) {
 uint8_t duty;
 	// Startup Ramp
 	if (ctrl_main_handle.ramp > 1.0F) {
@@ -266,9 +266,20 @@ uint8_t duty;
 	ctrl_PID_controller_execute(&ctrl_pi_voltage_boost, voltage_meas_mV / 1000.0F,
 			voltage_meas_accurate_mV / 1000.0F, 0);
 
+	// Current-limit foldback: pure P correction on top of the voltage loop's
+	// output, does not touch ctrl_pi_voltage_boost.action/I_action (no
+	// anti-windup interaction with the voltage integrator).
+	float duty_limited = ctrl_pi_voltage_boost.action;
+	int32_t current_excess_mA = (int32_t) current_meas_mA - CTRL_PARAM_BOOST_IOUT_LIMIT_mA;
+	if (current_excess_mA > 0) {
+		duty_limited -= CTRL_PARAM_BOOST_IOUT_LIMIT_P * (current_excess_mA / 1000.0F);
+		if (duty_limited < CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW)
+			duty_limited = CTRL_PARAM_VOLTAGE_BOOST_DUTY_SAT_LOW;
+	}
+
 	// Apply Duty
-	hrtim_set_duty(HRTIM_CHANNEL_SEK, ctrl_pi_voltage_boost.action);
-	ctrl_main_handle.duty = ctrl_pi_voltage_boost.action*1000;
+	hrtim_set_duty(HRTIM_CHANNEL_SEK, duty_limited);
+	ctrl_main_handle.duty = duty_limited*1000;
 	//if(ctrl_pi_voltage.action > 0.24F || ctrl_pi_voltage.action<0.24F)
 	//	printf("%d\r\n", duty);
 }
